@@ -80,7 +80,8 @@ traceln("Diagonals removed for arterials: " + diagonalsRemoved);   // TEST
 Runnable connectIsolated = () -> {
     int[][] allDirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
     int isolatedLinksAdded = 0;
-    List<GridPoint> order = new ArrayList<>(gridPoints);
+    List<GridPoint> order = new ArrayList<>();
+    for (GridPoint g : gridPoints) order.add(g);   // copy the population into a plain list that can be shuffled
     Collections.shuffle(order, getDefaultRandomGenerator());   // random order, so bias of early fixes on later fixes is spread throughout grid
     for (GridPoint p : order) {
         if (p.colLinks.isEmpty()) {
