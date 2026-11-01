@@ -33,6 +33,7 @@ for (GridPoint[] pl : potentialLinks) {
     double prob = parLinkProb * funJunctionsFactor(a) * funJunctionsFactor(b) * funAngleFactor(a, b) * funAngleFactor(b, a);
     if (randomTrue(min(1.0, prob))) funAddLink(a, b);
 }
+traceln("Links after random stage: " + links.size());   // TEST
 
 // Four arterials through the central node: horizontal, vertical, two diagonals
 int ci = parCols / 2; //truncates if parCols is odd, Java being zero indexed, this is exact centre. For even parCols, then we get one increment off centre closer to origin.
@@ -70,68 +71,85 @@ for (int[] d : axes) {
 traceln("Arterial links added: " + arterialLinksAdded);   // TEST
 traceln("Diagonals removed for arterials: " + diagonalsRemoved);   // TEST
 
+// Repair stages, defined here as local functions (lambdas) and run at the bottom of this block.
+// Each is a Runnable: a block of code stored in a variable, executed by calling .run() on it.
+
 // Give every isolated node one link to a random neighbour (diagonals that would cross an existing link are excluded)
-int[][] allDirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
-for (GridPoint p : gridPoints) {
-    if (p.colLinks.isEmpty()) {
-        List<GridPoint> nbrs = new ArrayList<>();
-        for (int[] d : allDirs) { //this loop builds a list of nieghbours around the grindpoint in question, excluding neighbours for whom a new link would cross an existing link (applicable to diagonals)
-            int ni = p.parXIndex + d[0];
-            int nj = p.parYIndex + d[1];
-            if (ni < 0 || ni >= parCols || nj < 0 || nj >= parCols) continue;   // off grid
-            if (d[0] != 0 && d[1] != 0 && funFindLink(varGrid[ni][p.parYIndex], varGrid[p.parXIndex][nj]) != null) continue;   // diagonal would cross
-            nbrs.add(varGrid[ni][nj]);
+Runnable connectIsolated = () -> {
+    int[][] allDirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
+    int isolatedLinksAdded = 0;
+    for (GridPoint p : gridPoints) {
+        if (p.colLinks.isEmpty()) {
+            List<GridPoint> nbrs = new ArrayList<>();
+            for (int[] d : allDirs) { //this loop builds a list of nieghbours around the grindpoint in question, excluding neighbours for whom a new link would cross an existing link (applicable to diagonals)
+                int ni = p.parXIndex + d[0];
+                int nj = p.parYIndex + d[1];
+                if (ni < 0 || ni >= parCols || nj < 0 || nj >= parCols) continue;   // off grid
+                if (d[0] != 0 && d[1] != 0 && funFindLink(varGrid[ni][p.parYIndex], varGrid[p.parXIndex][nj]) != null) continue;   // diagonal would cross
+                nbrs.add(varGrid[ni][nj]);
+            }
+            funAddLink(p, randomFrom(nbrs));
+            isolatedLinksAdded++;
         }
-        funAddLink(p, randomFrom(nbrs));
     }
-}
+    traceln("Isolated-node links added: " + isolatedLinksAdded);   // TEST
+};
 
 // Join separate clusters into one network
-Set<GridPoint> reached = new HashSet<>();
-ArrayDeque<GridPoint> queue = new ArrayDeque<>();
-reached.add(varGrid[0][0]);
-queue.add(varGrid[0][0]);
-List<GridPoint[]> candidates = new ArrayList<>();   // pairs {inside node, outside grid neighbour}, kept across passes
-int bridgesAdded = 0;
-while (true) {
-    // Flood-fill: find every node reachable from what's already reached
-    while (!queue.isEmpty()) {
-        GridPoint p = queue.poll();
-        // Record p's unreached grid neighbours as possible bridges (each node is explored once, so scanned once)
-        for (int[] d : allDirs) {
-            int ni = p.parXIndex + d[0];
-            int nj = p.parYIndex + d[1];
-            if (ni >= 0 && ni < parCols && nj >= 0 && nj < parCols && !reached.contains(varGrid[ni][nj]))
-                candidates.add(new GridPoint[]{p, varGrid[ni][nj]});//each candidate is a pair of nodes that are disconnected
+Runnable bridgeClusters = () -> {
+    int[][] allDirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
+    Set<GridPoint> reached = new HashSet<>();
+    ArrayDeque<GridPoint> queue = new ArrayDeque<>();
+    reached.add(varGrid[0][0]);
+    queue.add(varGrid[0][0]);
+    List<GridPoint[]> candidates = new ArrayList<>();   // pairs {inside node, outside grid neighbour}, kept across passes
+    int bridgesAdded = 0;
+    while (true) {
+        // Flood-fill: find every node reachable from what's already reached
+        while (!queue.isEmpty()) {
+            GridPoint p = queue.poll();
+            // Record p's unreached grid neighbours as possible bridges (each node is explored once, so scanned once)
+            for (int[] d : allDirs) {
+                int ni = p.parXIndex + d[0];
+                int nj = p.parYIndex + d[1];
+                if (ni >= 0 && ni < parCols && nj >= 0 && nj < parCols && !reached.contains(varGrid[ni][nj]))
+                    candidates.add(new GridPoint[]{p, varGrid[ni][nj]});//each candidate is a pair of nodes that are disconnected
+            }
+            for (Link l : p.colLinks) {
+                GridPoint q = (l.parNodeA == p) ? l.parNodeB : l.parNodeA;
+                if (reached.add(q)) queue.add(q); // Condition here is doing double duty, by adding and returning true or false: if node q hasn't already been reached, then add it to the queue, otherwise don't, and move to next link. When all links are done, the next 'unexplored' node in the queue has the process repeated for all its links ('unexplored'=has not yet been the subject p of the while loop), itself expanding the queue in the process (unless all its connected nodes were already reached).
+            }
         }
-        for (Link l : p.colLinks) {
-            GridPoint q = (l.parNodeA == p) ? l.parNodeB : l.parNodeA;
-            if (reached.add(q)) queue.add(q); // Condition here is doing double duty, by adding and returning true or false: if node q hasn't already been reached, then add it to the queue, otherwise don't, and move to next link. When all links are done, the next 'unexplored' node in the queue has the process repeated for all its links ('unexplored'=has not yet been the subject p of the while loop), itself expanding the queue in the process (unless all its connected nodes were already reached).
-        }
-    }
-    if (reached.size() == gridPoints.size()) break;   // all connected. The loop above could have an empty queue but not have explored all regions, since disconnected clusters never entered the queue, because entering the queue requires node q to have been reached by an existing intracluster link. This conditional break here only occurs when all the separate clusters have been explored.
+        if (reached.size() == gridPoints.size()) break;   // all connected. The loop above could have an empty queue but not have explored all regions, since disconnected clusters never entered the queue, because entering the queue requires node q to have been reached by an existing intracluster link. This conditional break here only occurs when all the separate clusters have been explored.
 
-    // Pick a random candidate; discard stale ones whose outside node has been reached since it was recorded,
-    // and diagonal ones that would cross an existing link (checked at pick time, since earlier bridges may have blocked them)
-    GridPoint[] pair;
-    boolean blocked;
-    do {
-        int k = uniform_discr(0, candidates.size() - 1);
-        pair = candidates.get(k);
-        candidates.set(k, candidates.get(candidates.size() - 1));   // remove item k quickly: overwrite it with the last item...
-        candidates.remove(candidates.size() - 1);                   // ...then drop the last item
-        GridPoint a = pair[0];
-        GridPoint b = pair[1];
-        blocked = a.parXIndex != b.parXIndex && a.parYIndex != b.parYIndex
-                  && funFindLink(varGrid[b.parXIndex][a.parYIndex], varGrid[a.parXIndex][b.parYIndex]) != null;
-    } while (reached.contains(pair[1]) || blocked); //the above loop cuts down the candidate list until a valid pair is found, and the loop ceases, regardless of how many valid and invalid pairs remain. Valid in this case means pairs for whom one is not inside the island/cluster called 'reached' found in the previous queue-based while loop ('the flood fill' while loop), and which don't cross an existing diagonal. Horizontal/vertical candidates are never blocked, so a valid pair always remains.
-    // Link the pair, then flood-fill from the newly joined node next pass
-    funAddLink(pair[0], pair[1]); //Notice the location of this link bridging islands is randomized because it was randomly drawn from a sea of candidates using the uniform_discr function
-    reached.add(pair[1]); //Remember that the previous loop only stopped when pair[1] was found to be not a reached point, so now that we've linked it in above statement, it becomes reached, and 
-    queue.add(pair[1]); //this means when we go back to top of while(true) loop, exploration will resume from this new connection
-    bridgesAdded++;
-}
-traceln("Bridging links added: " + bridgesAdded);   // TEST
+        // Pick a random candidate; discard stale ones whose outside node has been reached since it was recorded,
+        // and diagonal ones that would cross an existing link (checked at pick time, since earlier bridges may have blocked them)
+        GridPoint[] pair;
+        boolean blocked;
+        do {
+            int k = uniform_discr(0, candidates.size() - 1);
+            pair = candidates.get(k);
+            candidates.set(k, candidates.get(candidates.size() - 1));   // remove item k quickly: overwrite it with the last item...
+            candidates.remove(candidates.size() - 1);                   // ...then drop the last item
+            GridPoint a = pair[0];
+            GridPoint b = pair[1];
+            blocked = a.parXIndex != b.parXIndex && a.parYIndex != b.parYIndex
+                      && funFindLink(varGrid[b.parXIndex][a.parYIndex], varGrid[a.parXIndex][b.parYIndex]) != null;
+        } while (reached.contains(pair[1]) || blocked); //the above loop cuts down the candidate list until a valid pair is found, and the loop ceases, regardless of how many valid and invalid pairs remain. Valid in this case means pairs for whom one is not inside the island/cluster called 'reached' found in the previous queue-based while loop ('the flood fill' while loop), and which don't cross an existing diagonal. Horizontal/vertical candidates are never blocked, so a valid pair always remains.
+        // Link the pair, then flood-fill from the newly joined node next pass
+        funAddLink(pair[0], pair[1]); //Notice the location of this link bridging islands is randomized because it was randomly drawn from a sea of candidates using the uniform_discr function
+        reached.add(pair[1]); //Remember that the previous loop only stopped when pair[1] was found to be not a reached point, so now that we've linked it in above statement, it becomes reached, and
+        queue.add(pair[1]); //this means when we go back to top of while(true) loop, exploration will resume from this new connection
+        bridgesAdded++;
+    }
+    traceln("Bridging links added: " + bridgesAdded);   // TEST
+};
+
+// Run the repair stages (comment a line out to switch that stage off)
+connectIsolated.run();
+traceln("Links after isolated-node fix: " + links.size());   // TEST
+bridgeClusters.run();
+traceln("Links after bridging: " + links.size());   // TEST
 
 // TEST: count grid squares that have both diagonals (should be 0)
 int crossings = 0;
