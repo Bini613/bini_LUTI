@@ -20,7 +20,7 @@ for (int i = 0; i < parCols; i++) { //pan across the x axis starting from the le
             boolean diagA = randomTrue(parLinkProb);   // (i,j) to (i+1,j-1) --NE link from node p
             boolean diagB = randomTrue(parLinkProb);   // (i+1,j) to (i,j-1) --NW link from node one step right
             if (diagA && diagB) { //If both diagonals roll successfully, cancel one of them at equal random chance
-                if (randomTrue(0.5)) {diagB = false; else diagA = false};
+                if (randomTrue(0.5)) { diagB = false; } else { diagA = false; }
             }
             if (diagA) funAddLink(p, varGrid[i+1][j-1]);
             if (diagB) funAddLink(varGrid[i+1][j], varGrid[i][j-1]);
