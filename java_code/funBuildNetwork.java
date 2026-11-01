@@ -23,7 +23,7 @@ for (int i = 0; i < parCols; i++) { //pan across the x axis starting from the le
 }
 // 2. Shuffle, so the order links are considered in has no spatial bias.
 //    Uses AnyLogic's random generator, so runs with the same seed give the same network.
-Collections.shuffle(potentialLinks, getDefaultRandomNumberGenerator());
+Collections.shuffle(potentialLinks, getDefaultRandomGenerator());
 // 3. Accept each with a probability adjusted at both ends for junctions/dead ends and turn sharpness
 for (GridPoint[] pl : potentialLinks) {
     GridPoint a = pl[0];
