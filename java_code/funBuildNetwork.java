@@ -148,22 +148,44 @@ Runnable bridgeClusters = () -> {
         }
         if (reached.size() == gridPoints.size()) break;   // all connected. The loop above could have an empty queue but not have explored all regions, since disconnected clusters never entered the queue, because entering the queue requires node q to have been reached by an existing intracluster link. This conditional break here only occurs when all the separate clusters have been explored.
 
-        // Pick a random candidate; discard stale ones whose outside node has been reached since it was recorded,
-        // and diagonal ones that would cross an existing link (checked at pick time, since earlier bridges may have blocked them)
+        // Drop invalid candidates: stale ones whose outside node has been reached since it was recorded,
+        // and diagonal ones that would cross an existing link (earlier bridges may have blocked them).
+        // Horizontal/vertical candidates are never blocked, so at least one valid candidate always remains.
+        List<GridPoint[]> valid = new ArrayList<>();
+        for (GridPoint[] c : candidates) { 
+            GridPoint a = c[0];
+            GridPoint b = c[1];
+            if (reached.contains(b)) continue;   // stale
+            boolean blocked = a.parXIndex != b.parXIndex && a.parYIndex != b.parYIndex
+                              && funFindLink(varGrid[b.parXIndex][a.parYIndex], varGrid[a.parXIndex][b.parYIndex]) != null;
+            if (blocked) continue;
+            valid.add(c);
+        }
+        candidates = valid; //Previous loop created 'valid' list which purged all 'stale' entries. This becomes new candidate list
+
+        // Pick one candidate at random, weighted by the same junction and angle factors as the random stage.
+        // Weights are recalculated every pass, since each new bridge changes link counts.
+        List<Double> weights = new ArrayList<>();
+        double total = 0;
+        for (GridPoint[] c : candidates) {
+            double w = funJunctionsFactor(c[0]) * funJunctionsFactor(c[1]) * funAngleFactor(c[0], c[1]) * funAngleFactor(c[1], c[0]);
+            weights.add(w);
+            total += w;
+        }
         GridPoint[] pair;
-        boolean blocked;
-        do {
-            int k = uniform_discr(0, candidates.size() - 1);
-            pair = candidates.get(k);
-            candidates.set(k, candidates.get(candidates.size() - 1));   // remove item k quickly: overwrite it with the last item...
-            candidates.remove(candidates.size() - 1);                   // ...then drop the last item
-            GridPoint a = pair[0];
-            GridPoint b = pair[1];
-            blocked = a.parXIndex != b.parXIndex && a.parYIndex != b.parYIndex
-                      && funFindLink(varGrid[b.parXIndex][a.parYIndex], varGrid[a.parXIndex][b.parYIndex]) != null;
-        } while (reached.contains(pair[1]) || blocked); //the above loop cuts down the candidate list until a valid pair is found, and the loop ceases, regardless of how many valid and invalid pairs remain. Valid in this case means pairs for whom one is not inside the island/cluster called 'reached' found in the previous queue-based while loop ('the flood fill' while loop), and which don't cross an existing diagonal. Horizontal/vertical candidates are never blocked, so a valid pair always remains.
+        if (total <= 0) pair = randomFrom(candidates);   // every weight is zero: fall back to an unweighted choice
+        else {
+            // Weighted pick (roulette wheel), as in connectIsolated
+            double r = uniform(0, total);
+            int idx = 0;
+            while (idx < candidates.size() - 1 && r >= weights.get(idx)) {
+                r -= weights.get(idx);
+                idx++;
+            }
+            pair = candidates.get(idx);
+        }
         // Link the pair, then flood-fill from the newly joined node next pass
-        funAddLink(pair[0], pair[1]); //Notice the location of this link bridging islands is randomized because it was randomly drawn from a sea of candidates using the uniform_discr function
+        funAddLink(pair[0], pair[1]);
         reached.add(pair[1]); //Remember that the previous loop only stopped when pair[1] was found to be not a reached point, so now that we've linked it in above statement, it becomes reached, and
         queue.add(pair[1]); //this means when we go back to top of while(true) loop, exploration will resume from this new connection
         bridgesAdded++;
