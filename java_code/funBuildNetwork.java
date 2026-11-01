@@ -74,11 +74,15 @@ traceln("Diagonals removed for arterials: " + diagonalsRemoved);   // TEST
 // Repair stages, defined here as local functions (lambdas) and run at the bottom of this block.
 // Each is a Runnable: a block of code stored in a variable, executed by calling .run() on it.
 
-// Give every isolated node one link to a random neighbour (diagonals that would cross an existing link are excluded)
+// Give every isolated node one link to a neighbour (diagonals that would cross an existing link are excluded).
+// The neighbour is picked at random, weighted by the same junction and angle factors as the random stage,
+// so links that the random stage would favour are favoured here too. One link is always added.
 Runnable connectIsolated = () -> {
     int[][] allDirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
     int isolatedLinksAdded = 0;
-    for (GridPoint p : gridPoints) {
+    List<GridPoint> order = new ArrayList<>(gridPoints);
+    Collections.shuffle(order, getDefaultRandomGenerator());   // random order, so bias of early fixes on later fixes is spread throughout grid
+    for (GridPoint p : order) {
         if (p.colLinks.isEmpty()) {
             List<GridPoint> nbrs = new ArrayList<>();
             for (int[] d : allDirs) { //this loop builds a list of nieghbours around the grindpoint in question, excluding neighbours for whom a new link would cross an existing link (applicable to diagonals)
@@ -88,7 +92,28 @@ Runnable connectIsolated = () -> {
                 if (d[0] != 0 && d[1] != 0 && funFindLink(varGrid[ni][p.parYIndex], varGrid[p.parXIndex][nj]) != null) continue;   // diagonal would cross
                 nbrs.add(varGrid[ni][nj]);
             }
-            funAddLink(p, randomFrom(nbrs));
+            // Weight each neighbour with the same factors as the random stage (parLinkProb is left out: it's the same for every neighbour)
+            List<Double> weights = new ArrayList<>();
+            double total = 0;
+            for (GridPoint b : nbrs) {
+                double w = funJunctionsFactor(p) * funJunctionsFactor(b) * funAngleFactor(p, b) * funAngleFactor(b, p);
+                weights.add(w);
+                total += w;
+            }
+            GridPoint chosen;
+            if (total <= 0) chosen = randomFrom(nbrs);   // every weight is zero: fall back to an unweighted choice
+            else {
+                // Below is a weighted pick. We line up all the weights as bars of length in a line, and the following algorithm draws a random point r along that length, and then figures out the index of the neighbour whose weight bar r landed upon.
+                double r
+                    = uniform(0, total);
+                int idx = 0;
+                while (idx < nbrs.size() - 1 && r >= weights.get(idx)) {
+                    r -= weights.get(idx);
+                    idx++;
+                }
+                chosen = nbrs.get(idx);
+            }
+            funAddLink(p, chosen);
             isolatedLinksAdded++;
         }
     }
