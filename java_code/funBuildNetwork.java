@@ -30,7 +30,7 @@ for (GridPoint[] pl : potentialLinks) {
     GridPoint b = pl[1];
     boolean diagonal = a.parXIndex != b.parXIndex && a.parYIndex != b.parYIndex;
     if (diagonal && funFindLink(varGrid[b.parXIndex][a.parYIndex], varGrid[a.parXIndex][b.parYIndex]) != null) continue;   // would cross the square's other diagonal
-    double prob = parLinkProb * funJunctionsFactor(a) * funJunctionsFactor(b) * funAngleFactor(a, b) * funAngleFactor(b, a);
+    double prob = parLinkProb * funJunctionsFactor(a, b) * funAngleFactor(a, b);
     if (randomTrue(min(1.0, prob))) funAddLink(a, b);
 }
 traceln("Links after random stage: " + links.size());   // TEST
@@ -97,7 +97,7 @@ Runnable connectIsolated = () -> {
             List<Double> weights = new ArrayList<>();
             double total = 0;
             for (GridPoint b : nbrs) {
-                double w = funJunctionsFactor(p) * funJunctionsFactor(b) * funAngleFactor(p, b) * funAngleFactor(b, p);
+                double w = funJunctionsFactor(p, b) * funAngleFactor(p, b);
                 weights.add(w);
                 total += w;
             }
@@ -168,7 +168,7 @@ Runnable bridgeClusters = () -> {
         List<Double> weights = new ArrayList<>();
         double total = 0;
         for (GridPoint[] c : candidates) {
-            double w = funJunctionsFactor(c[0]) * funJunctionsFactor(c[1]) * funAngleFactor(c[0], c[1]) * funAngleFactor(c[1], c[0]);
+            double w = funJunctionsFactor(c[0], c[1]) * funAngleFactor(c[0], c[1]);
             weights.add(w);
             total += w;
         }
