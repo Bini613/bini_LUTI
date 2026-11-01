@@ -1,0 +1,4 @@
+# Track only the java_code folder
+/*
+!/.gitignore
+!/java_code/
