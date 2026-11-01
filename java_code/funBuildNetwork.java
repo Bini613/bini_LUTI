@@ -8,24 +8,30 @@ for (int i = 0; i < parCols; i++) {
 }
 
 // Random links (y points down in AnyLogic, so N is j-1).
-// Horizontal/vertical: each node rolls for E and N.
-// Diagonals: each node owns the grid square to its NE and rolls for both of that square's diagonals.
-// If both succeed, a coin flip keeps one, so diagonals never cross and neither orientation is favoured.
+// 1. List every potential link once: each node's E and N links, plus both diagonals of the grid square to its NE.
+List<GridPoint[]> potentialLinks = new ArrayList<>();
 for (int i = 0; i < parCols; i++) { //pan across the x axis starting from the left
     for (int j = 0; j < parCols; j++) { //pan across the y axis starting from the top
         GridPoint p = varGrid[i][j];
-        if (i + 1 < parCols && randomTrue(parLinkProb)) funAddLink(p, varGrid[i+1][j]);   // E
-        if (j - 1 >= 0 && randomTrue(parLinkProb)) funAddLink(p, varGrid[i][j-1]);        // N
+        if (i + 1 < parCols) potentialLinks.add(new GridPoint[]{p, varGrid[i+1][j]});   // E
+        if (j - 1 >= 0) potentialLinks.add(new GridPoint[]{p, varGrid[i][j-1]});        // N
         if (i + 1 < parCols && j - 1 >= 0) {   // this node owns a NE square
-            boolean diagA = randomTrue(parLinkProb);   // (i,j) to (i+1,j-1) --NE link from node p
-            boolean diagB = randomTrue(parLinkProb);   // (i+1,j) to (i,j-1) --NW link from node one step right
-            if (diagA && diagB) { //If both diagonals roll successfully, cancel one of them at equal random chance
-                if (randomTrue(0.5)) { diagB = false; } else { diagA = false; }
-            }
-            if (diagA) funAddLink(p, varGrid[i+1][j-1]);
-            if (diagB) funAddLink(varGrid[i+1][j], varGrid[i][j-1]);
+            potentialLinks.add(new GridPoint[]{p, varGrid[i+1][j-1]});                  // (i,j) to (i+1,j-1) --NE link from node p
+            potentialLinks.add(new GridPoint[]{varGrid[i+1][j], varGrid[i][j-1]});      // (i+1,j) to (i,j-1) --NW link from node one step right
         }
     }
+}
+// 2. Shuffle, so the order links are considered in has no spatial bias.
+//    Uses AnyLogic's random generator, so runs with the same seed give the same network.
+Collections.shuffle(potentialLinks, getDefaultRandomNumberGenerator());
+// 3. Accept each with a probability adjusted at both ends for junctions/dead ends and turn sharpness
+for (GridPoint[] pl : potentialLinks) {
+    GridPoint a = pl[0];
+    GridPoint b = pl[1];
+    boolean diagonal = a.parXIndex != b.parXIndex && a.parYIndex != b.parYIndex;
+    if (diagonal && funFindLink(varGrid[b.parXIndex][a.parYIndex], varGrid[a.parXIndex][b.parYIndex]) != null) continue;   // would cross the square's other diagonal
+    double prob = parLinkProb * funJunctionsFactor(a) * funJunctionsFactor(b) * funAngleFactor(a, b) * funAngleFactor(b, a);
+    if (randomTrue(min(1.0, prob))) funAddLink(a, b);
 }
 
 // Four arterials through the central node: horizontal, vertical, two diagonals
@@ -135,5 +141,14 @@ for (int i = 0; i + 1 < parCols; i++) { //boundary is i+1<, because we reach rig
     }
 }
 traceln("Crossing diagonals: " + crossings);   // TEST
+
+// TEST: count dead ends (1 link) and junctions (3+ links)
+int deadEnds = 0;
+int junctions = 0;
+for (GridPoint p : gridPoints) {
+    if (p.colLinks.size() == 1) deadEnds++;
+    else if (p.colLinks.size() >= 3) junctions++;
+}
+traceln("Dead ends: " + deadEnds + ", junctions: " + junctions);   // TEST
 
 traceln("Avg links per node: " + 2.0 * links.size() / gridPoints.size());   // TEST
