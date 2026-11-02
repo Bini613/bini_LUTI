@@ -21,18 +21,36 @@ for (int i = 0; i < parCols; i++) { //pan across the x axis starting from the le
         }
     }
 }
-// 2. Shuffle, so the order links are considered in has no spatial bias.
-//    Uses AnyLogic's random generator, so runs with the same seed give the same network.
-Collections.shuffle(potentialLinks, getDefaultRandomGenerator());
-// 3. Accept each with a probability adjusted at both ends for junctions/dead ends and turn sharpness
-for (GridPoint[] pl : potentialLinks) {
-    GridPoint a = pl[0];
-    GridPoint b = pl[1];
-    boolean diagonal = a.parXIndex != b.parXIndex && a.parYIndex != b.parYIndex;
-    if (diagonal && funFindLink(varGrid[b.parXIndex][a.parYIndex], varGrid[a.parXIndex][b.parYIndex]) != null) continue;   // would cross the square's other diagonal
-    double prob = parLinkProb * funJunctionsFactor(a, b) * funAngleFactor(a, b);
-    if (randomTrue(min(1.0, prob))) funAddLink(a, b);
+// 2. Repeated passes until the share of nodes with at least one link reaches parInitialRoadBuildCoverage.
+//    Each pass shuffles the remaining candidates (so the order has no spatial bias) and rolls each one;
+//    rejected candidates get another chance next pass, when more roads exist for the factors to favour.
+//    Shuffling uses AnyLogic's random generator, so runs with the same seed give the same network.
+int connectedNodes = 0;   // nodes with at least one link
+int passes = 0;
+int maxPasses = 1000;      // safety stop, in case the target can't be reached (e.g. every remaining probability is 0)
+List<GridPoint[]> remaining = potentialLinks;
+while ((double) connectedNodes / gridPoints.size() < parInitialRoadBuildCoverage && !remaining.isEmpty() && passes < maxPasses) {
+    passes++;
+    Collections.shuffle(remaining, getDefaultRandomGenerator());
+    List<GridPoint[]> rejected = new ArrayList<>();
+    // 3. Accept each with a probability adjusted at both ends for junctions/dead ends and turn sharpness
+    for (GridPoint[] pl : remaining) {
+        if ((double) connectedNodes / gridPoints.size() >= parInitialRoadBuildCoverage) break;   // target reached mid-pass
+        GridPoint a = pl[0];
+        GridPoint b = pl[1];
+        boolean diagonal = a.parXIndex != b.parXIndex && a.parYIndex != b.parYIndex;
+        if (diagonal && funFindLink(varGrid[b.parXIndex][a.parYIndex], varGrid[a.parXIndex][b.parYIndex]) != null) continue;   // would cross the square's other diagonal: dropped for good
+        double prob = parLinkProb * funJunctionsFactor(a, b) * funAngleFactor(a, b);
+        if (randomTrue(min(1.0, prob))) {
+            if (a.colLinks.isEmpty()) connectedNodes++;
+            if (b.colLinks.isEmpty()) connectedNodes++;
+            funAddLink(a, b);
+        }
+        else rejected.add(pl);   // try again next pass
+    }
+    remaining = rejected;
 }
+traceln("Random stage: " + passes + " passes, coverage " + (double) connectedNodes / gridPoints.size());   // TEST
 traceln("Links after random stage: " + links.size());   // TEST
 
 // Four arterials through the central node: horizontal, vertical, two diagonals
