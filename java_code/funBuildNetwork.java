@@ -211,11 +211,34 @@ Runnable bridgeClusters = () -> {
     traceln("Bridging links added: " + bridgesAdded);   // TEST
 };
 
+// Prune dead-end links (links with a node of only one link at either end) at random,
+// until dead-end links / all links is no more than parDeadEndMaxRatio.
+// Removing a dead-end link leaves its dead-end node with no links (isolated).
+Runnable pruneDeadEnds = () -> {
+    int pruned = 0;
+    while (true) {
+        // Recount every time: removing a link can turn its other end into a new dead end
+        List<Link> deadEndLinks = new ArrayList<>();
+        for (Link l : links) {
+            if (l.parNodeA.colLinks.size() == 1 || l.parNodeB.colLinks.size() == 1) deadEndLinks.add(l);
+        }
+        if (deadEndLinks.isEmpty() || (double) deadEndLinks.size() / links.size() <= parDeadEndMaxRatio) break;
+        Link l = randomFrom(deadEndLinks);
+        l.parNodeA.colLinks.remove(l);
+        l.parNodeB.colLinks.remove(l);
+        remove_links(l);
+        pruned++;
+    }
+    traceln("Dead-end links pruned: " + pruned);   // TEST
+};
+
 // Run the repair stages (comment a line out to switch that stage off)
-connectIsolated.run();
-traceln("Links after isolated-node fix: " + links.size());   // TEST
+//connectIsolated.run();
+//traceln("Links after isolated-node fix: " + links.size());   // TEST
 bridgeClusters.run();
 traceln("Links after bridging: " + links.size());   // TEST
+pruneDeadEnds.run();
+traceln("Links after pruning: " + links.size());   // TEST
 
 // TEST: count grid squares that have both diagonals (should be 0)
 int crossings = 0;
