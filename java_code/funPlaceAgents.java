@@ -1,10 +1,12 @@
-// Stop if there aren't enough grid points for one agent each
-if (parNumActivities + parNumCitizens > gridPoints.size()) {
-    error("Too many agents: " + (parNumActivities + parNumCitizens) + " agents, but only " + gridPoints.size() + " grid points");
+List<GridPoint> free = new ArrayList<>();   // points not yet holding any agent
+for (GridPoint g : gridPoints) {
+    if (!g.colLinks.isEmpty()) free.add(g);   // skip nodes with no links (inaccessible)
 }
 
-List<GridPoint> free = new ArrayList<>();   // points not yet holding any agent
-for (GridPoint g : gridPoints) free.add(g);
+// Stop if there aren't enough accessible grid points for one agent each
+if (parNumActivities + parNumCitizens > free.size()) {
+    error("Too many agents: " + (parNumActivities + parNumCitizens) + " agents, but only " + free.size() + " accessible grid points");
+}
 
 // Activities: each on its own random free point
 for (int k = 0; k < parNumActivities; k++) {
