@@ -25,4 +25,4 @@ while (n != testOrigin) {
     n = (l.parNodeA == n) ? l.parNodeB : l.parNodeA; //update node to next link in path
     steps++;
 }
-traceln("Fastest path tree from (" + testOrigin.parXIndex + "," + testOrigin.parYIndex + "): farthest node (" + farthest.parXIndex + "," + farthest.parYIndex + ") at " + varTestMaxTime + " minutes, " + steps + " links; unreachable nodes: " + unreachable);   // TEST
+traceln("Fastest path tree from (" + testOrigin.parXIndex + "," + testOrigin.parYIndex + "): farthest node (" + farthest.parXIndex + "," + farthest.parYIndex + ") at " + (int) varTestMaxTime + " minutes, " + steps + " links; unreachable nodes: " + unreachable);   // TEST

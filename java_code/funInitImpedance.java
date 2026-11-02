@@ -29,4 +29,4 @@ for (Link l : links) {
     sumT += l.varTravelTime;
 }
 traceln("Arterial links: " + arterialCount + " of " + links.size());   // TEST
-traceln("Impedance range: " + minI + " to " + maxI + ", avg free-flow time: " + sumT / links.size() + " minutes");   // TEST
+traceln("Impedance range: " + roundToDecimal(minI, 2) + " to " + roundToDecimal(maxI, 2) + ", avg free-flow time: " + roundToDecimal(sumT / links.size(), 2) + " minutes");   // TEST
