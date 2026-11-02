@@ -259,3 +259,15 @@ for (GridPoint p : gridPoints) {
 traceln("Dead ends: " + deadEnds + ", junctions: " + junctions);   // TEST
 
 traceln("Avg links per node: " + 2.0 * links.size() / gridPoints.size());   // TEST
+
+// Save the network to a text file in the model folder, so later runs can load it instead of rebuilding.
+// First line: grid size. Then one line per link: x,y of one end, x,y of the other end. Overwritten on every build.
+try (java.io.PrintWriter out = new java.io.PrintWriter("savedNetwork.txt")) {
+    out.println(parCols);
+    for (Link l : links) {
+        out.println(l.parNodeA.parXIndex + "," + l.parNodeA.parYIndex + "," + l.parNodeB.parXIndex + "," + l.parNodeB.parYIndex);
+    }
+    traceln("Network saved: " + links.size() + " links");
+} catch (Exception e) {
+    traceln("Could not save network: " + e.getMessage());
+}
