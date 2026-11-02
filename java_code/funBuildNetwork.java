@@ -54,7 +54,7 @@ traceln("Random stage: " + passes + " passes, coverage " + (double) connectedNod
 traceln("Links after random stage: " + links.size());   // TEST
 
 // Four arterials through the central node: horizontal, vertical, two diagonals
-int ci = parCols / 2; //truncates if parCols is odd, Java being zero indexed, this is exact centre. For even parCols, then we get one increment off centre closer to origin.
+int ci = parCols / 2; //truncates if parCols is odd, Java being zero indexed, this is exact centre. For even parCols, then we get one increment off centre further from origin.
 int cj = parCols / 2;
 int[][] axes = {{1,0}, {0,1}, {1,1}, {1,-1}};
 int arterialLinksAdded = 0;

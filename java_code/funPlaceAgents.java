@@ -8,17 +8,39 @@ if (parNumActivities + parNumCitizens > free.size()) {
     error("Too many agents: " + (parNumActivities + parNumCitizens) + " agents, but only " + free.size() + " accessible grid points");
 }
 
-// Activities: each on its own random free point
+// Pick and remove a random free point, biased towards the centre by negative exponential weight exp(-d / lambda),
+// where d is the straight-line distance to the centre node in grid steps
+int ci = parCols / 2;
+int cj = parCols / 2;
+java.util.function.DoubleFunction<GridPoint> pickNearCentre = lambda -> {
+    double[] w = new double[free.size()];
+    double total = 0;
+    for (int k = 0; k < free.size(); k++) {
+        GridPoint g = free.get(k);
+        double d = sqrt(pow(g.parXIndex - ci, 2) + pow(g.parYIndex - cj, 2));
+        w[k] = exp(-d / lambda);
+        total += w[k];
+    }
+    double r = uniform(0, total);   // random point along the stacked weights
+    int k = 0;
+    while (k < free.size() - 1 && r >= w[k]) {   // walk along until r falls inside a node's share
+        r -= w[k];
+        k++;
+    }
+    return free.remove(k);
+};
+
+// Activities: each on its own free point, biased towards the centre
 for (int k = 0; k < parNumActivities; k++) {
-    GridPoint g = free.remove(uniform_discr(0, free.size() - 1));   // this expression removes the index (random here) from the collection 'free', and also returns whatever was just removed for assignment to 'g'
+    GridPoint g = pickNearCentre.apply(parActivitiesInitialSpread);
     Activity a = add_activities(); //this method creates a new instance of an Activity agent
     a.varLocation = g;
     a.setXY(g.getX(), g.getY());
 }
 
-// Citizens: each on its own random free point
+// Citizens: each on its own free point, biased towards the centre
 for (int k = 0; k < parNumCitizens; k++) {
-    GridPoint g = free.remove(uniform_discr(0, free.size() - 1));
+    GridPoint g = pickNearCentre.apply(parCitizensInitialSpread);
     Citizen c = add_citizens();
     c.varHome = g;
     c.setXY(g.getX(), g.getY());
