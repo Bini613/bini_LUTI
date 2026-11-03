@@ -27,9 +27,8 @@ for (int i = 0; i < parCols; i++) { //pan across the x axis starting from the le
 //    Shuffling uses AnyLogic's random generator, so runs with the same seed give the same network.
 int connectedNodes = 0;   // nodes with at least one link
 int passes = 0;
-int maxPasses = 10000;      // safety stop, in case the target can't be reached (e.g. every remaining probability is 0)
 List<GridPoint[]> remaining = potentialLinks;
-while ((double) connectedNodes / gridPoints.size() < parInitialRoadBuildCoverage && !remaining.isEmpty() && passes < maxPasses) {
+while ((double) connectedNodes / gridPoints.size() < parInitialRoadBuildCoverage && !remaining.isEmpty() && passes < parMaxRandomPasses) {
     passes++;
     Collections.shuffle(remaining, getDefaultRandomGenerator());
     List<GridPoint[]> rejected = new ArrayList<>();
