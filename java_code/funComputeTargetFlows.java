@@ -46,7 +46,7 @@ for (int a = 0; a < activities.size(); a++) {
         Link l = prev[k];
         l.varTargetFlowVol += demand[k];
         GridPoint up = (l.parNodeA == varGrid[k / parCols][k % parCols]) ? l.parNodeB : l.parNodeA;   // up is defined as the next node along the route to activity a. We had to convert k indices back to grid indices for varGrid[][]. The conditional makes sure to pick the correct end of link l which is the next node, not the current one.
-        demand[up.parXIndex * parCols + up.parYIndex] += demand[k];//up indices converted back to stacked column form, and up passed the demand from the link.
+        demand[up.parXIndex * parCols + up.parYIndex] += demand[k];//up indices converted back to stacked column form, and up receives the demand from the link.
     }
 }
 
