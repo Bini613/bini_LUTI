@@ -1,11 +1,11 @@
 // TEMPORARY TEST. Paste at the bottom of Main's On startup (after agents are placed and impedances set).
-// Runs funFastestPathTree from the first activity, colours nodes by travel time,
+// Runs funBuildFastestPathTree from the first activity, colours nodes by travel time,
 // and highlights the route to the slowest-to-reach node.
 double[] testTime = new double[parCols * parCols];
 Link[] testPrev = new Link[parCols * parCols];
 int[] testOrder = new int[parCols * parCols];
 GridPoint testOrigin = activities.get(0).varLocation;
-funFastestPathTree(testOrigin, testTime, testPrev, testOrder);
+funBuildFastestPathTree(testOrigin, testTime, testPrev, testOrder);
 
 GridPoint farthest = testOrigin;
 int unreachable = 0;
