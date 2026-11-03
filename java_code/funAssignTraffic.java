@@ -30,14 +30,17 @@ for (n = 1; n <= parAssignMaxIterations; n++) {
     }
 }// Effectively, the first pass creates the initial target flows, and updates the times based on that. Every subsequent pass updates the target based on the last one's times, then reblends the flows, and then updates the times accordingly, ready for the next pass. Repeated until convergence condition is met. 
 
+// Largest V/C in the network (Main variable), used to scale link colours from gray (least) to red (most congested)
+varMaxVCRatio = 0;
+for (Link l : links) varMaxVCRatio = max(varMaxVCRatio, l.varFlowVol / l.varCapacity);
+
 // TEST: passes used, final gap, busiest link V/C, and how much slower the network is than free-flow overall
-double maxVC = 0, sumT = 0, sumT0 = 0;
+double sumT = 0, sumT0 = 0;
 for (Link l : links) {
-    maxVC = max(maxVC, l.varFlowVol / l.varCapacity);
     sumT += l.varFlowVol * l.varTravelTime;
     sumT0 += l.varFlowVol * l.funFreeFlowTime();
 }
 boolean converged = n <= parAssignMaxIterations;
 traceln("Assignment " + (converged ? "converged" : "NOT converged") + " after " + min(n, parAssignMaxIterations) + " passes, gap: " + String.format("%.2e", gap)
-        + ", busiest link V/C " + roundToDecimal(maxVC, 2) + ", congested/free-flow time: " + roundToDecimal(sumT / sumT0, 3));   // TEST
+        + ", busiest link V/C " + roundToDecimal(varMaxVCRatio, 2) + ", congested/free-flow time: " + roundToDecimal(sumT / sumT0, 3));   // TEST
 return gap;
