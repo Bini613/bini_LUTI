@@ -3,7 +3,7 @@
 // Needs varCapacityRef calibrated and link capacities set first (funCalibrateCapacity).
 // During each pass (with MSA step count n, see warm start below):
 //   1. Load all demand onto the current fastest routes (funComputeTargetFlows) -> each link's varTargetFlowVol
-//   2. Convergence check (from pass 2): relative gap = (T_actual - T_fastest) / T_actual,
+//   2. Convergence check (from pass 2 on cold starts): relative gap = (T_actual - T_fastest) / T_actual,
 //      T_actual = sum over links of: varFlowVol * varTravelTime (time spent on the current flows),
 //      T_fastest = time everyone would spend on the current fastest routes (returned by funComputeTargetFlows).
 //      Both use the same current link times. Stop once the gap is below parAssignGapTolerance.
