@@ -1,7 +1,7 @@
 // Function in Main. Returns value, type: double (the final relative gap). No arguments.
 // Equilibrium traffic assignment by the method of successive averages (MSA).
 // Needs varCapacityRef calibrated and link capacities set first (funCalibrateCapacity).
-// Starts from free-flow times and zero flows, then each pass n:
+// During each pass n:
 //   1. Load all demand onto the current fastest routes (funComputeTargetFlows) -> each link's varTargetFlowVol
 //   2. Convergence check (from pass 2): relative gap = (T_actual - T_fastest) / T_actual,
 //      T_actual = sum over links of: varFlowVol * varTravelTime (time spent on the current flows),
@@ -10,11 +10,6 @@
 //   3. Blend: varFlowVol += (varTargetFlowVol - varFlowVol) / n   (pass 1 takes the target fully, pass 2 half, pass 3 a third..., helps convergence)
 //   4. Update each link's travel time to the congested adjusted travel time using funUpdateTravelTime inside that link
 // Ends with every link's varFlowVol and varTravelTime at (or near) equilibrium.
-
-for (Link l : links) {
-    l.varFlowVol = 0;
-    l.varTravelTime = l.funFreeFlowTime(); //Travel time starts at free flow (no congestion)
-}
 
 double gap = 1;   // relative gap; 1 until it can first be measured (pass 2)
 int n;
