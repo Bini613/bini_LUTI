@@ -46,4 +46,4 @@ for (int k = 0; k < parNumCitizens; k++) {
     c.setXY(g.getX(), g.getY());
 }
 
-traceln("Activities placed: " + activities.size() + ", citizens placed: " + citizens.size() + ", empty points left: " + free.size());   // TEST
+traceln("Activities placed: " + activities.size() + ", citizens placed: " + citizens.size() + ", available nodes remaining: " + free.size());   // TEST
