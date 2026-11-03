@@ -36,3 +36,20 @@ for (int p = 0; p < 3; p++) {   // p = 0, 1, 2 for VOT, VOM, VOP
     double spread = mean > 0 ? sd / mean : 0;
     traceln(names[p] + ": mean " + roundToDecimal(mean, 3) + " (target " + targetMeans[p] + "), spread " + roundToDecimal(spread, 3) + " (target " + targetSpreads[p] + ")");   // TEST
 }
+
+// Same check for activities' VOM and VOL (few activities, so expect a looser match to the targets)
+String[] aNames = {"Activity VOM", "Activity VOL"};
+double[] aTargetMeans = {parActivityVOMMean, parActivityVOLMean};
+double[] aTargetSpreads = {parActivityVOMSpread, parActivityVOLSpread};
+for (int p = 0; p < 2; p++) {   // p = 0, 1 for VOM, VOL
+    double sum = 0, sumSq = 0;
+    for (Activity a : activities) {
+        double v = (p == 0) ? a.parVOM : a.parVOL;
+        sum += v;
+        sumSq += v * v;
+    }
+    double mean = sum / activities.size();
+    double sd = sqrt(max(0, sumSq / activities.size() - mean * mean));
+    double spread = mean > 0 ? sd / mean : 0;
+    traceln(aNames[p] + ": mean " + roundToDecimal(mean, 3) + " (target " + aTargetMeans[p] + "), spread " + roundToDecimal(spread, 3) + " (target " + aTargetSpreads[p] + ")");   // TEST
+}
