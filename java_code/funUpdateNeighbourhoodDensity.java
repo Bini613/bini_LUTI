@@ -5,7 +5,7 @@
 //   varCrowding[k]   += dCrowding * exp(-d / r)
 //   varNearbyLand[k] += dLand     * exp(-d / r)
 // d = straight-line distance between j and k in metres, r = parRentInfluenceDecayLength (metres), cutoff = parRentInfluenceDecayLength_CutOffMultiple * r.
-// The full build (funBuildRentSurface) uses this same function, so the build and later updates always agree.
+// The full build (funBuildDensitySurface) uses this same function, so the build and later updates always agree.
 
 double cutoff = parRentInfluenceDecayLength_CutOffMultiple * parRentInfluenceDecayLength;          // metres
 int reach = (int) ceil(cutoff / parStepLength);          // cutoff in whole grid steps: only this square around j is checked
