@@ -14,4 +14,4 @@ for (GridPoint g : gridPoints) {
 }
 double roadShare = 1 - totalAvailable / (gridPoints.size() * parCellLand); //proportion left over once you subtract the available land's portion of the total
 traceln("Available land set. varRoadWidthRef: " + roundToDecimal(varRoadWidthRef, 1) + " m, road share: " + roundToDecimal(roadShare, 3)
-        + " (starting target " + parStartingRoadLandShare + "), smallest node land: " + roundToDecimal(minAvailable, 0) + " m2, nodes at floor: " + floored);   // TEST
+        + " (starting target " + parStartingRoadLandShare + "), smallest node land: " + roundToDecimal(minAvailable, 0) + " m^2, nodes at floor: " + floored);   // TEST
