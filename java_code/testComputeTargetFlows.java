@@ -7,10 +7,11 @@ int nNodes = parCols * parCols;
 double[] t = new double[nNodes];
 Link[] p = new Link[nNodes];
 int[] o = new int[nNodes];
+double[] dd = new double[nNodes];
 Map<Link, Double> slowFlow = new HashMap<>();   // link -> flow, slow method
 for (int a = 0; a < activities.size(); a++) {
     GridPoint origin = activities.get(a).varLocation;
-    funBuildFastestPathTree(origin, t, p, o);
+    funBuildFastestPathTree(origin, t, p, o, dd);
     for (Citizen c : citizens) {
         GridPoint n = c.varHome;
         if (t[n.parXIndex * parCols + n.parYIndex] == Double.POSITIVE_INFINITY) continue;   // unreachable

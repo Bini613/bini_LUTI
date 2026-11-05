@@ -10,7 +10,7 @@
 //   3. Blend: varFlowVol += (varTargetFlowVol - varFlowVol) / n   (pass 1 takes the target fully, pass 2 half, pass 3 a third..., helps convergence)
 //   4. Update each link's travel time to the congested adjusted travel time using funUpdateTravelTime inside that link
 // Ends with every link's varFlowVol and varTravelTime at (or near) equilibrium,
-// and varAccessTimes (filled by funComputeTargetFlows) holding the times from every node to every activity.
+// and varAccessTimes and varAccessDistances (filled by funComputeTargetFlows) holding the times and fastest-route-distances from every node to every activity.
 // If it converges, the stop comes before the last time update, so varAccessTimes matches the final link times exactly. Otherwise one more funUpdateTravelTime() will occur, but with enough steps permitted, then that final travel times it calculates will be only marginally different from the varAccessTimes found in the last loop. 
 
 // Warm start: if links already carry flows from a previous assignment (e.g. before a relocation round), keep them
