@@ -14,7 +14,7 @@ java.util.function.Function<Link, GridPoint> watched = l -> occupiedNodes.contai
 List<Link> localLinks = new ArrayList<>();
 for (Link l : links) {
     boolean anyEndOccupied = occupiedNodes.contains(l.parNodeA) || occupiedNodes.contains(l.parNodeB);
-    if (l.varImpedance > parImpedanceArterial && anyEndOccupied) localLinks.add(l);   // skip arterials and links with both ends empty
+    if (l.varImpedance > parImpedanceArterial && anyEndOccupied && watched.apply(l).colLinks.size() >= 2) localLinks.add(l);   // skip arterials, links with both ends empty, and links whose watched node has no second link to upgrade
 }
 localLinks.sort(Comparator.comparingDouble(l -> watched.apply(l).varCrowding));   // sort from least to most crowded occupied end
 Link testLink = localLinks.get(localLinks.size() / 2);   // middle of the sorted list = median
@@ -28,7 +28,20 @@ funApplyImpedanceChange(testLink, parImpedanceMin);
 traceln("After upgrade: capacity " + roundToDecimal(testLink.varCapacity, 1) + " (should rise), time " + roundToDecimal(testLink.varTravelTime, 2)
         + " minutes (should fall), end-node land " + roundToDecimal(a.varAvailableLand, 0) + " m^2 (should fall), rent " + roundToDecimal(a.varRent, 0) + " (should rise)");   // TEST
 
-// Compare the incremental update with a full recomputation
+// Second upgrade at the same watched node: another of its links (not already at parImpedanceMin) also becomes a freeway
+Link secondLink = null;
+for (Link l : a.colLinks) {
+    if (l != testLink && l.varImpedance > parImpedanceMin) { secondLink = l; break; }
+}
+if (secondLink == null) traceln("Second upgrade skipped: node (" + a.parXIndex + "," + a.parYIndex + ") has no other link to upgrade");   // TEST
+else {
+    traceln("Upgrading second link (" + secondLink.parNodeA.parXIndex + "," + secondLink.parNodeA.parYIndex + ")-(" + secondLink.parNodeB.parXIndex + "," + secondLink.parNodeB.parYIndex
+            + ") at the same node: impedance " + roundToDecimal(secondLink.varImpedance, 2) + " -> " + parImpedanceMin);   // TEST
+    funApplyImpedanceChange(secondLink, parImpedanceMin);
+    traceln("After second upgrade: end-node land " + roundToDecimal(a.varAvailableLand, 0) + " m^2 (should fall further), rent " + roundToDecimal(a.varRent, 0) + " (should rise further)");   // TEST
+}
+
+// Compare the incremental update (after both upgrades) with a full recomputation
 double[] incLand = new double[parCols * parCols];
 double[] incRent = new double[parCols * parCols];
 for (GridPoint g : gridPoints) {
