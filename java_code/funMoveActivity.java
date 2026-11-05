@@ -1,7 +1,7 @@
 // Function in Main. Just action (returns nothing). Arguments: a (Activity), to (GridPoint)
 // Carries out an activity's move (the choice of where to move is made elsewhere):
 //   1. Takes its crowding (weight parActivityCrowdingWeight) away from around its old location and adds it around the new one,
-//      which also updates rent at every affected node (funUpdateNeighbourhoodDensity calls funUpdateRent)
+//      which also updates rent at every affected node (funUpdateNeighbourhoodDensity recomputes varRent there)
 //   2. Updates its location and moves its icon
 // Does not check occupancy: the caller must only pick a node without another activity.
 GridPoint from = a.varLocation;

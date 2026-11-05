@@ -21,7 +21,7 @@ for (GridPoint g : occupied) {
 if (count == 0 || sum <= 0) error("Density calibration failed: no crowding or no land found. Run funBuildDensitySurface first.");
 varDensityRef = sum / count;
 
-for (GridPoint g : gridPoints) g.funUpdateRent(); //With varDensityRef set, we can initialise all rents
+for (GridPoint g : gridPoints) g.varRent = funComputeRent(funComputeDensity(g, g, /* ownWeight = */ 0)); //With varDensityRef set, we can initialise all rents (everyone included)
 
 // TEST: reference density, rent range over all nodes, and average rent over occupied nodes
 // (equals parRentRef exactly when parRentDensityElasticity = 1, close to it otherwise)

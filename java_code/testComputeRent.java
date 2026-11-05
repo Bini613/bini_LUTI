@@ -1,6 +1,6 @@
 // TEMPORARY TEST. Paste in Main's On startup, after funCalibrateDensity();
-// 1. Inclusive rent: recomputes every node's rent with funComputeRent from its stored density, and compares with the stored varRent
-//    (set by GridPoint's funUpdateRent, which still has its own copy of the formula). The largest difference should be 0.
+// 1. Inclusive rent: recomputes every node's rent with funComputeRent from its stored density, and compares with the stored varRent.
+//    The stored rent now comes from the same formula, so this only checks that varRent is current. The largest difference should be 0.
 // 2. Rent excluding self: for citizen 0, compares funComputeRent(funComputeDensity(..., 1)) with the "real" answer:
 //    actually removing the citizen's crowding, reading the rents, then putting it back. Checked at its home and at one
 //    neighbouring node. Each computed / actual pair should match, both below the stored rent.
@@ -8,7 +8,7 @@
 // 1. Inclusive rent
 double worstDiff = 0;
 for (GridPoint g : gridPoints) {
-    if (g.varNearbyLand <= 0) continue;   // safety: funUpdateRent skips these too
+    if (g.varNearbyLand <= 0) continue;   // safety: rent updates skip these too
     double r = funComputeRent(g.varCrowding / g.varNearbyLand);
     worstDiff = max(worstDiff, abs(r - g.varRent));
 }
