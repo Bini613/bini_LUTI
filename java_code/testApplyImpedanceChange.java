@@ -23,10 +23,13 @@ traceln("Upgrading link (" + testLink.parNodeA.parXIndex + "," + testLink.parNod
         + roundToDecimal(testLink.varImpedance, 2) + " -> " + parImpedanceMin + ", capacity " + roundToDecimal(testLink.varCapacity, 1)
         + ", time " + roundToDecimal(testLink.varTravelTime, 2) + " minutes, end-node land " + roundToDecimal(a.varAvailableLand, 0) + " m^2, rent " + roundToDecimal(a.varRent, 0));   // TEST
 
+double rentBefore = a.varRent;   // watched node's rent before any upgrade, for the percentage changes
 funApplyImpedanceChange(testLink, parImpedanceMin);
+double rentAfterOne = a.varRent;
 
 traceln("After upgrade: capacity " + roundToDecimal(testLink.varCapacity, 1) + " (should rise), time " + roundToDecimal(testLink.varTravelTime, 2)
-        + " minutes (should fall), end-node land " + roundToDecimal(a.varAvailableLand, 0) + " m^2 (should fall), rent " + roundToDecimal(a.varRent, 0) + " (should rise)");   // TEST
+        + " minutes (should fall), end-node land " + roundToDecimal(a.varAvailableLand, 0) + " m^2 (should fall), rent " + roundToDecimal(a.varRent, 0)
+        + " (should rise): " + roundToDecimal(100 * (rentAfterOne - rentBefore) / rentBefore, 2) + "% vs before");   // TEST
 
 // Second upgrade at the same watched node: another of its links (not already at parImpedanceMin) also becomes a freeway
 Link secondLink = null;
@@ -38,7 +41,10 @@ else {
     traceln("Upgrading second link (" + secondLink.parNodeA.parXIndex + "," + secondLink.parNodeA.parYIndex + ")-(" + secondLink.parNodeB.parXIndex + "," + secondLink.parNodeB.parYIndex
             + ") at the same node: impedance " + roundToDecimal(secondLink.varImpedance, 2) + " -> " + parImpedanceMin);   // TEST
     funApplyImpedanceChange(secondLink, parImpedanceMin);
+    double rentAfterTwo = a.varRent;
     traceln("After second upgrade: end-node land " + roundToDecimal(a.varAvailableLand, 0) + " m^2 (should fall further), rent " + roundToDecimal(a.varRent, 0) + " (should rise further)");   // TEST
+    traceln("Rent change vs before any upgrade: 1 freeway " + roundToDecimal(100 * (rentAfterOne - rentBefore) / rentBefore, 2) + "%, 2 freeways "
+            + roundToDecimal(100 * (rentAfterTwo - rentBefore) / rentBefore, 2) + "%");   // TEST
 }
 
 // Compare the incremental update (after both upgrades) with a full recomputation
