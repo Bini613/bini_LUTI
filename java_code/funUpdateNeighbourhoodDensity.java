@@ -18,6 +18,8 @@ for (int x = max(0, j.parXIndex - reach); x <= min(parCols - 1, j.parXIndex + re
         k.varCrowding += dCrowding * weight;
         k.varNearbyLand += dLand * weight;
         // Update k's stored rent (everyone included). Skipped until varDensityRef is calibrated, since the startup build runs this first
-        if (varDensityRef > 0 && k.varNearbyLand > 0) k.varRent = funComputeRent(funComputeDensity(k, k, /* ownWeight = */ 0));
+        if (varDensityRef > 0) {
+            k.varRent = funComputeRent(funComputeDensity(k, k, /* ownWeight = */ 0));
+        }
     }
 }
