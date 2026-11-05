@@ -1,7 +1,8 @@
 // Function in Citizen. Just action (returns nothing). No arguments. Called from Citizen's On startup.
 // Draws this citizen's preferences:
 //   varActivityWeights: one weight per activity (index a matches main.activities.get(a)), summing to 1.
-//   parVOT, parVOM, parVOP: value of time, money and privacy, each drawn from its own lognormal distribution.
+//   parVOT, parVOM: value of time and money, each drawn from its own lognormal distribution (always positive).
+//   parVOP: value of privacy, drawn from a normal distribution, so it can be negative (see below).
 // Activities must already exist when this runs (funPlaceAgents creates them before citizens).
 
 // Activity weights: each raw weight is drawn from gamma(parActivityWeightEvenness, 1), then all are divided by their sum.
@@ -31,4 +32,11 @@ java.util.function.DoubleBinaryOperator drawLognormal = (mean, spread) -> {
 };
 parVOT = drawLognormal.applyAsDouble(main.parVOTMean, main.parVOTSpread);
 parVOM = drawLognormal.applyAsDouble(main.parVOMMean, main.parVOMSpread);
-parVOP = drawLognormal.applyAsDouble(main.parVOPMean, main.parVOPSpread);
+
+// Value of privacy: normal distribution with mean parVOPMean and standard deviation parVOPStandardDeviation.
+// Positive VOP = dislikes crowding; negative VOP = enjoys it (likes vibrant, busy areas for their own sake).
+// VOP is relative to the reference density: the privacy utility is -VOP * (density / main.varDensityRef),
+// so VOP is the rand value (per month) of living at the city's typical occupied starting density.
+// Written as mean + sd * normal() rather than AnyLogic's normal(sd, mean): same distribution, and it simply returns the mean when sd = 0.
+// Mean 0 and sd 0 switches privacy off (every citizen gets VOP = 0).
+parVOP = main.parVOPMean + main.parVOPStandardDeviation * normal();
