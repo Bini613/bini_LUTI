@@ -16,5 +16,5 @@ for (GridPoint g : ends) {
     double oldLand = g.varAvailableLand;
     g.funUpdateAvailableLand(); //this function actually clears and then recalculates the available land at that node (equivalent to updating, but can also be used in startup land calculation). On this occasion, the update is used to account for impedance of a link changing. g.varAvailableLand will change if the impedance changed.
     double dLand = g.varAvailableLand - oldLand;   // negative when the road is widened
-    if (dLand != 0) funUpdateNeighbourhoodDensity(g, 0, dLand);
+    if (dLand != 0) funUpdateNeighbourhoodDensity(g, 0, dLand); //rent update included in here
 }
