@@ -9,6 +9,8 @@
 //   T_actual = sum over links l of  V[l] * t[l]   (V = varFlowVol, t = varTravelTime)
 //   relative gap = (T_actual - T_fastest) / T_actual
 // At equilibrium nobody can save time by switching routes, so the two match and the gap is 0.
+// Also stores each activity's fastest times in varAccessTimes (Main variable, double[][], indexed [activity][node]),
+// so after funAssignTraffic finishes, it holds the equilibrium times from every node to every activity.
 //
 //initialise empty time, prev and order arrays to be filled in shortly by funBuildFastestPathTree:
 int nNodes = parCols * parCols;
@@ -21,8 +23,13 @@ double unreachableDemand = 0; //For testing: Should remain zero
 
 for (Link l : links) l.varTargetFlowVol = 0; //initialise target flow
 
+// Create the access time table on the first call (or if the number of activities or nodes has changed)
+if (varAccessTimes == null || varAccessTimes.length != activities.size() || varAccessTimes[0].length != nNodes)//varAccessTimes[0] is the array of access times for activity zero, which is the same number of nodes as any other activity, since they all are looking at the same grid.
+    varAccessTimes = new double[activities.size()][nNodes];
+
 for (int a = 0; a < activities.size(); a++) {
     funBuildFastestPathTree(activities.get(a).varLocation, time, prev, order); //first argument selects the gridPoint for the current activity in this loop. Time array passed in from previous loop needn't be empty, since this function resets it internally
+    System.arraycopy(time, 0, varAccessTimes[a], 0, nNodes);   // keep a copy of this activity's times (time[] is reused for the next activity). Recall this time calculation considered congestion, because the fasest tree looks at travel times in the BPR function, from whatever the last calculated flows were. 
 
     // 1. Each node starts with the weights of the citizens living there for activity a
     Arrays.fill(demand, 0);
