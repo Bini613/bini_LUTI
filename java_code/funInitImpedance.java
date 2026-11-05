@@ -2,6 +2,8 @@
 // Sets every link's starting impedance and free-flow travel time.
 // Arterials are recognised from geometry (both ends on one of the four axes through the centre node),
 // so this works the same whether the network was built or loaded.
+// Links touching the centre node itself are kept local, so the centre doesn't start as an 8-way arterial junction
+// (whose roads would take more land than the whole cell, especially once upgraded).
 int ci = parCols / 2; //As in funBuildNetwork, odd numbers will be truncated,
 int cj = parCols / 2; //and considering Java is zero indexed, odd numbers get exact centre index, evens get one increment further from origin
 int arterialCount = 0;
@@ -12,6 +14,8 @@ for (Link l : links) {
                     || (xa == 0 && xb == 0)          // both ends of link are on vertical axis
                     || (xa == ya && xb == yb)        // both ends of link are on diagonal down-right
                     || (xa == -ya && xb == -yb);     // both ends of link are on diagonal up-right
+    boolean touchesCentre = (xa == 0 && ya == 0) || (xb == 0 && yb == 0);   // either end is the centre node
+    if (touchesCentre) arterial = false;   // links at the centre stay local
     if (arterial) { //arterial=true if one of the above conditions is met, saying link lies on arterial
         l.varImpedance = parImpedanceArterial;
         arterialCount++;
