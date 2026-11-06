@@ -54,6 +54,6 @@ for (Link l : links) {
     sumT0 += l.varFlowVol * l.funFreeFlowTime();
 }
 boolean converged = pass <= parAssignMaxIterations;
-traceln("Assignment (" + (warm ? "warm start, n from " + nStart : "cold start") + ") " + (converged ? "converged" : "NOT converged") + " after " + min(pass, parAssignMaxIterations) + " passes, gap: " + String.format("%.2e", gap)
+funTestPrint("Assignment (" + (warm ? "warm start, n from " + nStart : "cold start") + ") " + (converged ? "converged" : "NOT converged") + " after " + min(pass, parAssignMaxIterations) + " passes, gap: " + String.format("%.2e", gap)
         + ", busiest link V/C " + roundToDecimal(varMaxVCRatio, 2) + ", congested/free-flow time: " + roundToDecimal(sumT / sumT0, 3));   // TEST
 return gap;

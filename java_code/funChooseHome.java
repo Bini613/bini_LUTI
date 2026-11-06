@@ -81,7 +81,7 @@ while (true) {
             maxV = max(maxV, V[nCand]); //keep track of highest utility so far (expected to be least negative)
             nCand++;
 
-            if (c == citizens.get(0) && isHome) traceln("Citizen 0 home (" + x + "," + y + ") utility terms: rent " + roundToDecimal(uRent, 0) + ", travel cost " + roundToDecimal(uTravelCost, 0)
+            if (c == citizens.get(0) && isHome) funTestPrint("Citizen 0 home (" + x + "," + y + ") utility terms: rent " + roundToDecimal(uRent, 0) + ", travel cost " + roundToDecimal(uTravelCost, 0)
                     + ", travel time " + roundToDecimal(uTime, 0) + ", privacy " + roundToDecimal(uPriv, 0) + ", total " + roundToDecimal(V[nCand - 1], 0));   // TEST. nCand - 1 because we already incremented nCand, but are still talking about he one in this iteration.
         }
     }
@@ -107,6 +107,6 @@ while (pick < nCand - 1 && r >= e[pick]) {   // walk along the stacked weights u
     pick++;
 }
 
-if (c == citizens.get(0)) traceln("Citizen 0: " + nCand + " candidates, chose (" + cand[pick].parXIndex + "," + cand[pick].parYIndex + ")"
+if (c == citizens.get(0)) funTestPrint("Citizen 0: " + nCand + " candidates, chose (" + cand[pick].parXIndex + "," + cand[pick].parYIndex + ")"
         + (cand[pick] == home ? " (stay)" : "") + " with probability " + roundToDecimal(e[pick] / total, 3) + ", utility " + roundToDecimal(V[pick], 0));   // TEST
 return cand[pick]; //of the candidate list, the one with index 'pick' was chosen, and function returns its gridPoint

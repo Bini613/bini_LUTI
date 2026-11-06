@@ -79,7 +79,7 @@ while (true) {
             maxV = max(maxV, V[nCand]);
             nCand++;
 
-            if (act == activities.get(0) && isHere) traceln("Activity 0 location (" + x + "," + y + ") utility terms: rent " + roundToDecimal(uRent, 0)
+            if (act == activities.get(0) && isHere) funTestPrint("Activity 0 location (" + x + "," + y + ") utility terms: rent " + roundToDecimal(uRent, 0)
                     + ", location " + roundToDecimal(uLoc, 0) + " (avg distance " + roundToDecimal(avgDist, 0) + " m), total " + roundToDecimal(V[nCand - 1], 0));   // TEST
         }
     }
@@ -105,6 +105,6 @@ while (pick < nCand - 1 && r >= e[pick]) {   // walk along the stacked weights u
     pick++;
 }
 
-if (act == activities.get(0)) traceln("Activity 0: " + nCand + " candidates, chose (" + cand[pick].parXIndex + "," + cand[pick].parYIndex + ")"
+if (act == activities.get(0)) funTestPrint("Activity 0: " + nCand + " candidates, chose (" + cand[pick].parXIndex + "," + cand[pick].parYIndex + ")"
         + (cand[pick] == here ? " (stay)" : "") + " with probability " + roundToDecimal(e[pick] / total, 3) + ", utility " + roundToDecimal(V[pick], 0));   // TEST
 return cand[pick];

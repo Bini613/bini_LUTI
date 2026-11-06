@@ -11,4 +11,4 @@ Collections.shuffle(varRelocationQueue, getDefaultRandomGenerator());
 // TEST: queue size and the type of the first 10 agents (citizens and activities should be mixed)
 String s = "";
 for (int i = 0; i < min(10, varRelocationQueue.size()); i++) s += (varRelocationQueue.get(i) instanceof Citizen ? "C " : "A ");
-traceln("Relocation queue: " + varRelocationQueue.size() + " agents (" + citizens.size() + " citizens, " + activities.size() + " activities). First 10: " + s);   // TEST
+funTestPrint("Relocation queue: " + varRelocationQueue.size() + " agents (" + citizens.size() + " citizens, " + activities.size() + " activities). First 10: " + s);   // TEST
