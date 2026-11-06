@@ -49,6 +49,7 @@ if (isActivity || varRelocationsSinceAssignment >= parRelocationsPerAssignment) 
     varAssignmentCount++;
     varRelocationsSinceAssignment = 0;
     funTestPrint("Turn " + varTurnCount + ": assignment " + varAssignmentCount + (isActivity ? " (activity moved)" : " (periodic)"));   // TEST
+    testPrintDensity();   // Runtime TEST: current average density vs varDensityRef
 
     if (parAssignmentsPerInvestment > 0 && varAssignmentCount % parAssignmentsPerInvestment == 0) {
         funInvest();
