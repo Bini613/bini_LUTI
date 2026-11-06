@@ -33,14 +33,14 @@ boolean usePriv = c.parVOP != 0;
 // and search again, so that moving is always an option (stops once the whole grid has been searched).
 // Each wider pass only checks the new ring of nodes (beyond the previous range): nodes inside it were already checked,
 // and the candidates found there are kept.
-double searchRange = parRelocationRange;   // starting search range in metres
-double checkedRange = -1;                  // nodes at or within this distance have already been checked (-1: none yet)
+double searchRange = parRelocationRange / parStepLength;   // starting search range, in grid steps (all distances in this loop are in grid steps)
+double checkedRange = -1;                  // nodes at or within this distance (grid steps) have already been checked (-1: none yet)
 GridPoint[] cand = new GridPoint[0];
 double[] V = new double[0];
 int nCand = 0;
 double maxV = Double.NEGATIVE_INFINITY;
 while (true) {
-    int reach = (int) floor(searchRange / parStepLength);   // range in whole grid steps: only this square around home is checked
+    int reach = (int) floor(searchRange);   // range in whole grid steps: only this square around home is checked
     int maxCand = (2 * reach + 1) * (2 * reach + 1);
     if (cand.length < maxCand) {   // make room for the wider search, keeping the candidates found so far
         cand = Arrays.copyOf(cand, maxCand); //keep everything in cand, but extend the array to the new size maxCand. One first run, goes from 0 slots to maxCand starting size. Every pass thereafter, extends by how much maxCand grows when you extend reach at the bottom of the last pass.
@@ -50,7 +50,7 @@ while (true) {
 
     for (int x = max(0, home.parXIndex - reach); x <= min(parCols - 1, home.parXIndex + reach); x++) {
         for (int y = max(0, home.parYIndex - reach); y <= min(parCols - 1, home.parYIndex + reach); y++) {
-            double d = sqrt(pow(x - home.parXIndex, 2) + pow(y - home.parYIndex, 2)) * parStepLength;
+            double d = sqrt(pow(x - home.parXIndex, 2) + pow(y - home.parYIndex, 2));   // distance from home in grid steps
             if (d > searchRange) continue;   // corners of the square lie outside the search circle. When d is equal, node will be checked, hence 'or equal' can be condition below.
             if (d <= checkedRange) continue; // already checked on an earlier pass
             GridPoint k = varGrid[x][y];
@@ -87,10 +87,10 @@ while (true) {
         }
     }
     if (nCand > 1) break;              // at least one place to move to: done searching
-    double farthestCorner = sqrt(pow(max(home.parXIndex, parCols - 1 - home.parXIndex), 2) + pow(max(home.parYIndex, parCols - 1 - home.parYIndex), 2)) * parStepLength;
+    double farthestCorner = sqrt(pow(max(home.parXIndex, parCols - 1 - home.parXIndex), 2) + pow(max(home.parYIndex, parCols - 1 - home.parYIndex), 2));   // grid steps
     if (searchRange >= farthestCorner) break;   // the search circle already covers the whole grid: nowhere else to go, so home is the only option
     checkedRange = searchRange;        // everything within the current range has now been checked
-    searchRange += parStepLength;      // only home found: widen the search by one grid step and try again
+    searchRange += 1;                  // only home found: widen the search by one grid step and try again
 }
 if (nCand == 0) return home;   // safety: nothing valid (should never happen, since home is always a candidate), so stay
 
