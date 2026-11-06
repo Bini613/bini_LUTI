@@ -12,4 +12,4 @@ funUpdateNeighbourhoodDensity(to, parActivityCrowdingWeight, 0);
 from.varActivity = null;   // GridPoint variable (type Activity): which activity is at a node, null if none
 to.varActivity = a;
 a.varLocation = to; //updates the internal location variable
-a.setXY(to.getX(), to.getY()); //updates the location in presentation
+funPlaceIcon(a, to); //updates the location in presentation: icon near the new node (display only)

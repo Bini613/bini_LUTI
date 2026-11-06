@@ -36,7 +36,7 @@ for (int k = 0; k < parNumActivities; k++) {
     Activity a = add_activities(); //this method creates a new instance of an Activity agent
     a.varLocation = g;
     g.varActivity = a;   // GridPoint variable (type Activity): which activity is at a node, null if none
-    a.setXY(g.getX(), g.getY());
+    funPlaceIcon(a, g);   // icon near the node (display only)
 }
 
 // Citizens: each on its own free point, biased towards the centre
@@ -45,7 +45,7 @@ for (int k = 0; k < parNumCitizens; k++) {
     Citizen c = add_citizens();
     c.varHome = g;
     g.varResident = c;   // GridPoint variable (type Citizen): who lives at a node. On this line we just placed citizen c there, so it won't be null. Otherwise, empty nodes remain varResident = null
-    c.setXY(g.getX(), g.getY());
+    funPlaceIcon(c, g);   // icon near the node (display only)
 }
 
 traceln("Activities placed: " + activities.size() + ", citizens placed: " + citizens.size() + ", available nodes remaining: " + free.size());   // TEST
