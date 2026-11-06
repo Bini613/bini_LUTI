@@ -4,8 +4,9 @@
 // Needs varDensityRef calibrated (funCalibrateDensity).
 //
 // Candidates: every node within parRelocationRange (metres) of the current location, including itself; if it is the only one found,
-// the range is widened one grid step at a time until somewhere to move appears. Excluded: nodes already holding another activity,
-// nodes at the land floor (varAvailableLand <= parMinAvailableLand), and isolated nodes (no links). Sharing a node with a citizen is allowed.
+// the range is widened one grid step at a time until somewhere to move appears. Excluded: nodes at the land floor
+// (varAvailableLand <= parMinAvailableLand) and isolated nodes (no links).
+// Occupied nodes are allowed: any number of activities and citizens may share a node (crowding is priced through rent).
 //
 // Utility of candidate k (all terms in rand per month, negative = bad):
 //   U_rent = -VOM * R_k                          R_k = rent excluding act itself: funComputeRent(funComputeDensity(k, here, parActivityCrowdingWeight))
@@ -60,7 +61,6 @@ while (true) {
             GridPoint k = varGrid[x][y];
             if (k.colLinks.isEmpty()) continue;   // isolated node (no links): can't locate there
             boolean isHere = (k == here);
-            if (!isHere && !k.colActivities.isEmpty()) continue;                     // another activity is there
             if (!isHere && k.varAvailableLand <= parMinAvailableLand) continue;     // no land left to locate on
 
             // Weighted average straight-line distance from k to citizens' homes (metres)

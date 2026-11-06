@@ -4,9 +4,9 @@
 // Needs varDensityRef calibrated (funCalibrateDensity) and varAccessTimes / varAccessDistances filled (funAssignTraffic).
 //
 // Candidates: every node within parRelocationRange (metres) of the current home, including home; if home is the only one found,
-// the range is widened one grid step at a time until somewhere to move appears. Excluded:
-// except nodes already holding another citizen, nodes at the land floor (varAvailableLand <= parMinAvailableLand),
-// and isolated nodes (no links). An unreachable activity stops the run with an error, as this should never be the case. Sharing a node with an activity is allowed.
+// the range is widened one grid step at a time until somewhere to move appears. Excluded: nodes at the land floor
+// (varAvailableLand <= parMinAvailableLand) and isolated nodes (no links). An unreachable activity stops the run with an error, as this should never be the case.
+// Occupied nodes are allowed: any number of citizens and activities may share a node (crowding is priced through rent and privacy).
 //
 // Utility of candidate k (all terms in rand per month, negative = bad):
 //   U_rent = -VOM * R_k                                   R_k = rent excluding c itself: funComputeRent(funComputeDensity(k, home, 1))
@@ -55,7 +55,6 @@ while (true) {
             GridPoint k = varGrid[x][y];
             if (k.colLinks.isEmpty()) continue;   // isolated node (no links): can't live there
             boolean isHome = (k == home);
-            if (!isHome && !k.colResidents.isEmpty()) continue;                      // another citizen lives there
             if (!isHome && k.varAvailableLand <= parMinAvailableLand) continue;     // no land left to live on
 
             // Travel: weighted sums over all activities of time and (if used) distance from k

@@ -8,7 +8,7 @@
 // Left uncorrected, this bias falls from home outwards, so staying always looks worst and distant moves best,
 // purely because of the agent's own presence: a false push to move away, causing excess and jumpy relocation.
 // Removing its own contribution everywhere judges every option, staying included, as the city without this agent.
-// One agent per node is a large share of its neighbourhood's crowding, so the bias is not negligible in this model.
+// One agent from a node without a large number of agents is a large share of its neighbourhood's crowding, so the bias is not negligible in this model.
 //We do that exclusion by passing in argument ownWeight, which represents the agent in the home node who is making the evaluation (1 for citizens, parActivityCrowdingWeight for activities). This function will then return a density whose home's influence is subtracted from the candidate's inclusive crowding (set in funBuildDensitySurface and updated upon relocations in funUpdateNeighbourhoodDensity).
 //But this function can also be used to find the inclusive density at the candidate (i.e. without excluding home's influence), by passing ownWeight = 0. The original inclusive crowding values will be used at the candidate
 //We can also find density at one's own node by just passing the same node for candidate and home. Again, by passing ownWeight = 0, the inclusive density is returned, otherwise passing 1 or parActivityCrowdingWeight gives the exclusive density.
