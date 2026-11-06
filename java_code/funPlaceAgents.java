@@ -43,6 +43,7 @@ for (int k = 0; k < parNumCitizens; k++) {
     GridPoint g = pickNearCentre.apply(parCitizensInitialSpread);
     Citizen c = add_citizens();
     c.varHome = g;
+    g.varResident = c;   // GridPoint variable (type Citizen): who lives at a node. On this line we just placed citizen c there, so it won't be null. Otherwise, empty nodes remain varResident = null
     c.setXY(g.getX(), g.getY());
 }
 
