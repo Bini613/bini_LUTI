@@ -3,7 +3,7 @@
 //   1. Takes its crowding (weight 1) away from around its old home and adds it around the new one,
 //      which also updates rent at every affected node (funUpdateNeighbourhoodDensity recomputes varRent there)
 //   2. Updates its home and moves its icon
-// Does not check occupancy: the caller must only pick a node without another citizen.
+// Occupancy is not checked here. The caller decides whether multiple occupancy is permitted.
 GridPoint from = c.varHome;
 if (to == from) return;   // staying put: nothing to change
 funUpdateNeighbourhoodDensity(from, -1, 0);
