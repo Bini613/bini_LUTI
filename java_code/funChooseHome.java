@@ -37,55 +37,55 @@ double[] V;
 int nCand;
 double maxV;
 while (true) {
-int reach = (int) floor(searchRange / parStepLength);   // range in whole grid steps: only this square around home is checked
-int maxCand = (2 * reach + 1) * (2 * reach + 1);
-cand = new GridPoint[maxCand];
-V = new double[maxCand];
-nCand = 0;
-maxV = Double.NEGATIVE_INFINITY;
-boolean firstPass = (searchRange == parRelocationRange);   // TEST printout only on the first pass
+    int reach = (int) floor(searchRange / parStepLength);   // range in whole grid steps: only this square around home is checked
+    int maxCand = (2 * reach + 1) * (2 * reach + 1);
+    cand = new GridPoint[maxCand];
+    V = new double[maxCand];
+    nCand = 0;
+    maxV = Double.NEGATIVE_INFINITY;
+    boolean firstPass = (searchRange == parRelocationRange);   // TEST printout only on the first pass
 
-for (int x = max(0, home.parXIndex - reach); x <= min(parCols - 1, home.parXIndex + reach); x++) {
-    for (int y = max(0, home.parYIndex - reach); y <= min(parCols - 1, home.parYIndex + reach); y++) {
-        double d = sqrt(pow(x - home.parXIndex, 2) + pow(y - home.parYIndex, 2)) * parStepLength;
-        if (d > searchRange) continue;   // corners of the square lie outside the search circle
-        GridPoint k = varGrid[x][y];
-        if (k.colLinks.isEmpty()) continue;   // isolated node (no links): can't live there
-        boolean isHome = (k == home);
-        if (!isHome && k.varResident != null) continue;                         // another citizen lives there
-        if (!isHome && k.varAvailableLand <= parMinAvailableLand) continue;     // no land left to live on
+    for (int x = max(0, home.parXIndex - reach); x <= min(parCols - 1, home.parXIndex + reach); x++) {
+        for (int y = max(0, home.parYIndex - reach); y <= min(parCols - 1, home.parYIndex + reach); y++) {
+            double d = sqrt(pow(x - home.parXIndex, 2) + pow(y - home.parYIndex, 2)) * parStepLength;
+            if (d > searchRange) continue;   // corners of the square lie outside the search circle
+            GridPoint k = varGrid[x][y];
+            if (k.colLinks.isEmpty()) continue;   // isolated node (no links): can't live there
+            boolean isHome = (k == home);
+            if (!isHome && k.varResident != null) continue;                         // another citizen lives there
+            if (!isHome && k.varAvailableLand <= parMinAvailableLand) continue;     // no land left to live on
 
-        // Travel: weighted sums over all activities of time and (if used) distance from k
-        int idx = x * parCols + y; //index in stacked column format
-        double sumWeightedTime = 0, sumWeightedDist = 0;
-        for (int a = 0; a < nAct; a++) {
-            double t = varAccessTimes[a][idx];
-            if (t == Double.POSITIVE_INFINITY) { error("An activity is unreachable, grid repair must have failed."); }   // no route to activity a
-            sumWeightedTime += c.varActivityWeights[a] * t;
-            if (useCost) sumWeightedDist += c.varActivityWeights[a] * varAccessDistances[a][idx];
+            // Travel: weighted sums over all activities of time and (if used) distance from k
+            int idx = x * parCols + y; //index in stacked column format
+            double sumWeightedTime = 0, sumWeightedDist = 0;
+            for (int a = 0; a < nAct; a++) {
+                double t = varAccessTimes[a][idx];
+                if (t == Double.POSITIVE_INFINITY) { error("An activity is unreachable, grid repair must have failed."); }   // no route to activity a
+                sumWeightedTime += c.varActivityWeights[a] * t;
+                if (useCost) sumWeightedDist += c.varActivityWeights[a] * varAccessDistances[a][idx];
+            }
+
+            // Sub-utilities
+            double density = funComputeDensity(k, home, /* ownWeight = */ 1);   // excluding c itself, hence ownWeight = 1
+            double uRent = -c.parVOM * funComputeRent(density);
+            double uTravelCost = useCost ? -c.parVOM * parTripsPerMonth * parTravelCostPerMetre * sumWeightedDist : 0;
+            double uTime = -c.parVOT * parTripsPerMonth * sumWeightedTime;
+            double uPriv = usePriv ? -c.parVOP * parRentRef * density / varDensityRef : 0;
+            double uMove = isHome ? 0 : -c.parVOM * parRelocationAmortizedCost;
+
+            cand[nCand] = k; //gridPoint of candidate added to array of candidate locations
+            V[nCand] = uRent + uTravelCost + uTime + uPriv + uMove; //utility of candidate added to array of candidate utilities
+            maxV = max(maxV, V[nCand]); //keep track of highest utility so far (expected to be least negative)
+            nCand++;
+
+            if (c == citizens.get(0) && isHome && firstPass) traceln("Citizen 0 home (" + x + "," + y + ") utility terms: rent " + roundToDecimal(uRent, 0) + ", travel cost " + roundToDecimal(uTravelCost, 0)
+                    + ", travel time " + roundToDecimal(uTime, 0) + ", privacy " + roundToDecimal(uPriv, 0) + ", total " + roundToDecimal(V[nCand - 1], 0));   // TEST. nCand - 1 because we already incremented nCand, but are still talking about he one in this iteration.
         }
-
-        // Sub-utilities
-        double density = funComputeDensity(k, home, /* ownWeight = */ 1);   // excluding c itself, hence ownWeight = 1
-        double uRent = -c.parVOM * funComputeRent(density);
-        double uTravelCost = useCost ? -c.parVOM * parTripsPerMonth * parTravelCostPerMetre * sumWeightedDist : 0;
-        double uTime = -c.parVOT * parTripsPerMonth * sumWeightedTime;
-        double uPriv = usePriv ? -c.parVOP * parRentRef * density / varDensityRef : 0;
-        double uMove = isHome ? 0 : -c.parVOM * parRelocationAmortizedCost;
-
-        cand[nCand] = k; //gridPoint of candidate added to array of candidate locations
-        V[nCand] = uRent + uTravelCost + uTime + uPriv + uMove; //utility of candidate added to array of candidate utilities
-        maxV = max(maxV, V[nCand]); //keep track of highest utility so far (expected to be least negative)
-        nCand++;
-
-        if (c == citizens.get(0) && isHome && firstPass) traceln("Citizen 0 home (" + x + "," + y + ") utility terms: rent " + roundToDecimal(uRent, 0) + ", travel cost " + roundToDecimal(uTravelCost, 0)
-                + ", travel time " + roundToDecimal(uTime, 0) + ", privacy " + roundToDecimal(uPriv, 0) + ", total " + roundToDecimal(V[nCand - 1], 0));   // TEST. nCand - 1 because we already incremented nCand, but are still talking about he one in this iteration.
     }
-}
-if (nCand > 1) break;              // at least one place to move to: done searching
-double farthestCorner = sqrt(pow(max(home.parXIndex, parCols - 1 - home.parXIndex), 2) + pow(max(home.parYIndex, parCols - 1 - home.parYIndex), 2)) * parStepLength;
-if (searchRange >= farthestCorner) break;   // the search circle already covers the whole grid: nowhere else to go, so home is the only option
-searchRange += parStepLength;      // only home found: widen the search by one grid step and try again
+    if (nCand > 1) break;              // at least one place to move to: done searching
+    double farthestCorner = sqrt(pow(max(home.parXIndex, parCols - 1 - home.parXIndex), 2) + pow(max(home.parYIndex, parCols - 1 - home.parYIndex), 2)) * parStepLength;
+    if (searchRange >= farthestCorner) break;   // the search circle already covers the whole grid: nowhere else to go, so home is the only option
+    searchRange += parStepLength;      // only home found: widen the search by one grid step and try again
 }
 if (nCand == 0) return home;   // safety: nothing valid (should never happen, since home is always a candidate), so stay
 
