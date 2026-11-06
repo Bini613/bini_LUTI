@@ -9,7 +9,7 @@ if (to == from) return;   // staying put: nothing to change
 //funUpdateNeighbourhoodDensity was built to update crowding (and nearby land) and rent for all nodes within the cutoff box around the central node (first argument) who changes by dCrowding and dLand in the second and third arguments. So what we are doing below is first updating the crowding and rent for all nodes around and including the one the agent leaves, and then doing the same around and including the node the agent arrives at.
 funUpdateNeighbourhoodDensity(from, -parActivityCrowdingWeight, 0);
 funUpdateNeighbourhoodDensity(to, parActivityCrowdingWeight, 0);
-from.varActivity = null;   // GridPoint variable (type Activity): which activity is at a node, null if none
-to.varActivity = a;
+from.colActivities.remove(a);   // GridPoint collection (ArrayList of Activity): every activity at a node. Activity leaves the old node's list...
+to.colActivities.add(a);         // ...and joins the new node's list
 a.varLocation = to; //updates the internal location variable
 funPlaceIcon(a, to); //updates the location in presentation: icon near the new node (display only)

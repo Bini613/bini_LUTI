@@ -35,7 +35,7 @@ for (int k = 0; k < parNumActivities; k++) {
     GridPoint g = pickNearCentre.apply(parActivitiesInitialSpread);
     Activity a = add_activities(); //this method creates a new instance of an Activity agent
     a.varLocation = g;
-    g.varActivity = a;   // GridPoint variable (type Activity): which activity is at a node, null if none
+    g.colActivities.add(a);   // GridPoint collection (ArrayList of Activity): every activity at a node
     funPlaceIcon(a, g);   // icon near the node (display only)
 }
 
@@ -44,7 +44,7 @@ for (int k = 0; k < parNumCitizens; k++) {
     GridPoint g = pickNearCentre.apply(parCitizensInitialSpread);
     Citizen c = add_citizens();
     c.varHome = g;
-    g.varResident = c;   // GridPoint variable (type Citizen): who lives at a node. On this line we just placed citizen c there, so it won't be null. Otherwise, empty nodes remain varResident = null
+    g.colResidents.add(c);   // GridPoint collection (ArrayList of Citizen): everyone living at a node
     funPlaceIcon(c, g);   // icon near the node (display only)
 }
 

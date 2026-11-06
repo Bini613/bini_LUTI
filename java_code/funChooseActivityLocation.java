@@ -60,7 +60,7 @@ while (true) {
             GridPoint k = varGrid[x][y];
             if (k.colLinks.isEmpty()) continue;   // isolated node (no links): can't locate there
             boolean isHere = (k == here);
-            if (!isHere && k.varActivity != null) continue;                         // another activity is there
+            if (!isHere && !k.colActivities.isEmpty()) continue;                     // another activity is there
             if (!isHere && k.varAvailableLand <= parMinAvailableLand) continue;     // no land left to locate on
 
             // Weighted average straight-line distance from k to citizens' homes (metres)

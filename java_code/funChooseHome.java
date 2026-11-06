@@ -55,7 +55,7 @@ while (true) {
             GridPoint k = varGrid[x][y];
             if (k.colLinks.isEmpty()) continue;   // isolated node (no links): can't live there
             boolean isHome = (k == home);
-            if (!isHome && k.varResident != null) continue;                         // another citizen lives there
+            if (!isHome && !k.colResidents.isEmpty()) continue;                      // another citizen lives there
             if (!isHome && k.varAvailableLand <= parMinAvailableLand) continue;     // no land left to live on
 
             // Travel: weighted sums over all activities of time and (if used) distance from k

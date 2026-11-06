@@ -8,7 +8,7 @@ GridPoint from = c.varHome;
 if (to == from) return;   // staying put: nothing to change
 funUpdateNeighbourhoodDensity(from, -1, 0);
 funUpdateNeighbourhoodDensity(to, 1, 0);
-from.varResident = null;   // GridPoint variable (type Citizen): who lives at a node, null if nobody. In this line, it is cleared once citizen moves out
-to.varResident = c; //new location records citizen as new resident
+from.colResidents.remove(c);   // GridPoint collection (ArrayList of Citizen): everyone living at a node. Citizen leaves the old node's list...
+to.colResidents.add(c);       // ...and joins the new node's list
 c.varHome = to;
 funPlaceIcon(c, to);   // icon near the new node (display only)
