@@ -3,7 +3,8 @@
 // Does not move the citizen: the caller then calls funMoveCitizen(c, chosen), in the same event, so later choices see updated rents.
 // Needs varDensityRef calibrated (funCalibrateDensity) and varAccessTimes / varAccessDistances filled (funAssignTraffic).
 //
-// Candidates: every node within the rent influence cutoff of the current home (same cutoff as funUpdateNeighbourhoodDensity), including home,
+// Candidates: every node within parRelocationRange (metres) of the current home, including home; if home is the only one found,
+// the range is widened one grid step at a time until somewhere to move appears. Excluded:
 // except nodes already holding another citizen, nodes at the land floor (varAvailableLand <= parMinAvailableLand),
 // and isolated nodes (no links). An unreachable activity stops the run with an error, as this should never be the case. Sharing a node with an activity is allowed.
 //
@@ -28,18 +29,26 @@ int nAct = activities.size();
 boolean useCost = parTravelCostPerMetre != 0;
 boolean usePriv = c.parVOP != 0;
 
-double cutoff = parRelocationRange ;   // metres
-int reach = (int) floor(cutoff / parStepLength);   // cutoff in whole grid steps: only this square around home is checked
+// Search for candidates within searchRange of home. If home is the only candidate found, widen the range by one grid step
+// and search again, so that moving is always an option (stops once the whole grid has been searched).
+double searchRange = parRelocationRange;   // metres
+GridPoint[] cand;
+double[] V;
+int nCand;
+double maxV;
+while (true) {
+int reach = (int) floor(searchRange / parStepLength);   // range in whole grid steps: only this square around home is checked
 int maxCand = (2 * reach + 1) * (2 * reach + 1);
-GridPoint[] cand = new GridPoint[maxCand];
-double[] V = new double[maxCand];
-int nCand = 0;
-double maxV = Double.NEGATIVE_INFINITY;
+cand = new GridPoint[maxCand];
+V = new double[maxCand];
+nCand = 0;
+maxV = Double.NEGATIVE_INFINITY;
+boolean firstPass = (searchRange == parRelocationRange);   // TEST printout only on the first pass
 
 for (int x = max(0, home.parXIndex - reach); x <= min(parCols - 1, home.parXIndex + reach); x++) {
     for (int y = max(0, home.parYIndex - reach); y <= min(parCols - 1, home.parYIndex + reach); y++) {
         double d = sqrt(pow(x - home.parXIndex, 2) + pow(y - home.parYIndex, 2)) * parStepLength;
-        if (d > cutoff) continue;   // corners of the square lie outside the cutoff circle
+        if (d > searchRange) continue;   // corners of the square lie outside the search circle
         GridPoint k = varGrid[x][y];
         if (k.colLinks.isEmpty()) continue;   // isolated node (no links): can't live there
         boolean isHome = (k == home);
@@ -69,11 +78,16 @@ for (int x = max(0, home.parXIndex - reach); x <= min(parCols - 1, home.parXInde
         maxV = max(maxV, V[nCand]); //keep track of highest utility so far (expected to be least negative)
         nCand++;
 
-        if (c == citizens.get(0) && isHome) traceln("Citizen 0 home (" + x + "," + y + ") utility terms: rent " + roundToDecimal(uRent, 0) + ", travel cost " + roundToDecimal(uTravelCost, 0)
+        if (c == citizens.get(0) && isHome && firstPass) traceln("Citizen 0 home (" + x + "," + y + ") utility terms: rent " + roundToDecimal(uRent, 0) + ", travel cost " + roundToDecimal(uTravelCost, 0)
                 + ", travel time " + roundToDecimal(uTime, 0) + ", privacy " + roundToDecimal(uPriv, 0) + ", total " + roundToDecimal(V[nCand - 1], 0));   // TEST. nCand - 1 because we already incremented nCand, but are still talking about he one in this iteration.
     }
 }
-if (nCand == 0) return home;   // safety: nothing valid (e.g. home unreachable and no alternatives), so stay
+if (nCand > 1) break;              // at least one place to move to: done searching
+double farthestCorner = sqrt(pow(max(home.parXIndex, parCols - 1 - home.parXIndex), 2) + pow(max(home.parYIndex, parCols - 1 - home.parYIndex), 2)) * parStepLength;
+if (searchRange >= farthestCorner) break;   // the search circle already covers the whole grid: nowhere else to go, so home is the only option
+searchRange += parStepLength;      // only home found: widen the search by one grid step and try again
+}
+if (nCand == 0) return home;   // safety: nothing valid (should never happen, since home is always a candidate), so stay
 
 // MNL: weights exp(mu * (V - maxV)), then a weighted random pick
 double[] e = new double[nCand];
