@@ -35,6 +35,7 @@ for (int k = 0; k < parNumActivities; k++) {
     GridPoint g = pickNearCentre.apply(parActivitiesInitialSpread);
     Activity a = add_activities(); //this method creates a new instance of an Activity agent
     a.varLocation = g;
+    g.varActivity = a;   // GridPoint variable (type Activity): which activity is at a node, null if none
     a.setXY(g.getX(), g.getY());
 }
 

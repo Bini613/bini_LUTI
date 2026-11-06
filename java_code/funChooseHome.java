@@ -46,7 +46,6 @@ while (true) {
         cand = Arrays.copyOf(cand, maxCand); //keep everything in cand, but extend the array to the new size maxCand. One first run, goes from 0 slots to maxCand starting size. Every pass thereafter, extends by how much maxCand grows when you extend reach at the bottom of the last pass.
         V = Arrays.copyOf(V, maxCand);
     }
-    boolean firstPass = (checkedRange < 0);   // TEST printout only on the first pass
 
     for (int x = max(0, home.parXIndex - reach); x <= min(parCols - 1, home.parXIndex + reach); x++) {
         for (int y = max(0, home.parYIndex - reach); y <= min(parCols - 1, home.parYIndex + reach); y++) {
@@ -82,7 +81,7 @@ while (true) {
             maxV = max(maxV, V[nCand]); //keep track of highest utility so far (expected to be least negative)
             nCand++;
 
-            if (c == citizens.get(0) && isHome && firstPass) traceln("Citizen 0 home (" + x + "," + y + ") utility terms: rent " + roundToDecimal(uRent, 0) + ", travel cost " + roundToDecimal(uTravelCost, 0)
+            if (c == citizens.get(0) && isHome) traceln("Citizen 0 home (" + x + "," + y + ") utility terms: rent " + roundToDecimal(uRent, 0) + ", travel cost " + roundToDecimal(uTravelCost, 0)
                     + ", travel time " + roundToDecimal(uTime, 0) + ", privacy " + roundToDecimal(uPriv, 0) + ", total " + roundToDecimal(V[nCand - 1], 0));   // TEST. nCand - 1 because we already incremented nCand, but are still talking about he one in this iteration.
         }
     }
