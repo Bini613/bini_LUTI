@@ -1,6 +1,7 @@
-// Function in Main. Returns value, type: GridPoint. Arguments: c (Citizen)
-// Citizen c's location choice (multinomial logit). Returns the chosen node, which may be its current home (staying).
-// Does not move the citizen: the caller then calls funMoveCitizen(c, chosen), in the same event, so later choices see updated rents.
+// Function in Main. Returns value, type: boolean. Arguments: c (Citizen)
+// Citizen c's relocation turn: evaluates every candidate node, chooses one (multinomial logit), stores the chosen node's
+// values and the expected welfare on c, then moves c there with funMoveCitizen (nothing changes if it stays at home).
+// Returns true if c moved, false if it stayed.
 // Needs the density surface built (funBuildDensitySurface) and varAccessTimes / varAccessDistances filled (funAssignTraffic).
 //
 // Candidates: every node within parRelocationRange (metres) of the current home, including home; if home is the only one found,
@@ -29,7 +30,7 @@
 //                                                                 varUPriv        = -VOP * varPriv  (0 if switched off)
 //   varExpectedWelfare  logsum over all candidates: maxV + ln(sum_k exp(mu * (V_k - maxV))) / mu  (rand per month; only differences are meaningful)
 
-if (varAccessTimes == null || varAccessDistances == null) error("funChooseHome called before access times exist (run funAssignTraffic first)");
+if (varAccessTimes == null || varAccessDistances == null) error("funEvaluateAndMoveCitizen called before access times exist (run funAssignTraffic first)");
 
 GridPoint home = c.varHome;
 int nAct = activities.size();
@@ -108,7 +109,7 @@ while (true) {
     checkedRange = searchRange;        // everything within the current range has now been checked
     searchRange += 1;                  // only home found: widen the search by one grid step and try again
 }
-if (nCand == 0) return home;   // safety: nothing valid (should never happen, since home is always a candidate), so stay
+if (nCand == 0) return false;   // safety: nothing valid (should never happen, since home is always a candidate), so stay
 
 // MNL: weights exp(mu * (V - maxV)), then a weighted random pick
 double[] e = new double[nCand];
@@ -137,4 +138,8 @@ c.varExpectedWelfare = maxV + log(total) / parLogitScale;   // total already has
 
 if (c == citizens.get(0)) funTestPrint("Citizen 0: " + nCand + " candidates, chose (" + cand[pick].parXIndex + "," + cand[pick].parYIndex + ")"
         + (cand[pick] == home ? " (stay)" : "") + " with probability " + roundToDecimal(e[pick] / total, 3) + ", utility " + roundToDecimal(V[pick], 0));   // TEST
-return cand[pick]; //of the candidate list, the one with index 'pick' was chosen, and function returns its gridPoint
+
+// Move to the chosen node (of the candidate list, the one with index 'pick'); funMoveCitizen does nothing if it is home
+boolean moved = (cand[pick] != home);
+funMoveCitizen(c, cand[pick]);
+return moved;

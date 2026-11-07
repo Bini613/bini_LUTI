@@ -36,7 +36,7 @@ for (int i = 0; i < nCit; i++) {
 if (sumW <= 0) error("funChooseActivityLocation: no citizen has any weight for activity " + ai);
 
 // Search for candidates within searchRange of the current location, widening one grid step at a time if current location is the only
-// candidate found (as in funChooseHome). Each wider pass only checks the new ring of nodes, keeping earlier candidates.
+// candidate found (as in funEvaluateAndMoveCitizen). Each wider pass only checks the new ring of nodes, keeping earlier candidates.
 double searchRange = parRelocationRange / parStepLength;   // starting search range, in grid steps (all distances in this loop are in grid steps)
 double checkedRange = -1;                                  // nodes at or within this distance (grid steps) have already been checked (-1: none yet)
 GridPoint[] cand = new GridPoint[0];

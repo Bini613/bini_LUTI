@@ -2,7 +2,7 @@
 // One turn: the next agent in varRelocationQueue chooses a location and moves there (or stays).
 //   - Round handling: the queue position is varTurnCount % queue size. When it wraps back to 0, the round is over:
 //     varRounds goes up, the run stops after parMaxRounds rounds, otherwise the queue is reshuffled for the next round.
-//   - Citizen: funChooseHome, then funMoveCitizen.
+//   - Citizen: funEvaluateAndMoveCitizen (chooses, stores its values, and moves or stays).
 //   - Activity: skips its turn with probability parProbActivityRelocationSkip; otherwise funChooseActivityLocation, then funMoveActivity.
 //   - Only actual moves count towards varRelocationsSinceAssignment (skips and stays change nothing).
 //   - Traffic is re-assigned when that count reaches parRelocationsPerAssignment, or straight after any activity move
@@ -37,9 +37,7 @@ if (isActivity) {
 }
 else {
     Citizen c = (Citizen) agent; //cast to Citizen class type
-    GridPoint to = funChooseHome(c);
-    moved = (to != c.varHome);
-    funMoveCitizen(c, to);   // does nothing if to is its current home
+    moved = funEvaluateAndMoveCitizen(c);   // Actually evaluates options for and possibly moves the citizen, and returns true if it moved, false if it stayed
 }
 if (!moved) return;   // stayed: nothing changed, so nothing counted
 

@@ -1,5 +1,5 @@
 // Function in Main. Just action (returns nothing). Arguments: c (Citizen), to (GridPoint)
-// Carries out a citizen's move (the choice of where to move is made elsewhere):
+// Carries out a citizen's move, with no choice made here (called by funEvaluateAndMoveCitizen after its choice, or directly by tests):
 //   1. Takes its crowding (weight 1) away from around its old home and adds it around the new one,
 //      which also updates rent at every affected node (funUpdateNeighbourhoodDensity recomputes varRent there)
 //   2. Updates its home and moves its icon
