@@ -3,7 +3,7 @@
 //   - Round handling: the queue position is varTurnCount % queue size. When it wraps back to 0, the round is over:
 //     varRounds goes up, the run stops after parMaxRounds rounds, otherwise the queue is reshuffled for the next round.
 //   - Citizen: funEvaluateAndMoveCitizen (chooses, stores its values, and moves or stays).
-//   - Activity: skips its turn with probability parProbActivityRelocationSkip; otherwise funChooseActivityLocation, then funMoveActivity.
+//   - Activity: skips its turn with probability parProbActivityRelocationSkip; otherwise funEvaluateAndMoveActivity (chooses, stores its values, and moves or stays).
 //   - Only actual moves count towards varRelocationsSinceAssignment (skips and stays change nothing).
 //   - Traffic is re-assigned when that count reaches parRelocationsPerAssignment, or straight after any activity move
 //     (without re-assignment, an activity move makes its row of varAccessTimes / varAccessDistances point to its old location).
@@ -31,9 +31,7 @@ boolean isActivity = agent instanceof Activity;
 if (isActivity) {
     Activity act = (Activity) agent;   // the queue holds both types as Agent, so it must be cast back to Activity to use its fields
     if (randomTrue(parProbActivityRelocationSkip)) return;   // skipped turn: nothing changes, nothing counted
-    GridPoint to = funChooseActivityLocation(act);
-    moved = (to != act.varLocation);
-    funMoveActivity(act, to);   // does nothing if to is its current location
+    moved = funEvaluateAndMoveActivity(act);   // Evaluates options for and possibly moves the activity, and returns true if it moved, false if it stayed
 }
 else {
     Citizen c = (Citizen) agent; //cast to Citizen class type
