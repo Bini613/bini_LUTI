@@ -1,10 +1,12 @@
 // TEMPORARY TEST. Function in Main. Returns value, type: boolean. No arguments. Called by the cyclic test report event evTestReport.
 // Equilibrium check on average density over occupied nodes (nodes with at least one citizen or activity).
-// Compares the current average with the one stored at the previous report (varAverageDensity):
-//   relative change = |current - previous| / previous
+// Every report's average is appended to colAverageDensity (Collection in Main: ArrayList of Double), a growing history.
+// The current average is compared with the mean of the previous parDensityEquilibriumWindow reports:
+//   relative change = |current - mean of last N| / mean of last N
+// Comparing with several past reports, rather than just the last one, catches slow steady trends that look flat from one report to the next.
 // If the change is within parDensityEquilibriumTolerance (e.g. 0.05 = 5%), prints the density and stops the simulation.
 // Returns true when equilibrium is reached (so evTestReport can run its other reports first), false otherwise.
-// On the first report there is nothing to compare with yet, so it only stores the average.
+// Until there are parDensityEquilibriumWindow earlier reports to compare with, it only stores the average.
 
 double sum = 0;
 int count = 0;
@@ -14,15 +16,20 @@ for (GridPoint g : gridPoints) {
     count++;
 }
 double current = sum / count;
-double previous = varAverageDensity;
-varAverageDensity = current;   // stored for the next report's comparison
 
-if (previous <= 0) return false;   // first report: nothing to compare with yet
-double change = abs(current - previous) / previous;
+int n = colAverageDensity.size();          // earlier reports stored so far
+int window = parDensityEquilibriumWindow;
+colAverageDensity.add(current);            // stored for later reports' comparisons
+if (n < window) return false;              // not enough history yet
+
+double sumPast = 0;
+for (int i = n - window; i < n; i++) sumPast += colAverageDensity.get(i);   // the last 'window' reports before this one
+double pastMean = sumPast / window;
+double change = abs(current - pastMean) / pastMean;
 if (change > parDensityEquilibriumTolerance) return false;   // still changing: keep running
 
 funRuntimePrint("Density equilibrium reached at turn " + varTurnCount + " (round " + varRounds + "): average occupied-node density "
-        + String.format("%.3e", current) + " agents/m^2, change since last report " + roundToDecimal(100 * change, 2) + "% (tolerance "
+        + String.format("%.3e", current) + " agents/m^2, change vs mean of last " + window + " reports " + roundToDecimal(100 * change, 2) + "% (tolerance "
         + roundToDecimal(100 * parDensityEquilibriumTolerance, 2) + "%), parDensityRef " + String.format("%.3e", parDensityRef));   // TEST
 finishSimulation();
 return true;
