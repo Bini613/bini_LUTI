@@ -1,7 +1,7 @@
 // TEMPORARY TEST. Function in Main. Just action (returns nothing). No arguments.
 // Prints the current average density over occupied nodes (nodes with at least one citizen or activity),
 // next to parDensityRef for comparison.
-// Also prints the smallest and largest occupied-node density. Called after every traffic assignment in funSimulateNextTurn.
+// Also prints the smallest and largest occupied-node density. Called by a cyclic test report event in Main (no longer by funSimulateNextTurn).
 double sum = 0, minD = Double.MAX_VALUE, maxD = 0;
 int count = 0;
 for (GridPoint g : gridPoints) {
