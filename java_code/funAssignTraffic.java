@@ -1,6 +1,6 @@
 // Function in Main. Returns value, type: double (the final relative gap). No arguments.
 // Equilibrium traffic assignment by the method of successive averages (MSA).
-// Needs varCapacityRef calibrated and link capacities set first (funCalibrateCapacity).
+// Needs link capacities set first (funInitImpedance, from parCapacityRef).
 // During each pass (with MSA step count n, see warm start below):
 //   1. Load all demand onto the current fastest routes (funComputeTargetFlows) -> each link's varTargetFlowVol
 //   2. Convergence check (from pass 2 on cold starts): relative gap = (T_actual - T_fastest) / T_actual,

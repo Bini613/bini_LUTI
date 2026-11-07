@@ -1,5 +1,5 @@
 // Function in Main. Just action (returns nothing). No arguments.
-// Sets every link's starting impedance and free-flow travel time.
+// Sets every link's starting impedance, capacity (from parCapacityRef, via Link funUpdateCapacity) and free-flow travel time.
 // Arterials are recognised from geometry (both ends on one of the four axes through the centre node),
 // so this works the same whether the network was built or loaded.
 // Links touching the centre node itself are kept local, so the centre doesn't start as an 8-way arterial junction
@@ -21,8 +21,9 @@ for (Link l : links) {
         arterialCount++;
     }
     else l.varImpedance = parImpedanceLocal + uniform(-parImpedanceLocalSpread, parImpedanceLocalSpread);
+    l.funUpdateCapacity();   // C = parCapacityRef * I^(-gamma)
     l.varFlowVol = 0;
-    l.varTravelTime = l.funFreeFlowTime();   // no congestion until capacities are calibrated
+    l.varTravelTime = l.funFreeFlowTime();   // no flow yet, so no congestion until the first assignment
 }
 
 // TEST: arterial count, impedance range and average free-flow time
