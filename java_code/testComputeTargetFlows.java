@@ -1,9 +1,14 @@
 // TEMPORARY TEST. Paste at the bottom of Main's On startup (after agents are placed and impedances set).
 // Runs funComputeTargetFlows, then recomputes the same flows the slow way (walking every citizen's whole route)
 // and prints the largest difference between the two methods. It should be 0 (or a tiny rounding error).
-double totalTime = funComputeTargetFlows();
-
 int nNodes = parCols * parCols;
+double[][] nodeDemand = new double[activities.size()][nNodes];   // same node demand table funAssignTraffic builds
+for (Citizen c : citizens) {
+    int k = c.varHome.parXIndex * parCols + c.varHome.parYIndex;
+    for (int a = 0; a < activities.size(); a++) nodeDemand[a][k] += c.varActivityWeights[a];
+}
+double totalTime = funComputeTargetFlows(nodeDemand);
+
 double[] t = new double[nNodes];
 Link[] p = new Link[nNodes];
 int[] o = new int[nNodes];

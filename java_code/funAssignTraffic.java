@@ -22,12 +22,21 @@ for (Link l : links) {
 }
 int nStart = warm ? parAssignWarmStartStep : 1;
 
+// Node demand, built once per assignment: nodeDemand[a][k] = total weight of the citizens living at node k for activity a.
+// Citizens don't move during an assignment, so it is the same on every pass; only the routes (and so the link flows) change.
+int nNodes = parCols * parCols;
+double[][] nodeDemand = new double[activities.size()][nNodes];
+for (Citizen c : citizens) {
+    int k = c.varHome.parXIndex * parCols + c.varHome.parYIndex;   // stacked column index of the citizen's home
+    for (int a = 0; a < activities.size(); a++) nodeDemand[a][k] += c.varActivityWeights[a];   // += so citizens sharing a node add up
+}
+
 double gap = 1;   // relative gap; 1 until it can first be measured (pass 2 on a cold start, pass 1 on a warm start)
 int pass;
 for (pass = 1; pass <= parAssignMaxIterations; pass++) {
     int n = nStart + pass - 1;   // MSA step count: this pass blends in 1/n of the target
 
-    double tFastest = funComputeTargetFlows();   // Returns the fastest cumulative travel time based on the existing link travel times. Also updates the varTargetFlowVol for each link, as the combined flows that would result from everyone using their fastest routes with the existing travel times. Hence any previous congestion adjustments to link travel times are captured. But until equilibrium is achieved, those flows are not the actual flows, because they don't consider extra readjustments citizens will make in light of the new congestion this routing creates. At equilibrium, the routes the blended flows use are already the fastest, so no route can save anyone time, and the blended flows are final.
+    double tFastest = funComputeTargetFlows(nodeDemand);   // Returns the fastest cumulative travel time based on the existing link travel times. Also updates the varTargetFlowVol for each link, as the combined flows that would result from everyone using their fastest routes with the existing travel times. Hence any previous congestion adjustments to link travel times are captured. But until equilibrium is achieved, those flows are not the actual flows, because they don't consider extra readjustments citizens will make in light of the new congestion this routing creates. At equilibrium, the routes the blended flows use are already the fastest, so no route can save anyone time, and the blended flows are final.
 
     if (warm || pass > 1) {   // 2. on a cold start, pass 1 has no flows yet, so nothing to compare
         double tActual = 0;

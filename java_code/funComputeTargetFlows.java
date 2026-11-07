@@ -1,7 +1,8 @@
-// Function in Main. Returns value, type: double. No arguments.
+// Function in Main. Returns value, type: double. Arguments: nodeDemand (double[][])
 // All-or-nothing loading: puts all demand onto the current fastest routes (using each link's current varTravelTime)
 // and stores the result in every link's varTargetFlowVol (Link variable, double).
 // Demand: each citizen sends its weight for activity a (varActivityWeights[a]) from its home to activity a.
+// nodeDemand[a][k] holds those weights already summed per home node (built once by funAssignTraffic, since citizens don't move during an assignment).
 // Returns T_fastest: the total time everyone would spend travelling if they all used the current fastest routes.
 //   T_fastest = sum over citizens c and activities a of  w[c][a] * tFastest[c][a]
 //   (w = citizen's weight for the activity, tFastest = fastest time from the citizen's home to the activity)
@@ -19,7 +20,7 @@ double[] time = new double[nNodes];
 Link[] prev = new Link[nNodes];
 int[] order = new int[nNodes];
 double[] dist = new double[nNodes];
-double[] demand = new double[nNodes];   // demand waiting at each node, to be passed towards the activity
+double[] thisActDemand = new double[nNodes];   // demand waiting at each node, to be passed towards the activity
 double totalFastestTime = 0;
 double unreachableDemand = 0; //For testing: Should remain zero
 
@@ -31,22 +32,20 @@ if (varAccessTimes == null || varAccessTimes.length != activities.size() || varA
 if (varAccessDistances == null || varAccessDistances.length != activities.size() || varAccessDistances[0].length != nNodes)
     varAccessDistances = new double[activities.size()][nNodes];
 
-for (int a = 0; a < activities.size(); a++) {
-    funBuildFastestPathTree(activities.get(a).varLocation, time, prev, order, dist); //first argument selects the gridPoint for the current activity in this loop. Time array passed in from previous loop needn't be empty, since this function resets it internally
-    System.arraycopy(time, 0, varAccessTimes[a], 0, nNodes);   // keep a copy of this activity's times (time[] is reused for the next activity). Recall this time calculation considered congestion, because the fasest tree looks at travel times in the BPR function, from whatever the last calculated flows were.
-    System.arraycopy(dist, 0, varAccessDistances[a], 0, nNodes);   // same for the lengths of those routes
+for (int thisAct = 0; thisAct < activities.size(); thisAct++) {
+    funBuildFastestPathTree(activities.get(thisAct).varLocation, time, prev, order, dist); //first argument selects the gridPoint for the current activity in this loop. Time array passed in from previous loop needn't be empty, since this function resets it internally
+    System.arraycopy(time, 0, varAccessTimes[thisAct], 0, nNodes);   // keep a copy of this activity's times (time[] is reused for the next activity). Recall this time calculation considered congestion, because the fasest tree looks at travel times in the BPR function, from whatever the last calculated flows were.
+    System.arraycopy(dist, 0, varAccessDistances[thisAct], 0, nNodes);   // same for the lengths of those routes
 
-    // 1. Each node starts with the weights of the citizens living there for activity a
-    Arrays.fill(demand, 0);
-    for (Citizen c : citizens) {
-        int k = c.varHome.parXIndex * parCols + c.varHome.parYIndex; //convert into stacked columns index form
-        double w = c.varActivityWeights[a]; //weight of citizen c for activity a
-        if (time[k] == Double.POSITIVE_INFINITY) {   // no route to this activity: can't be loaded
-            unreachableDemand += w;
+    //1. thisActDemand starts with entry for each node, that represents the combined weights for thisAct of all citizens living there (or zero if node is unoccupied or no one there demands thisAct). In step 2, thisActDemand is changed iteratively, accumulating the demand of every node further out whose route to thisAct passes through it. We get starting demands from nodeDemand passed down as an argument from funAssignTraffic, rather than recalculating it in the present function, so that it needn't be repeatedly generated on the many times funAssignTraffic calls the present function. 
+    //nodeDemand therefore must only be read, not changed by the present function, and this is why thisActDemand is created as a separate variable from nodeDemand, because it is changed progressively as overlapping routes accumulate demand (for the purpose of accumulating the target flows on the connecting links). A copy function is used rather than assignment because assignment would just make both names refer to the same array, so changes would corrupt nodeDemand. A clone would also work, but then each iteration would produce a different clone in memory which would need clearing up later. Copy overwrites between iterations, so no needless memory accumulation between iterations, for which Java would waste time at the end clearing up automatically. 
+    System.arraycopy(nodeDemand[thisAct], 0, thisActDemand, 0, nNodes); 
+    for (int k = 0; k < nNodes; k++) { //Add all the travel time to this activity to the accumulation of all activities'
+        if (time[k] == Double.POSITIVE_INFINITY) {   // Track unreachable demand and don't add it to the total travel time. There should be no unreachable demand.
+            unreachableDemand += thisActDemand[k];
             continue;
         }
-        demand[k] += w;   // += so several citizens on one node add up
-        totalFastestTime += w * time[k];
+        totalFastestTime += thisActDemand[k] * time[k];
     }
 
     // 2. Ordered from farthest to nearest travel times (settle order backwards), each node passes its demand onto its previous link,
@@ -54,11 +53,11 @@ for (int a = 0; a < activities.size(); a++) {
     //    Every node is processed after all nodes further out on its branch, so its demand is already complete.
     for (int s = nNodes - 1; s >= 1; s--) {   // s = 0 is the activity's own node: nothing to pass on
         int k = order[s]; //get the index k of the first node to look at, which is the last one settled
-        if (k == -1 || demand[k] == 0) continue;   // unsettled (unreachable) slot, or nothing to pass on
+        if (k == -1 || thisActDemand[k] == 0) continue;   // unsettled (unreachable) slot, or nothing to pass on
         Link l = prev[k];
-        l.varTargetFlowVol += demand[k];
-        GridPoint up = (l.parNodeA == varGrid[k / parCols][k % parCols]) ? l.parNodeB : l.parNodeA;   // up is defined as the next node along the route to activity a. We had to convert k indices back to grid indices for varGrid[][]. The conditional makes sure to pick the correct end of link l which is the next node, not the current one.
-        demand[up.parXIndex * parCols + up.parYIndex] += demand[k];//up indices converted back to stacked column form, and up receives the demand from the link.
+        l.varTargetFlowVol += thisActDemand[k];
+        GridPoint up = (l.parNodeA == varGrid[k / parCols][k % parCols]) ? l.parNodeB : l.parNodeA;   // up is defined as the next node along the route to activity thisAct. We had to convert k indices back to grid indices for varGrid[][]. The conditional makes sure to pick the correct end of link l which is the next node, not the current one.
+        thisActDemand[up.parXIndex * parCols + up.parYIndex] += thisActDemand[k];//Next node up the chain receives the previous one's demand on top of what it already had from other routes already tracked.
     }
 }
 
