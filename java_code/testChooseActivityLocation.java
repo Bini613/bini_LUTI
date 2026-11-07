@@ -1,4 +1,4 @@
-// TEMPORARY TEST. Paste at the bottom of Main's On startup (after funCalibrateDensity).
+// TEMPORARY TEST. Paste at the bottom of Main's On startup (after funBuildDensitySurface).
 // Runs one activity relocation round: every activity chooses (funChooseActivityLocation) and moves (funMoveActivity) in turn.
 // funChooseActivityLocation itself prints activity 0's utility terms at its location and its choice.
 // Then prints how many moved, their average move distance, and checks that no two activities share a node.

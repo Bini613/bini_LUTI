@@ -1,7 +1,7 @@
 // Function in Main. Returns value, type: GridPoint. Arguments: c (Citizen)
 // Citizen c's location choice (multinomial logit). Returns the chosen node, which may be its current home (staying).
 // Does not move the citizen: the caller then calls funMoveCitizen(c, chosen), in the same event, so later choices see updated rents.
-// Needs varDensityRef calibrated (funCalibrateDensity) and varAccessTimes / varAccessDistances filled (funAssignTraffic).
+// Needs the density surface built (funBuildDensitySurface) and varAccessTimes / varAccessDistances filled (funAssignTraffic).
 //
 // Candidates: every node within parRelocationRange (metres) of the current home, including home; if home is the only one found,
 // the range is widened one grid step at a time until somewhere to move appears. Excluded: nodes at the land floor
@@ -12,7 +12,7 @@
 //   U_rent = -VOM * R_k                                   R_k = rent excluding c itself: funComputeRent(funComputeDensity(k, home, 1))
 //   U_cost = -VOM * f * sum_a( w_a * cost * dist_ka )     f = parTripsPerMonth, cost = parTravelCostPerMetre, dist from varAccessDistances
 //   U_time = -VOT * f * sum_a( w_a * t_ka )               t from varAccessTimes (equilibrium travel times, minutes)
-//   U_priv = -VOP * parRentRef * rho_k / varDensityRef    rho_k = density excluding c itself; VOP is a multiplier: the crowding cost at the
+//   U_priv = -VOP * parRentRef * rho_k / parDensityRef   rho_k = density excluding c itself; VOP is a multiplier: the crowding cost at the
 //                                                         reference density, as a fraction of the reference rent (e.g. 0.1 = like 10% extra rent).
 //                                                         VOP can be negative (likes crowding)
 //   U_move = -VOM * parRelocationAmortizedCost            only if k is not the current home
@@ -21,7 +21,6 @@
 // The largest V is subtracted from each V before exp to avoid overflow (doesn't change the probabilities).
 // Terms switched off by a zero coefficient (parTravelCostPerMetre = 0, or this citizen's VOP = 0) are skipped to save computation time.
 
-if (varDensityRef <= 0) error("funChooseHome called before varDensityRef was calibrated (run funCalibrateDensity first)");
 if (varAccessTimes == null || varAccessDistances == null) error("funChooseHome called before access times exist (run funAssignTraffic first)");
 
 GridPoint home = c.varHome;
@@ -72,7 +71,7 @@ while (true) {
             double uRent = -c.parVOM * funComputeRent(density);
             double uTravelCost = useCost ? -c.parVOM * parTripsPerMonth * parTravelCostPerMetre * sumWeightedDist : 0;
             double uTime = -c.parVOT * parTripsPerMonth * sumWeightedTime;
-            double uPriv = usePriv ? -c.parVOP * parRentRef * density / varDensityRef : 0;
+            double uPriv = usePriv ? -c.parVOP * parRentRef * density / parDensityRef : 0;
             double uMove = isHome ? 0 : -c.parVOM * parRelocationAmortizedCost;
 
             cand[nCand] = k; //gridPoint of candidate added to array of candidate locations

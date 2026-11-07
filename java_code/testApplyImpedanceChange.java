@@ -1,4 +1,4 @@
-// TEMPORARY TEST. Paste at the bottom of Main's On startup (after funCalibrateDensity and funAssignTraffic).
+// TEMPORARY TEST. Paste at the bottom of Main's On startup (after funBuildDensitySurface and funAssignTraffic).
 // Upgrades a local link at median crowding to parImpedanceMin, prints what changed, then checks the incremental update against a
 // fully independent recomputation from the current impedances: every node's available land (funSetAvailableLands), then the
 // whole density surface and rents (funBuildDensitySurface). This checks the whole chain: the end nodes' land, and its spread
@@ -55,14 +55,8 @@ for (GridPoint g : gridPoints) {
     incRent[g.parXIndex * parCols + g.parYIndex] = g.varRent;
 }
 funSetAvailableLands();     // recompute every node's available land from the current impedances (independent of the end-node update above; also prints its road-share line)
-// Rebuild nearby land and crowding from scratch. varDensityRef is set to 0 during the rebuild so rent calculations are turned off, so that rents aren't repeatedly written with incomplete accumulations of varNearbyLand prior to final complete accumulations.
-// This also protects against a divide by zero error in density as the funComputeRent argument, for nodes who have no nearbyland yet, and whose neigbhourhood centre gives it none in funUpdateNeighbourhoodDensity. 
-//Such nodes probably won't have errors in rent calculation that comes for all nodes that comes afterwards, though it is still possible, if an entire neighbourhood has no available land (unlikely). That is why parMinAvailableLand should be set to a small number and not zero.
-double savedDensityRef = varDensityRef;
-varDensityRef = 0;
+// Rebuild nearby land, crowding and rent from scratch (funBuildDensitySurface pauses rent updates during the build and sets all rents at the end)
 funBuildDensitySurface();
-varDensityRef = savedDensityRef;
-for (GridPoint g : gridPoints) g.varRent = funComputeRent(funComputeDensity(g, g, /* ownWeight = */ 0));
 double worstLandError = 0, worstRentError = 0;
 for (GridPoint g : gridPoints) {
     int k = g.parXIndex * parCols + g.parYIndex;

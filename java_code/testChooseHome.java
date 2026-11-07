@@ -1,4 +1,4 @@
-// TEMPORARY TEST. Paste at the bottom of Main's On startup (after funCalibrateDensity and funAssignTraffic).
+// TEMPORARY TEST. Paste at the bottom of Main's On startup (after funBuildDensitySurface and funAssignTraffic).
 // Runs one relocation round: every citizen chooses (funChooseHome) and moves (funMoveCitizen) in turn.
 // funChooseHome itself prints citizen 0's utility terms at home and its choice.
 // Then prints how many moved, their average move distance, and checks that no two citizens share a node.

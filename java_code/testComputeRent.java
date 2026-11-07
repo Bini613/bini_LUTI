@@ -1,4 +1,4 @@
-// TEMPORARY TEST. Paste in Main's On startup, after funCalibrateDensity();
+// TEMPORARY TEST. Paste in Main's On startup, after funBuildDensitySurface();
 // 1. Inclusive rent: recomputes every node's rent with funComputeRent from its stored density, and compares with the stored varRent.
 //    The stored rent now comes from the same formula, so this only checks that varRent is current. The largest difference should be 0.
 // 2. Rent excluding self: for citizen 0, compares funComputeRent(funComputeDensity(..., 1)) with the "real" answer:

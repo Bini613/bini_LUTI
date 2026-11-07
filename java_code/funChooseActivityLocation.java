@@ -1,7 +1,7 @@
 // Function in Main. Returns value, type: GridPoint. Arguments: act (Activity)
 // Activity act's location choice (multinomial logit). Returns the chosen node, which may be its current location (staying).
 // Does not move the activity: the caller then calls funMoveActivity(act, chosen), in the same event, so later choices see updated rents.
-// Needs varDensityRef calibrated (funCalibrateDensity).
+// Needs the density surface built (funBuildDensitySurface).
 //
 // Candidates: every node within parRelocationRange (metres) of the current location, including itself; if it is the only one found,
 // the range is widened one grid step at a time until somewhere to move appears. Excluded: nodes at the land floor
@@ -16,8 +16,6 @@
 //   V_k = U_rent + U_loc + U_move
 // Choice probability: P_k = exp(mu * V_k) / sum_j(exp(mu * V_j)), mu = parLogitScale (shared with citizens' choice).
 // The largest V is subtracted from each V before exp to avoid overflow and underflow (doesn't change the probabilities).
-
-if (varDensityRef <= 0) error("funChooseActivityLocation called before varDensityRef was calibrated (run funCalibrateDensity first)");
 
 GridPoint here = act.varLocation;
 int ai = act.getIndex();   // this activity's index: matches the position of its weight in each citizen's varActivityWeights, so long as no agents are added or removed during simulation. Otherwise, different coding solution would be needed.

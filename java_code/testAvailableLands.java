@@ -1,5 +1,5 @@
 // TEMPORARY TEST. Function in Main. Just action (returns nothing). No arguments.
-// Call it in Main's On startup after funCalibrateDensity (so funApplyImpedanceChange can update rent too).
+// Call it in Main's On startup after funBuildDensitySurface (so funApplyImpedanceChange can update rent too).
 // Finds the node whose roads take the largest share of its cell at the start, then upgrades that node's widest road
 // (lowest impedance) to a freeway (parImpedanceMin) and prints the share again.
 // Part 2 (bottom): finds a junction where an arterial crosses a local road, and upgrades it step by step up to a

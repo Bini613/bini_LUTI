@@ -36,8 +36,8 @@ parVOM = drawLognormal.applyAsDouble(main.parVOMMean, main.parVOMSpread);
 // Value of privacy: normal distribution with mean parVOPMean and standard deviation parVOPStandardDeviation.
 // Positive VOP = dislikes crowding; negative VOP = enjoys it (likes vibrant, busy areas for their own sake).
 // VOP is a multiplier relative to the reference density and reference rent: the privacy utility is
-// -VOP * main.parRentRef * (density / main.varDensityRef), so VOP is the crowding cost of living at the city's typical
-// occupied starting density, as a fraction of the reference rent (e.g. 0.1 = feels like 10% extra rent).
+// -VOP * main.parRentRef * (density / main.parDensityRef), so VOP is the crowding cost of living at the reference
+// density, as a fraction of the reference rent (e.g. 0.1 = feels like 10% extra rent).
 // Written as mean + sd * normal() rather than AnyLogic's normal(sd, mean): same distribution, and it simply returns the mean when sd = 0.
 // Mean 0 and sd 0 switches privacy off (every citizen gets VOP = 0).
 parVOP = main.parVOPMean + main.parVOPStandardDeviation * normal();

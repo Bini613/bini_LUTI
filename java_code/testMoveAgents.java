@@ -1,4 +1,4 @@
-// TEMPORARY TEST. Paste at the bottom of Main's On startup (after funCalibrateDensity).
+// TEMPORARY TEST. Paste at the bottom of Main's On startup (after funBuildDensitySurface).
 // Moves citizen 0 to a free corner-most node and back, and activity 0 likewise, then checks every node's crowding and rent
 // are back to where they started (only rounding differences allowed). The first move is printed so you can see rent change.
 double[] startCrowding = new double[parCols * parCols];

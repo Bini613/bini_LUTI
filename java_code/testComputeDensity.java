@@ -1,4 +1,4 @@
-// TEMPORARY TEST. Paste in Main's On startup, after funCalibrateDensity();
+// TEMPORARY TEST. Paste in Main's On startup, after funBuildDensitySurface();
 // Full density (ownWeight 0) at every node should equal varCrowding / varNearbyLand: the largest difference should be 0.
 // (The excluding-self case is checked in testComputeRent.)
 double worstFullError = 0;
