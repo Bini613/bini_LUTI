@@ -7,9 +7,7 @@
 //   - Only actual moves count towards varRelocationsSinceAssignment (skips and stays change nothing).
 //   - Traffic is re-assigned when that count reaches parRelocationsPerAssignment, or straight after any activity move
 //     (without re-assignment, an activity move makes its row of varAccessTimes / varAccessDistances point to its old location).
-//   - Every parAssignmentsPerInvestment assignments, funInvest runs and traffic is assigned again, so the investment
-//     both uses fresh equilibrium data and is reflected straight away. parAssignmentsPerInvestment = 0 switches investment off.
-//     The assignment after an investment isn't counted in varAssignmentCount, so investments stay evenly spaced.
+//   - Investment is not handled here: it happens at density equilibrium, in funRunCheckpoint (event evCheckpoint).
 
 int queueSize = varRelocationQueue.size();
 int pos = varTurnCount % queueSize;   // this turn's place in the queue
@@ -17,7 +15,8 @@ if (pos == 0 && varTurnCount > 0) {   // back at the start of the queue: a round
     varRounds++;
     funTestPrint("Round " + varRounds + " finished after " + varTurnCount + " turns");   // TEST
     if (varRounds >= parMaxRounds) {
-        funEndRun("parMaxRounds reached");   // end-of-run reports, then stop
+        funPrintFinalReports("parMaxRounds reached");   // end-of-run reports
+        finishSimulation();
         return;
     }
     funShuffleResetRelocationQueue();   // new random order for the next round
@@ -45,10 +44,4 @@ if (isActivity || varRelocationsSinceAssignment >= parRelocationsPerAssignment) 
     varAssignmentCount++;
     varRelocationsSinceAssignment = 0;
     funTestPrint("Turn " + varTurnCount + ": assignment " + varAssignmentCount + (isActivity ? " (activity moved)" : " (periodic)"));   // TEST
-
-    if (parAssignmentsPerInvestment > 0 && varAssignmentCount % parAssignmentsPerInvestment == 0) {
-        funInvest();
-        funAssignTraffic();   // re-equilibrate on the upgraded network (not counted, see header)
-        funTestPrint("Turn " + varTurnCount + ": investment made after assignment " + varAssignmentCount);   // TEST
-    }
 }
