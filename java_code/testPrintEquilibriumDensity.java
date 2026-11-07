@@ -4,8 +4,8 @@
 // The current average is compared with the mean of the previous parDensityEquilibriumWindow reports:
 //   relative change = |current - mean of last N| / mean of last N
 // Comparing with several past reports, rather than just the last one, catches slow steady trends that look flat from one report to the next.
-// If the change is within parDensityEquilibriumTolerance (e.g. 0.05 = 5%), prints the density and stops the simulation.
-// Returns true when equilibrium is reached (so evTestReport can run its other reports first), false otherwise.
+// If the change is within parDensityEquilibriumTolerance (e.g. 0.05 = 5%), prints the density and ends the run via funEndRun
+// (end-of-run reports, then stop). Returns true when equilibrium is reached, false otherwise.
 // Until there are parDensityEquilibriumWindow earlier reports to compare with, it only stores the average.
 
 double sum = 0;
@@ -29,7 +29,7 @@ double change = abs(current - pastMean) / pastMean;
 if (change > parDensityEquilibriumTolerance) return false;   // still changing: keep running
 
 funRuntimePrint("Density equilibrium reached at turn " + varTurnCount + " (round " + varRounds + "): average occupied-node density "
-        + String.format("%.3e", current) + " agents/m^2, change vs mean of last " + window + " reports " + roundToDecimal(100 * change, 2) + "% (tolerance "
-        + roundToDecimal(100 * parDensityEquilibriumTolerance, 2) + "%), parDensityRef " + String.format("%.3e", parDensityRef));   // TEST
-finishSimulation();
+        + String.format("%.3e", current) + " agents/m^2, change vs mean of last " + window + " reports " + roundToDecimal(100 * change, 5) + "% (tolerance "
+        + roundToDecimal(100 * parDensityEquilibriumTolerance, 5) + "%), parDensityRef " + String.format("%.3e", parDensityRef));   // TEST
+funEndRun("density equilibrium");   // end-of-run reports, then stop
 return true;

@@ -17,7 +17,7 @@ if (pos == 0 && varTurnCount > 0) {   // back at the start of the queue: a round
     varRounds++;
     funTestPrint("Round " + varRounds + " finished after " + varTurnCount + " turns");   // TEST
     if (varRounds >= parMaxRounds) {
-        finishSimulation();
+        funEndRun("parMaxRounds reached");   // end-of-run reports, then stop
         return;
     }
     funShuffleResetRelocationQueue();   // new random order for the next round
