@@ -14,7 +14,6 @@ Arrays.fill(dist, Double.POSITIVE_INFINITY);
 Arrays.fill(prev, null);
 Arrays.fill(order, -1);
 int settledCount = 0;
-boolean[] settled = new boolean[time.length];   // true once a node's time is final
 
 int o = origin.parXIndex * parCols + origin.parYIndex;
 time[o] = 0;
@@ -23,9 +22,9 @@ PriorityQueue<double[]> queue = new PriorityQueue<>((x, y) -> Double.compare(x[0
 queue.add(new double[]{0, o}); //origin is the first point to be added to queue, and we know its time to itself is zero
 
 while (!queue.isEmpty()) {
-    int k = (int) queue.poll()[1];   // closest unsettled node. Poll also removes this entry so not present in next loop
-    if (settled[k]) continue;   // old entry: this node was already settled via a faster time added later
-    settled[k] = true;
+    double[] entry = queue.poll();   // closest entry. Poll also removes it so it is not present in the next loop
+    int k = (int) entry[1];
+    if (entry[0] > time[k]) continue;   // outdated entry: a faster time to node k was found after it was added, and that faster entry was polled (and k settled) first
     order[settledCount] = k;   // E.g. on third run, third slot of order is filled with k, meaning that node at index k was the third node settled
     settledCount++;
     GridPoint n = varGrid[k / parCols][k % parCols]; //truncation and remainders translate index k back into x and y grid indices respectively. The X index would need +1 if we used base 1 indexing like in other programming languages. 
