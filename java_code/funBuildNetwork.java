@@ -216,7 +216,8 @@ Runnable bridgeClusters = () -> {
 //    a new dead end (the junction keeps 2+ links), so roads aren't eaten back link by link.
 //    Stops early if no stubs are left, even if the ratio is still above the target.
 //    Removing a stub leaves its dead-end node with no links (isolated).
-// 2. Join each remaining dead end (the end of a road) to a neighbour that already has links.
+// 2. Join each remaining dead end that is the end of a road (not a stub) to a neighbour that already has links.
+//    Stubs left after pruning stay as dead ends.
 Runnable smoothDeadEnds = () -> {
     int pruned = 0;
     while (true) {
@@ -246,7 +247,11 @@ Runnable smoothDeadEnds = () -> {
     int[][] allDirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
     List<GridPoint> deadEndNodes = new ArrayList<>();
     for (GridPoint g : gridPoints) {
-        if (g.colLinks.size() == 1) deadEndNodes.add(g);
+        if (g.colLinks.size() != 1) continue;
+        Link e = g.colLinks.get(0);
+        GridPoint other = (e.parNodeA == g) ? e.parNodeB : e.parNodeA;
+        if (other.colLinks.size() >= 3) continue;   // a stub left after pruning: kept as a dead end
+        deadEndNodes.add(g);
     }
     Collections.shuffle(deadEndNodes, getDefaultRandomGenerator());
     int deadEndsJoined = 0;
