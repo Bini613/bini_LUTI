@@ -67,7 +67,8 @@ for (int[] d : axes) {
             if (ni < 0 || ni >= parCols || nj < 0 || nj >= parCols) break; // reached edge
             GridPoint a = varGrid[i][j];
             GridPoint b = varGrid[ni][nj];
-            if (funFindLink(a, b) == null) {
+            boolean centreDiagonal = (i == ci && j == cj) && d[0] != 0 && d[1] != 0;   // diagonal arterials skip their first step out of the centre, so the centre is a 4-way junction, not 8-way
+            if (!centreDiagonal && funFindLink(a, b) == null) {
                 if (d[0] != 0 && d[1] != 0) {   // <-- if we are building a diagonal arterial on this run: remove the opposite diagonal of this square if it exists
                     Link cross = funFindLink(varGrid[ni][j], varGrid[i][nj]);
                     if (cross != null) {
