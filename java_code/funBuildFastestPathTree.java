@@ -15,7 +15,7 @@ Arrays.fill(prev, null);
 Arrays.fill(order, -1);
 int settledCount = 0;
 
-int o = origin.parXIndex * parCols + origin.parYIndex;
+int o = origin.parIndex;
 time[o] = 0;
 dist[o] = 0;
 PriorityQueue<double[]> queue = new PriorityQueue<>((x, y) -> Double.compare(x[0], y[0]));   // Each entry in this queue is itself an array: {time, node index}; poll() gives the smallest time
@@ -30,13 +30,13 @@ while (!queue.isEmpty()) {
     GridPoint n = varGrid[k / parCols][k % parCols]; //truncation and remainders translate index k back into x and y grid indices respectively. The X index would need +1 if we used base 1 indexing like in other programming languages. 
     for (Link l : n.colLinks) {   // update each neighbour if going through n is faster
         GridPoint m = (l.parNodeA == n) ? l.parNodeB : l.parNodeA; //node at other end of link l
-        int km = m.parXIndex * parCols + m.parYIndex; //the above node's index translated back into stacked column format
+        int km = m.parIndex; //the above node's stacked column index
         double t = time[k] + l.varTravelTime;
         if (t < time[km]) { //if adding this link creates a new route shorter than the previously recorded one, then the recorded one gets updated to this
             time[km] = t;
             dist[km] = dist[k] + l.parLength;   // length of this new fastest route
             prev[km] = l; //this node now knows which link it must follow to go on the shortest path to origin.
-            queue.add(new double[]{t, km});   // Add this neighbour to the queue of whom to settle. If the neighbour was already on the list with a slower time, then that entry remains; first the faster entry will be run through and settled. Then eventually one by one, each slower entry counterpart will be looked at, removed from the queue, and then immediately end its iteration when the second line in the iteration finds it was already settled.
+            queue.add(new double[]{t, km});   // Add this neighbour to the queue of whom to settle. If the neighbour was already on the list with a slower time, then that entry remains; first the faster entry will be run through and settled. Then eventually one by one, each slower entry counterpart will be looked at, removed from the queue, and then immediately end its iteration when the time check finds its stored time is greater than the node's current best time[km], indicating that it would have already been explored because the queue polls fastest times first.
         }
     }
 }

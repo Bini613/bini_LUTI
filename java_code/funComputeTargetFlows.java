@@ -56,8 +56,8 @@ for (int thisAct = 0; thisAct < activities.size(); thisAct++) {
         if (k == -1 || thisActDemand[k] == 0) continue;   // unsettled (unreachable) slot, or nothing to pass on
         Link l = prev[k];
         l.varTargetFlowVol += thisActDemand[k];
-        GridPoint up = (l.parNodeA == varGrid[k / parCols][k % parCols]) ? l.parNodeB : l.parNodeA;   // up is defined as the next node along the route to activity thisAct. We had to convert k indices back to grid indices for varGrid[][]. The conditional makes sure to pick the correct end of link l which is the next node, not the current one.
-        thisActDemand[up.parXIndex * parCols + up.parYIndex] += thisActDemand[k];//Next node up the chain receives the previous one's demand on top of what it already had from other routes already tracked.
+        GridPoint up = (l.parNodeA.parIndex == k) ? l.parNodeB : l.parNodeA;   // up is defined as the next node along the route to activity thisAct. The conditional makes sure to pick the correct end of link l which is the next node, not the current one (node k).
+        thisActDemand[up.parIndex] += thisActDemand[k];//Next node up the chain receives the previous one's demand on top of what it already had from other routes already tracked.
     }
 }
 

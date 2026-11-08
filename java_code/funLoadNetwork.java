@@ -30,7 +30,7 @@ try {
 varGrid = new GridPoint[parCols][parCols];
 for (int i = 0; i < parCols; i++) {
     for (int j = 0; j < parCols; j++) {
-        GridPoint p = add_gridPoints(i, j);
+        GridPoint p = add_gridPoints(i, j, i * parCols + j);   // third argument: parIndex, the node's stacked column index
         p.setXY(i * parSpacing, j * parSpacing);
         varGrid[i][j] = p;
     }

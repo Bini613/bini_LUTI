@@ -27,7 +27,7 @@ int nStart = warm ? parAssignWarmStartStep : 1;
 int nNodes = parCols * parCols;
 double[][] nodeDemand = new double[activities.size()][nNodes];
 for (Citizen c : citizens) {
-    int k = c.varHome.parXIndex * parCols + c.varHome.parYIndex;   // stacked column index of the citizen's home
+    int k = c.varHome.parIndex;   // stacked column index of the citizen's home
     for (int a = 0; a < activities.size(); a++) nodeDemand[a][k] += c.varActivityWeights[a];   // += so citizens sharing a node add up
 }
 
