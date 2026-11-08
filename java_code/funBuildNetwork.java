@@ -220,8 +220,9 @@ Runnable bridgeClusters = () -> {
 //    Removing a stub leaves its dead-end node with no links (isolated).
 Runnable smoothDeadEnds = () -> {
     // Step 1: join each road end to a neighbour that already has links, picked at random weighted by
-    // the junction and angle factors. Neighbours with no links are skipped, since linking to one would only move
-    // the dead end one step along. Dead ends are visited in random order, so there's no spatial bias.
+    // the junction and angle factors. If it has none, the road extends onto an empty neighbour (same weighting,
+    // so straight on is favoured) and tries again from there, until it joins the network or has nowhere left
+    // to go, in which case it stays a dead end. Dead ends are visited in random order, so there's no spatial bias.
     int[][] allDirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
     List<GridPoint> deadEndNodes = new ArrayList<>();
     Set<GridPoint> stubTips = new HashSet<>();   // dead-end nodes of stubs: never joined, from either side (step 2 decides which stubs stay)
@@ -234,44 +235,59 @@ Runnable smoothDeadEnds = () -> {
     }
     Collections.shuffle(deadEndNodes, getDefaultRandomGenerator());
     int deadEndsJoined = 0;
+    int extensionLinks = 0;
     for (GridPoint p : deadEndNodes) {
         if (p.colLinks.size() != 1) continue;   // no longer a dead end: another dead end joined onto it earlier in this loop
-        List<GridPoint> nbrs = new ArrayList<>();
-        for (int[] d : allDirs) {
-            int ni = p.parXIndex + d[0];
-            int nj = p.parYIndex + d[1];
-            if (ni < 0 || ni >= parCols || nj < 0 || nj >= parCols) continue;   // off grid
-            GridPoint b = varGrid[ni][nj];
-            if (b.colLinks.isEmpty()) continue;            // no links: would only move the dead end
-            if (stubTips.contains(b)) continue;            // the tip of a stub: joining it would remove the stub
-            if (funFindLink(p, b) != null) continue;       // already linked (the road p is the end of)
-            if (d[0] != 0 && d[1] != 0 && funFindLink(varGrid[ni][p.parYIndex], varGrid[p.parXIndex][nj]) != null) continue;   // diagonal would cross
-            nbrs.add(b);
-        }
-        if (nbrs.isEmpty()) continue;   // nothing suitable nearby: stays a dead end
-        // Weighted pick (roulette wheel), as in connectIsolated and bridgeClusters
-        List<Double> weights = new ArrayList<>();
-        double total = 0;
-        for (GridPoint b : nbrs) {
-            double w = funJunctionsFactor(p, b) * funAngleFactor(p, b);
-            weights.add(w);
-            total += w;
-        }
-        GridPoint chosen;
-        if (total <= 0) chosen = randomFrom(nbrs);   // every weight is zero: fall back to an unweighted choice
-        else {
-            double r = uniform(0, total);
-            int idx = 0;
-            while (idx < nbrs.size() - 1 && r >= weights.get(idx)) {
-                r -= weights.get(idx);
-                idx++;
+        GridPoint cur = p;   // the current end of the road; moves along as the road extends
+        while (true) {
+            // Sort cur's valid neighbours: ones that already have links (joining one ends the road there),
+            // and empty ones (extending onto one moves the road's end along)
+            List<GridPoint> linkedNbrs = new ArrayList<>();
+            List<GridPoint> emptyNbrs = new ArrayList<>();
+            for (int[] d : allDirs) {
+                int ni = cur.parXIndex + d[0];
+                int nj = cur.parYIndex + d[1];
+                if (ni < 0 || ni >= parCols || nj < 0 || nj >= parCols) continue;   // off grid
+                GridPoint b = varGrid[ni][nj];
+                if (stubTips.contains(b)) continue;            // the tip of a stub: joining it would remove the stub
+                if (funFindLink(cur, b) != null) continue;     // already linked (the road cur is the end of)
+                if (d[0] != 0 && d[1] != 0 && funFindLink(varGrid[ni][cur.parYIndex], varGrid[cur.parXIndex][nj]) != null) continue;   // diagonal would cross
+                if (b.colLinks.isEmpty()) emptyNbrs.add(b);
+                else linkedNbrs.add(b);
             }
-            chosen = nbrs.get(idx);
+            // Join the network if possible; otherwise extend onto an empty neighbour; otherwise stop
+            boolean joining = !linkedNbrs.isEmpty();
+            List<GridPoint> nbrs = joining ? linkedNbrs : emptyNbrs;
+            if (nbrs.isEmpty()) break;   // nowhere left to go: stays a dead end
+            // Weighted pick (roulette wheel), as in connectIsolated and bridgeClusters
+            List<Double> weights = new ArrayList<>();
+            double total = 0;
+            for (GridPoint b : nbrs) {
+                double w = funJunctionsFactor(cur, b) * funAngleFactor(cur, b);
+                weights.add(w);
+                total += w;
+            }
+            GridPoint chosen;
+            if (total <= 0) chosen = randomFrom(nbrs);   // every weight is zero: fall back to an unweighted choice
+            else {
+                double r = uniform(0, total);
+                int idx = 0;
+                while (idx < nbrs.size() - 1 && r >= weights.get(idx)) {
+                    r -= weights.get(idx);
+                    idx++;
+                }
+                chosen = nbrs.get(idx);
+            }
+            funAddLink(cur, chosen);
+            if (joining) {
+                deadEndsJoined++;
+                break;   // joined the network: done with this road end
+            }
+            extensionLinks++;
+            cur = chosen;   // extended onto an empty node, which is now the road's end
         }
-        funAddLink(p, chosen);
-        deadEndsJoined++;
     }
-    traceln("Dead ends joined: " + deadEndsJoined);   // TEST
+    traceln("Dead ends joined: " + deadEndsJoined + ", extension links added: " + extensionLinks);   // TEST
 
     // Step 2: prune stubs until the dead-end ratio is met
     int pruned = 0;
