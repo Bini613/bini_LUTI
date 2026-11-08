@@ -13,4 +13,5 @@ if (funInvest()) {
 }
 
 funPrintFinalReports("density equilibrium, no further investment");
+varShowGraphics = true;   // show the final graphics only
 finishSimulation();
