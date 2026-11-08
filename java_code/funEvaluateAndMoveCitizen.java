@@ -7,6 +7,7 @@
 // Candidates: every node within parRelocationRange (metres) of the current home, including home; if home is the only one found,
 // the range is widened one grid step at a time until somewhere to move appears. Excluded: nodes at the land floor
 // (varAvailableLand <= parMinAvailableLand) and isolated nodes (no links). An unreachable activity stops the run with an error, as this should never be the case.
+// If more nodes qualify than parNumberOfCandidates allows, home plus parNumberOfCandidates - 1 others drawn at random are evaluated.
 // Occupied nodes are allowed: any number of citizens and activities may share a node (crowding is priced through rent and privacy).
 //
 // Utility of candidate k (all terms in rand per month, negative = bad):
@@ -37,87 +38,92 @@ int nAct = activities.size();
 boolean useCost = parTravelCostPerMetre != 0;
 boolean usePriv = c.parVOP != 0;
 
-// Search for candidates within searchRange of home. If home is the only candidate found, widen the range by one grid step
-// and search again, so that moving is always an option (stops once the whole grid has been searched).
-// Each wider pass only checks the new ring of nodes (beyond the previous range): nodes inside it were already checked,
-// and the candidates found there are kept.
+if (parNumberOfCandidates < 2) error("funEvaluateAndMoveCitizen: parNumberOfCandidates must be at least 2 (home plus one other node)");
+
+// Step 1: gather the eligible nodes other than home within searchRange of home (cheap checks only, nothing evaluated yet).
+// If none is found, widen the range by one grid step and search again, so that moving is always an option
+// (stops once the whole grid has been searched). Each wider pass only checks the new ring of nodes (beyond the previous range).
 double searchRange = parRelocationRange / parStepLength;   // starting search range, in grid steps (all distances in this loop are in grid steps)
 double checkedRange = -1;                  // nodes at or within this distance (grid steps) have already been checked (-1: none yet)
-GridPoint[] cand = new GridPoint[0];
-double[] V = new double[0];
-// Per candidate values, kept to store the chosen one's on the citizen (plain arrays, grown with V: no new array per candidate).
-// The sub-utilities are not kept: each is just the value times -VOM / -VOT / -VOP, so they are recomputed for the chosen one only.
-double[] candRent = new double[0];
-double[] candTravelCost = new double[0];
-double[] candTravelTime = new double[0];
-double[] candPriv = new double[0];
-int nCand = 0;
-double maxV = Double.NEGATIVE_INFINITY;
+ArrayList<GridPoint> pool = new ArrayList<>();   // eligible nodes other than home
 while (true) {
     int reach = (int) floor(searchRange);   // range in whole grid steps: only this square around home is checked
-    int maxCand = (2 * reach + 1) * (2 * reach + 1);
-    if (cand.length < maxCand) {   // make room for the wider search, keeping the candidates found so far
-        cand = Arrays.copyOf(cand, maxCand); //keep everything in cand, but extend the array to the new size maxCand. One first run, goes from 0 slots to maxCand starting size. Every pass thereafter, extends by how much maxCand grows when you extend reach at the bottom of the last pass.
-        V = Arrays.copyOf(V, maxCand);
-        candRent = Arrays.copyOf(candRent, maxCand);
-        candTravelCost = Arrays.copyOf(candTravelCost, maxCand);
-        candTravelTime = Arrays.copyOf(candTravelTime, maxCand);
-        candPriv = Arrays.copyOf(candPriv, maxCand);
-    }
-
     for (int x = max(0, home.parXIndex - reach); x <= min(parCols - 1, home.parXIndex + reach); x++) {
         for (int y = max(0, home.parYIndex - reach); y <= min(parCols - 1, home.parYIndex + reach); y++) {
             int dx = x - home.parXIndex, dy = y - home.parYIndex;
-            double d = sqrt(dx * dx + dy * dy);   // distance from home in grid steps (dx * dx is much cheaper than pow(dx, 2))
-            if (d > searchRange) continue;   // corners of the square lie outside the search circle. When d is equal, node will be checked, hence 'or equal' can be condition below.
+            double d = sqrt(dx * dx + dy * dy);   // distance from home in grid steps
+            if (d > searchRange) continue;   // corners of the square lie outside the search circle
             if (d <= checkedRange) continue; // already checked on an earlier pass
             GridPoint k = varGrid[x][y];
-            if (k.colLinks.isEmpty()) continue;   // isolated node (no links): can't live there
-            boolean isHome = (k == home);
-            if (!isHome && k.varAvailableLand <= parMinAvailableLand) continue;     // no land left to live on
-
-            // Travel: weighted sums over all activities of time and (if used) distance from k
-            int idx = x * parCols + y; //index in stacked column format
-            double sumWeightedTime = 0, sumWeightedDist = 0;
-            for (int a = 0; a < nAct; a++) {
-                double t = varAccessTimes[a][idx];
-                if (t == Double.POSITIVE_INFINITY) { error("An activity is unreachable, grid repair must have failed."); }   // no route to activity a
-                sumWeightedTime += c.varActivityWeights[a] * t;
-                if (useCost) sumWeightedDist += c.varActivityWeights[a] * varAccessDistances[a][idx];
-            }
-
-            // Sub-utilities
-            double density = funComputeDensity(k, home, /* ownWeight = */ 1);   // excluding c itself, hence ownWeight = 1
-            double rent = funComputeRent(density);                                              // rand per month
-            double travelCost = useCost ? parTripsPerMonth * parTravelCostPerMetre * sumWeightedDist : 0;   // rand per month
-            double travelTime = parTripsPerMonth * sumWeightedTime;                             // minutes per month
-            double priv = usePriv ? parRentRef * density / parDensityRef : 0;                    // rand per month at VOP = 1 (equals parRentRef at the reference density)
-            double uRent = -c.parVOM * rent;
-            double uTravelCost = -c.parVOM * travelCost;
-            double uTravelTime = -c.parVOT * travelTime;
-            double uPriv = usePriv ? -c.parVOP * priv : 0;
-            double uMove = isHome ? 0 : -c.parVOM * parRelocationAmortizedCost;
-
-            cand[nCand] = k; //gridPoint of candidate added to array of candidate locations
-            V[nCand] = uRent + uTravelCost + uTravelTime + uPriv + uMove; //utility of candidate added to array of candidate utilities
-            candRent[nCand] = rent;
-            candTravelCost[nCand] = travelCost;
-            candTravelTime[nCand] = travelTime;
-            candPriv[nCand] = priv;
-            maxV = max(maxV, V[nCand]); //keep track of highest utility so far (expected to be least negative)
-            nCand++;
-
-            if (c == citizens.get(0) && isHome) funTestPrint("Citizen 0 home (" + x + "," + y + ") utility terms: rent " + roundToDecimal(uRent, 0) + ", travel cost " + roundToDecimal(uTravelCost, 0)
-                    + ", travel time " + roundToDecimal(uTravelTime, 0) + ", privacy " + roundToDecimal(uPriv, 0) + ", total " + roundToDecimal(V[nCand - 1], 0));   // TEST. nCand - 1 because we already incremented nCand, but are still talking about he one in this iteration.
+            if (k == home) continue;                                   // home is always a candidate, added separately below
+            if (k.colLinks.isEmpty()) continue;                        // isolated node (no links): can't live there
+            if (k.varAvailableLand <= parMinAvailableLand) continue;   // no land left to live on
+            pool.add(k);
         }
     }
-    if (nCand > 1) break;              // at least one place to move to: done searching
+    if (!pool.isEmpty()) break;        // at least one place to move to: done searching
     double farthestCorner = sqrt(pow(max(home.parXIndex, parCols - 1 - home.parXIndex), 2) + pow(max(home.parYIndex, parCols - 1 - home.parYIndex), 2));   // grid steps
     if (searchRange >= farthestCorner) break;   // the search circle already covers the whole grid: nowhere else to go, so home is the only option
     checkedRange = searchRange;        // everything within the current range has now been checked
-    searchRange += 1;                  // only home found: widen the search by one grid step and try again
+    searchRange += 1;                  // nothing found: widen the search by one grid step and try again
 }
-if (nCand == 0) return false;   // safety: nothing valid (should never happen, since home is always a candidate), so stay
+
+// Step 2: if there are more eligible nodes than allowed, draw parNumberOfCandidates - 1 of them at random (home takes the last place).
+// Partial shuffle: each of the first m places swaps with a random place at or after it, so the first m nodes are a random draw without repeats.
+int m = min(pool.size(), parNumberOfCandidates - 1);
+if (pool.size() > m) {
+    for (int i = 0; i < m; i++) Collections.swap(pool, i, uniform_discr(i, pool.size() - 1));
+}
+
+// Step 3: evaluate the candidates: home (index 0) plus the m drawn nodes
+int nCand = m + 1;
+GridPoint[] cand = new GridPoint[nCand];
+cand[0] = home;
+for (int i = 0; i < m; i++) cand[i + 1] = pool.get(i);
+double[] V = new double[nCand];
+// Per candidate values, kept to store the chosen one's on the citizen.
+// The sub-utilities are not kept: each is just the value times -VOM / -VOT / -VOP, so they are recomputed for the chosen one only.
+double[] candRent = new double[nCand];
+double[] candTravelCost = new double[nCand];
+double[] candTravelTime = new double[nCand];
+double[] candPriv = new double[nCand];
+double maxV = Double.NEGATIVE_INFINITY;
+for (int i = 0; i < nCand; i++) {
+    GridPoint k = cand[i];
+    boolean isHome = (i == 0);
+
+    // Travel: weighted sums over all activities of time and (if used) distance from k
+    int idx = k.parIndex;
+    double sumWeightedTime = 0, sumWeightedDist = 0;
+    for (int a = 0; a < nAct; a++) {
+        double t = varAccessTimes[a][idx];
+        if (t == Double.POSITIVE_INFINITY) { error("An activity is unreachable, grid repair must have failed."); }   // no route to activity a
+        sumWeightedTime += c.varActivityWeights[a] * t;
+        if (useCost) sumWeightedDist += c.varActivityWeights[a] * varAccessDistances[a][idx];
+    }
+
+    // Sub-utilities
+    double density = funComputeDensity(k, home, /* ownWeight = */ 1);   // excluding c itself, hence ownWeight = 1
+    double rent = funComputeRent(density);                                              // rand per month
+    double travelCost = useCost ? parTripsPerMonth * parTravelCostPerMetre * sumWeightedDist : 0;   // rand per month
+    double travelTime = parTripsPerMonth * sumWeightedTime;                             // minutes per month
+    double priv = usePriv ? parRentRef * density / parDensityRef : 0;                    // rand per month at VOP = 1 (equals parRentRef at the reference density)
+    double uRent = -c.parVOM * rent;
+    double uTravelCost = -c.parVOM * travelCost;
+    double uTravelTime = -c.parVOT * travelTime;
+    double uPriv = usePriv ? -c.parVOP * priv : 0;
+    double uMove = isHome ? 0 : -c.parVOM * parRelocationAmortizedCost;
+
+    V[i] = uRent + uTravelCost + uTravelTime + uPriv + uMove;
+    candRent[i] = rent;
+    candTravelCost[i] = travelCost;
+    candTravelTime[i] = travelTime;
+    candPriv[i] = priv;
+    maxV = max(maxV, V[i]); //keep track of highest utility so far (expected to be least negative)
+
+    if (c == citizens.get(0) && isHome) funTestPrint("Citizen 0 home (" + k.parXIndex + "," + k.parYIndex + ") utility terms: rent " + roundToDecimal(uRent, 0) + ", travel cost " + roundToDecimal(uTravelCost, 0)
+            + ", travel time " + roundToDecimal(uTravelTime, 0) + ", privacy " + roundToDecimal(uPriv, 0) + ", total " + roundToDecimal(V[i], 0));   // TEST
+}
 
 // MNL: weights exp(mu * (V - maxV)), then a weighted random pick
 double[] e = new double[nCand];
