@@ -65,4 +65,11 @@ for (Link l : links) {
 boolean converged = pass <= parAssignMaxIterations;
 funTestPrint("Assignment (" + (warm ? "warm start, n from " + nStart : "cold start") + ") " + (converged ? "converged" : "NOT converged") + " after " + min(pass, parAssignMaxIterations) + " passes, gap: " + String.format("%.2e", gap)
         + ", busiest link V/C " + roundToDecimal(varMaxVCRatio, 2) + ", congested/free-flow time: " + roundToDecimal(sumT / sumT0, 3));   // TEST
+// Runtime check: report every assignment that hit the iteration ceiling (parAssignMaxIterations) without reaching parAssignGapTolerance.
+// Should be rare; frequent reports mean the tolerance is too tight, the ceiling too low, or assignments come too often / after too big a change.
+if (!converged) {
+    varAssignCapHits++;   // Main variable (int, initial 0): running count of capped assignments
+    funRuntimePrint("Assignment hit the iteration ceiling (" + parAssignMaxIterations + " passes), gap " + String.format("%.2f", gap * 100) + "%"
+            + " (tolerance " + String.format("%.2f", parAssignGapTolerance * 100) + "%). Capped assignments so far: " + varAssignCapHits + ", turn " + varTurnCount);
+}
 return gap;
