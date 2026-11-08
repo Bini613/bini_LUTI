@@ -210,12 +210,14 @@ Runnable bridgeClusters = () -> {
     traceln("Bridging links added: " + bridgesAdded);   // TEST
 };
 
-// Prune dead-end stubs at random until dead-end links / all links is no more than parDeadEndMaxRatio.
-// Only stubs are pruned: dead-end links whose other end is a junction (3+ links). Removing one never creates
-// a new dead end (the junction keeps 2+ links), so roads aren't eaten back link by link.
-// Stops early if no stubs are left, even if the ratio is still above the target.
-// Removing a stub leaves its dead-end node with no links (isolated).
-Runnable pruneDeadEnds = () -> {
+// Smooth dead ends, in two steps:
+// 1. Prune dead-end stubs at random until dead-end links / all links is no more than parDeadEndMaxRatio.
+//    Only stubs are pruned: dead-end links whose other end is a junction (3+ links). Removing one never creates
+//    a new dead end (the junction keeps 2+ links), so roads aren't eaten back link by link.
+//    Stops early if no stubs are left, even if the ratio is still above the target.
+//    Removing a stub leaves its dead-end node with no links (isolated).
+// 2. Join each remaining dead end (the end of a road) to a neighbour that already has links.
+Runnable smoothDeadEnds = () -> {
     int pruned = 0;
     while (true) {
         // Recount every time, since each removal changes link counts
@@ -236,7 +238,55 @@ Runnable pruneDeadEnds = () -> {
         remove_links(l);
         pruned++;
     }
-    traceln("Dead-end links pruned: " + pruned);   // TEST
+    traceln("Dead-end stubs pruned: " + pruned);   // TEST
+
+    // Step 2: join each remaining dead end to a neighbour that already has links, picked at random weighted by
+    // the junction and angle factors. Neighbours with no links are skipped, since linking to one would only move
+    // the dead end one step along. Dead ends are visited in random order, so there's no spatial bias.
+    int[][] allDirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
+    List<GridPoint> deadEndNodes = new ArrayList<>();
+    for (GridPoint g : gridPoints) {
+        if (g.colLinks.size() == 1) deadEndNodes.add(g);
+    }
+    Collections.shuffle(deadEndNodes, getDefaultRandomGenerator());
+    int deadEndsJoined = 0;
+    for (GridPoint p : deadEndNodes) {
+        if (p.colLinks.size() != 1) continue;   // no longer a dead end: another dead end joined onto it earlier in this loop
+        List<GridPoint> nbrs = new ArrayList<>();
+        for (int[] d : allDirs) {
+            int ni = p.parXIndex + d[0];
+            int nj = p.parYIndex + d[1];
+            if (ni < 0 || ni >= parCols || nj < 0 || nj >= parCols) continue;   // off grid
+            GridPoint b = varGrid[ni][nj];
+            if (b.colLinks.isEmpty()) continue;            // no links: would only move the dead end
+            if (funFindLink(p, b) != null) continue;       // already linked (the road p is the end of)
+            if (d[0] != 0 && d[1] != 0 && funFindLink(varGrid[ni][p.parYIndex], varGrid[p.parXIndex][nj]) != null) continue;   // diagonal would cross
+            nbrs.add(b);
+        }
+        if (nbrs.isEmpty()) continue;   // nothing suitable nearby: stays a dead end
+        // Weighted pick (roulette wheel), as in connectIsolated and bridgeClusters
+        List<Double> weights = new ArrayList<>();
+        double total = 0;
+        for (GridPoint b : nbrs) {
+            double w = funJunctionsFactor(p, b) * funAngleFactor(p, b);
+            weights.add(w);
+            total += w;
+        }
+        GridPoint chosen;
+        if (total <= 0) chosen = randomFrom(nbrs);   // every weight is zero: fall back to an unweighted choice
+        else {
+            double r = uniform(0, total);
+            int idx = 0;
+            while (idx < nbrs.size() - 1 && r >= weights.get(idx)) {
+                r -= weights.get(idx);
+                idx++;
+            }
+            chosen = nbrs.get(idx);
+        }
+        funAddLink(p, chosen);
+        deadEndsJoined++;
+    }
+    traceln("Dead ends joined: " + deadEndsJoined);   // TEST
 };
 
 // Run the repair stages (comment a line out to switch that stage off)
@@ -244,8 +294,8 @@ Runnable pruneDeadEnds = () -> {
 //traceln("Links after isolated-node fix: " + links.size());   // TEST
 bridgeClusters.run();
 traceln("Links after bridging: " + links.size());   // TEST
-pruneDeadEnds.run();
-traceln("Links after pruning: " + links.size());   // TEST
+smoothDeadEnds.run();
+traceln("Links after smoothing dead ends: " + links.size());   // TEST
 
 // TEST: count grid squares that have both diagonals (should be 0)
 int crossings = 0;
