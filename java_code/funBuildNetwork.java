@@ -211,47 +211,26 @@ Runnable bridgeClusters = () -> {
 };
 
 // Smooth dead ends, in two steps:
-// 1. Prune dead-end stubs at random until dead-end links / all links is no more than parDeadEndMaxRatio.
-//    Only stubs are pruned: dead-end links whose other end is a junction (3+ links). Removing one never creates
-//    a new dead end (the junction keeps 2+ links), so roads aren't eaten back link by link.
+// 1. Join each dead end that is the end of a road (not a stub) to a neighbour that already has links.
+//    Stubs (dead-end links whose other end is a junction, 3+ links) are left alone, from either side.
+// 2. Prune stubs at random until dead-end links / all links is no more than parDeadEndMaxRatio.
+//    Done after joining, so the ratio isn't inflated by road ends that joining would have removed.
+//    Removing a stub never creates a new dead end (the junction keeps 2+ links), so roads aren't eaten back.
 //    Stops early if no stubs are left, even if the ratio is still above the target.
 //    Removing a stub leaves its dead-end node with no links (isolated).
-// 2. Join each remaining dead end that is the end of a road (not a stub) to a neighbour that already has links.
-//    Stubs left after pruning stay as dead ends.
 Runnable smoothDeadEnds = () -> {
-    int pruned = 0;
-    while (true) {
-        // Recount every time, since each removal changes link counts
-        int deadEndCount = 0;
-        List<Link> stubs = new ArrayList<>();
-        for (Link l : links) {
-            int dA = l.parNodeA.colLinks.size();
-            int dB = l.parNodeB.colLinks.size();
-            if (dA == 1 || dB == 1) {
-                deadEndCount++;
-                if ((dA == 1 && dB >= 3) || (dB == 1 && dA >= 3)) stubs.add(l);
-            }
-        }
-        if (stubs.isEmpty() || (double) deadEndCount / links.size() <= parDeadEndMaxRatio) break;
-        Link l = randomFrom(stubs);
-        l.parNodeA.colLinks.remove(l);
-        l.parNodeB.colLinks.remove(l);
-        remove_links(l);
-        pruned++;
-    }
-    traceln("Dead-end stubs pruned: " + pruned);   // TEST
-
-    // Step 2: join each remaining dead end to a neighbour that already has links, picked at random weighted by
+    // Step 1: join each road end to a neighbour that already has links, picked at random weighted by
     // the junction and angle factors. Neighbours with no links are skipped, since linking to one would only move
     // the dead end one step along. Dead ends are visited in random order, so there's no spatial bias.
     int[][] allDirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
     List<GridPoint> deadEndNodes = new ArrayList<>();
+    Set<GridPoint> stubTips = new HashSet<>();   // dead-end nodes of stubs: never joined, from either side (step 2 decides which stubs stay)
     for (GridPoint g : gridPoints) {
         if (g.colLinks.size() != 1) continue;
         Link e = g.colLinks.get(0);
         GridPoint other = (e.parNodeA == g) ? e.parNodeB : e.parNodeA;
-        if (other.colLinks.size() >= 3) continue;   // a stub left after pruning: kept as a dead end
-        deadEndNodes.add(g);
+        if (other.colLinks.size() >= 3) stubTips.add(g);   // a stub: kept as a dead end
+        else deadEndNodes.add(g);
     }
     Collections.shuffle(deadEndNodes, getDefaultRandomGenerator());
     int deadEndsJoined = 0;
@@ -264,6 +243,7 @@ Runnable smoothDeadEnds = () -> {
             if (ni < 0 || ni >= parCols || nj < 0 || nj >= parCols) continue;   // off grid
             GridPoint b = varGrid[ni][nj];
             if (b.colLinks.isEmpty()) continue;            // no links: would only move the dead end
+            if (stubTips.contains(b)) continue;            // the tip of a stub: joining it would remove the stub
             if (funFindLink(p, b) != null) continue;       // already linked (the road p is the end of)
             if (d[0] != 0 && d[1] != 0 && funFindLink(varGrid[ni][p.parYIndex], varGrid[p.parXIndex][nj]) != null) continue;   // diagonal would cross
             nbrs.add(b);
@@ -292,6 +272,29 @@ Runnable smoothDeadEnds = () -> {
         deadEndsJoined++;
     }
     traceln("Dead ends joined: " + deadEndsJoined);   // TEST
+
+    // Step 2: prune stubs until the dead-end ratio is met
+    int pruned = 0;
+    while (true) {
+        // Recount every time, since each removal changes link counts
+        int deadEndCount = 0;
+        List<Link> stubs = new ArrayList<>();
+        for (Link l : links) {
+            int dA = l.parNodeA.colLinks.size();
+            int dB = l.parNodeB.colLinks.size();
+            if (dA == 1 || dB == 1) {
+                deadEndCount++;
+                if ((dA == 1 && dB >= 3) || (dB == 1 && dA >= 3)) stubs.add(l);
+            }
+        }
+        if (stubs.isEmpty() || (double) deadEndCount / links.size() <= parDeadEndMaxRatio) break;
+        Link l = randomFrom(stubs);
+        l.parNodeA.colLinks.remove(l);
+        l.parNodeB.colLinks.remove(l);
+        remove_links(l);
+        pruned++;
+    }
+    traceln("Dead-end stubs pruned: " + pruned);   // TEST
 };
 
 // Run the repair stages (comment a line out to switch that stage off)
