@@ -5,7 +5,7 @@
 java.util.function.ToDoubleFunction<GridPoint> oneEnd = n -> {
     int d = n.colLinks.size();
     if (d <= 1) return 1; //No penalty for an empty node or a dead end: extending a road onto an empty node is unpenalised
-    return parJunctionFormationBias * pow(d - 1, -parAdditionalJunctionDecay);
+    return min(1.0, parJunctionFormationBias * pow(d - 1, -parExraJunctionProbComp));
 };
 
 double factor = oneEnd.applyAsDouble(a) * oneEnd.applyAsDouble(b);
