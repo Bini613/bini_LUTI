@@ -6,14 +6,13 @@
 //   varNearbyLand[k] += dLand     * exp(-d / r)
 // d = straight-line distance between j and k in metres, r = parRentInfluenceDecayLength (metres), cutoff = parRentInfluenceDecayLength_CutOffMultiple * r.
 // The full build (funBuildDensitySurface) uses this same function, so the build and later updates always agree.
+// The weights exp(-d / r) are read from varDensityKernel (built by funBuildDensitySurface), indexed by the absolute grid offsets from j.
 
-double cutoff = parRentInfluenceDecayLength_CutOffMultiple * parRentInfluenceDecayLength;          // metres
-int reach = (int) ceil(cutoff / parStepLength);          // cutoff in whole grid steps: only this square around j is checked
+int reach = varDensityKernel.length - 1;   // cutoff in whole grid steps (size of the kernel table): only this square around j is checked
 for (int x = max(0, j.parXIndex - reach); x <= min(parCols - 1, j.parXIndex + reach); x++) {
     for (int y = max(0, j.parYIndex - reach); y <= min(parCols - 1, j.parYIndex + reach); y++) {
-        double d = sqrt(pow(x - j.parXIndex, 2) + pow(y - j.parYIndex, 2)) * parStepLength;
-        if (d > cutoff) continue;   // corners of the square lie outside the cutoff circle
-        double weight = exp(-d / parRentInfluenceDecayLength);
+        double weight = varDensityKernel[abs(x - j.parXIndex)][abs(y - j.parYIndex)];
+        if (weight == 0) continue;   // corners of the square lie outside the cutoff circle
         GridPoint k = varGrid[x][y];
         k.varCrowding += dCrowding * weight;
         k.varNearbyLand += dLand * weight;

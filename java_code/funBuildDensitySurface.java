@@ -7,6 +7,20 @@
 // Rent updates inside funUpdateNeighbourhoodDensity are paused during the build (varPauseRentUpdates), because each node's
 // nearby land is incomplete until every node has contributed: rents computed mid-build would be wasted work, and a node
 // with no nearby land yet would stop the run in funComputeDensity.
+// Also builds varDensityKernel (Main variable, double[][]), the distance-decay weights read by funUpdateNeighbourhoodDensity and
+// funComputeDensity: so this function must run (at startup) before either of those is used.
+
+// Density kernel: weight exp(-d / r) for every grid offset (dx, dy) within the cutoff, 0 beyond it.
+// Grid distances never change, so the weights are computed once here instead of on every density update or lookup.
+double cutoff = parRentInfluenceDecayLength_CutOffMultiple * parRentInfluenceDecayLength;   // metres
+int reach = (int) ceil(cutoff / parStepLength);   // cutoff in whole grid steps
+varDensityKernel = new double[reach + 1][reach + 1];   // indexed [|dx|][|dy|], the absolute grid offsets between two nodes
+for (int dx = 0; dx <= reach; dx++) {
+    for (int dy = 0; dy <= reach; dy++) {
+        double d = sqrt(dx * dx + dy * dy) * parStepLength;   // metres
+        varDensityKernel[dx][dy] = (d <= cutoff) ? exp(-d / parRentInfluenceDecayLength) : 0;   // 0 for the square's corners beyond the cutoff circle
+    }
+}
 
 double[] n = new double[parCols * parCols];   // crowding at each node, index k = parXIndex * parCols + parYIndex
 for (Citizen c : citizens) n[c.varHome.parXIndex * parCols + c.varHome.parYIndex] += 1;
