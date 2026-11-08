@@ -22,9 +22,9 @@ for (int dx = 0; dx <= reach; dx++) {
     }
 }
 
-double[] n = new double[parCols * parCols];   // crowding at each node, index k = parXIndex * parCols + parYIndex
-for (Citizen c : citizens) n[c.varHome.parXIndex * parCols + c.varHome.parYIndex] += 1;
-for (Activity a : activities) n[a.varLocation.parXIndex * parCols + a.varLocation.parYIndex] += parActivityCrowdingWeight; //Common universal weight as simplification in this model
+double[] n = new double[parCols * parCols];   // crowding at each node, index parIndex
+for (Citizen c : citizens) n[c.varHome.parIndex] += 1;
+for (Activity a : activities) n[a.varLocation.parIndex] += parActivityCrowdingWeight; //Common universal weight as simplification in this model
 //Empty nodes will just have n=0, which will affect densities in funUpdateNeighbourhoodDensity() as intended
 
 for (GridPoint g : gridPoints) { //reset crowding and nearbyland globally
@@ -34,7 +34,7 @@ for (GridPoint g : gridPoints) { //reset crowding and nearbyland globally
 
 varPauseRentUpdates = true;   // Main variable (boolean): rent updates off until the surface is complete
 for (GridPoint g : gridPoints) {
-    funUpdateNeighbourhoodDensity(g, n[g.parXIndex * parCols + g.parYIndex], g.varAvailableLand);// Both arguments are normally changes (dCrowding, dLand). Since this function first resets varCrowding and varNearbyLand to 0,
+    funUpdateNeighbourhoodDensity(g, n[g.parIndex], g.varAvailableLand);// Both arguments are normally changes (dCrowding, dLand). Since this function first resets varCrowding and varNearbyLand to 0,
 // the change at each node is from zero to its full value: its crowding n[k] and its available land varAvailableLand.
 }
 varPauseRentUpdates = false;
