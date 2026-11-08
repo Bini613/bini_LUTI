@@ -64,7 +64,8 @@ while (true) {
 
     for (int x = max(0, here.parXIndex - reach); x <= min(parCols - 1, here.parXIndex + reach); x++) {
         for (int y = max(0, here.parYIndex - reach); y <= min(parCols - 1, here.parYIndex + reach); y++) {
-            double d = sqrt(pow(x - here.parXIndex, 2) + pow(y - here.parYIndex, 2));   // distance from current location in grid steps
+            int dx = x - here.parXIndex, dy = y - here.parYIndex;
+            double d = sqrt(dx * dx + dy * dy);   // distance from current location in grid steps (dx * dx is much cheaper than pow(dx, 2))
             if (d > searchRange) continue;   // corners of the square lie outside the search circle
             if (d <= checkedRange) continue; // already checked on an earlier pass
             GridPoint k = varGrid[x][y];
@@ -74,7 +75,10 @@ while (true) {
 
             // Weighted average straight-line distance from k to citizens' homes (metres)
             double sumWD = 0;
-            for (int i = 0; i < nCit; i++) sumWD += w[i] * sqrt(pow(x - hx[i], 2) + pow(y - hy[i], 2));
+            for (int i = 0; i < nCit; i++) {
+                int cx = x - hx[i], cy = y - hy[i];
+                sumWD += w[i] * sqrt(cx * cx + cy * cy);
+            }
             double avgDist = sumWD / sumW * parStepLength;
 
             // Sub-utilities

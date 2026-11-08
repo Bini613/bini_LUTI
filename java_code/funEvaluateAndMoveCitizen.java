@@ -62,7 +62,8 @@ while (true) {
 
     for (int x = max(0, home.parXIndex - reach); x <= min(parCols - 1, home.parXIndex + reach); x++) {
         for (int y = max(0, home.parYIndex - reach); y <= min(parCols - 1, home.parYIndex + reach); y++) {
-            double d = sqrt(pow(x - home.parXIndex, 2) + pow(y - home.parYIndex, 2));   // distance from home in grid steps
+            int dx = x - home.parXIndex, dy = y - home.parYIndex;
+            double d = sqrt(dx * dx + dy * dy);   // distance from home in grid steps (dx * dx is much cheaper than pow(dx, 2))
             if (d > searchRange) continue;   // corners of the square lie outside the search circle. When d is equal, node will be checked, hence 'or equal' can be condition below.
             if (d <= checkedRange) continue; // already checked on an earlier pass
             GridPoint k = varGrid[x][y];
