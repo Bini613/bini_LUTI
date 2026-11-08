@@ -210,22 +210,15 @@ Runnable bridgeClusters = () -> {
     traceln("Bridging links added: " + bridgesAdded);   // TEST
 };
 
-// Smooth dead ends, in two steps:
-// 1. Join each dead end that is the end of a road (not a stub) to a neighbour that already has links.
-//    Stubs (dead-end links whose other end is a junction, 3+ links) are left alone, from either side.
-// 2. Prune stubs at random until dead-end links / all links is no more than parDeadEndMaxRatio.
-//    Done after joining, so the ratio isn't inflated by road ends that joining would have removed.
-//    Removing a stub never creates a new dead end (the junction keeps 2+ links), so roads aren't eaten back.
-//    Stops early if no stubs are left, even if the ratio is still above the target.
-//    Removing a stub leaves its dead-end node with no links (isolated).
-Runnable smoothDeadEnds = () -> {
-    // Step 1: join each road end to a neighbour that already has links, picked at random weighted by
-    // the junction and angle factors. If it has none, the road extends onto an empty neighbour (same weighting,
-    // so straight on is favoured) and tries again from there, until it joins the network or has nowhere left
-    // to go, in which case it stays a dead end. Dead ends are visited in random order, so there's no spatial bias.
+// Stitch dead ends: join each road end (a dead end that is not a stub) to a neighbour that already has links,
+// picked at random weighted by the junction and angle factors. If it has none, the road extends onto an empty
+// neighbour (same weighting, so straight on is favoured) and tries again from there, until it joins the network
+// or has nowhere left to go, in which case it stays a dead end. Dead ends are visited in random order, so there's
+// no spatial bias. Stubs (dead-end links whose other end is a junction, 3+ links) are left alone, from either side.
+Runnable stitchDeadEnds = () -> {
     int[][] allDirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
     List<GridPoint> deadEndNodes = new ArrayList<>();
-    Set<GridPoint> stubTips = new HashSet<>();   // dead-end nodes of stubs: never joined, from either side (step 2 decides which stubs stay)
+    Set<GridPoint> stubTips = new HashSet<>();   // dead-end nodes of stubs: never joined, from either side (pruning decides which stubs stay)
     for (GridPoint g : gridPoints) {
         if (g.colLinks.size() != 1) continue;
         Link e = g.colLinks.get(0);
@@ -288,8 +281,13 @@ Runnable smoothDeadEnds = () -> {
         }
     }
     traceln("Dead ends joined: " + deadEndsJoined + ", extension links added: " + extensionLinks);   // TEST
+};
 
-    // Step 2: prune stubs until the dead-end ratio is met
+// Prune stubs at random until dead-end links / all links is no more than parDeadEndMaxRatio.
+// Removing a stub never creates a new dead end (the junction keeps 2+ links), so roads aren't eaten back.
+// Stops early if no stubs are left, even if the ratio is still above the target.
+// Removing a stub leaves its dead-end node with no links (isolated).
+Runnable pruneStubs = () -> {
     int pruned = 0;
     while (true) {
         // Recount every time, since each removal changes link counts
@@ -318,7 +316,11 @@ Runnable smoothDeadEnds = () -> {
 //traceln("Links after isolated-node fix: " + links.size());   // TEST
 bridgeClusters.run();
 traceln("Links after bridging: " + links.size());   // TEST
-smoothDeadEnds.run();
+// Dead-end smoothing sandwich: stitch road ends, prune stubs, then stitch again.
+// Pruning can lower a junction to 2 links, turning its remaining stubs into ordinary road ends; the second stitch joins those.
+stitchDeadEnds.run();
+pruneStubs.run();
+stitchDeadEnds.run();
 traceln("Links after smoothing dead ends: " + links.size());   // TEST
 
 // TEST: count grid squares that have both diagonals (should be 0)
