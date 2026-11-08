@@ -45,9 +45,12 @@ double searchRange = parRelocationRange / parStepLength;   // starting search ra
 double checkedRange = -1;                  // nodes at or within this distance (grid steps) have already been checked (-1: none yet)
 GridPoint[] cand = new GridPoint[0];
 double[] V = new double[0];
-// Per candidate, kept to store the chosen one's on the citizen. Index i is the same term in both arrays:
-double[][] vals = new double[0][];    // {rent, travel cost, travel time, priv}
-double[][] subUtils = new double[0][];   // {uRent, uTravelCost, uTravelTime, uPriv}
+// Per candidate values, kept to store the chosen one's on the citizen (plain arrays, grown with V: no new array per candidate).
+// The sub-utilities are not kept: each is just the value times -VOM / -VOT / -VOP, so they are recomputed for the chosen one only.
+double[] candRent = new double[0];
+double[] candTravelCost = new double[0];
+double[] candTravelTime = new double[0];
+double[] candPriv = new double[0];
 int nCand = 0;
 double maxV = Double.NEGATIVE_INFINITY;
 while (true) {
@@ -56,8 +59,10 @@ while (true) {
     if (cand.length < maxCand) {   // make room for the wider search, keeping the candidates found so far
         cand = Arrays.copyOf(cand, maxCand); //keep everything in cand, but extend the array to the new size maxCand. One first run, goes from 0 slots to maxCand starting size. Every pass thereafter, extends by how much maxCand grows when you extend reach at the bottom of the last pass.
         V = Arrays.copyOf(V, maxCand);
-        vals = Arrays.copyOf(vals, maxCand);
-        subUtils = Arrays.copyOf(subUtils, maxCand);
+        candRent = Arrays.copyOf(candRent, maxCand);
+        candTravelCost = Arrays.copyOf(candTravelCost, maxCand);
+        candTravelTime = Arrays.copyOf(candTravelTime, maxCand);
+        candPriv = Arrays.copyOf(candPriv, maxCand);
     }
 
     for (int x = max(0, home.parXIndex - reach); x <= min(parCols - 1, home.parXIndex + reach); x++) {
@@ -95,8 +100,10 @@ while (true) {
 
             cand[nCand] = k; //gridPoint of candidate added to array of candidate locations
             V[nCand] = uRent + uTravelCost + uTravelTime + uPriv + uMove; //utility of candidate added to array of candidate utilities
-            vals[nCand] = new double[]{rent, travelCost, travelTime, priv};
-            subUtils[nCand] = new double[]{uRent, uTravelCost, uTravelTime, uPriv};
+            candRent[nCand] = rent;
+            candTravelCost[nCand] = travelCost;
+            candTravelTime[nCand] = travelTime;
+            candPriv[nCand] = priv;
             maxV = max(maxV, V[nCand]); //keep track of highest utility so far (expected to be least negative)
             nCand++;
 
@@ -127,14 +134,14 @@ while (pick < nCand - 1 && r >= e[pick]) {   // walk along the stacked weights u
 }
 
 // Store the chosen node's values and the expected welfare (logsum) on the citizen
-c.varRent = vals[pick][0];
-c.varTravelCost = vals[pick][1];
-c.varTravelTime = vals[pick][2];
-c.varPriv = vals[pick][3];
-c.varURent = subUtils[pick][0];
-c.varUTravelCost = subUtils[pick][1];
-c.varUTravelTime = subUtils[pick][2];
-c.varUPriv = subUtils[pick][3];
+c.varRent = candRent[pick];
+c.varTravelCost = candTravelCost[pick];
+c.varTravelTime = candTravelTime[pick];
+c.varPriv = candPriv[pick];
+c.varURent = -c.parVOM * c.varRent;                // same formulas as the sub-utilities in the candidate loop
+c.varUTravelCost = -c.parVOM * c.varTravelCost;    // 0 when cost is off (travelCost was 0)
+c.varUTravelTime = -c.parVOT * c.varTravelTime;
+c.varUPriv = usePriv ? -c.parVOP * c.varPriv : 0;
 c.varExpectedWelfare = maxV + log(total) / parLogitScale;   // total already has maxV factored out (see the MNL loop above)
 
 if (c == citizens.get(0)) funTestPrint("Citizen 0: " + nCand + " candidates, chose (" + cand[pick].parXIndex + "," + cand[pick].parYIndex + ")"

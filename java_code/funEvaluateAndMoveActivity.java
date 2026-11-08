@@ -36,7 +36,7 @@ for (Citizen c : citizens) {
 }
 // Compress to just the nodes with weight
 int nOcc = 0;
-for (double v : nodeW) if (v > 0) nOcc++;
+for (double nodeWeight : nodeW) if (nodeWeight > 0) nOcc++;
 int[] hx = new int[nOcc];
 int[] hy = new int[nOcc];
 double[] w = new double[nOcc];
@@ -56,9 +56,10 @@ double searchRange = parRelocationRange / parStepLength;   // starting search ra
 double checkedRange = -1;                                  // nodes at or within this distance (grid steps) have already been checked (-1: none yet)
 GridPoint[] cand = new GridPoint[0];
 double[] V = new double[0];
-// Per candidate, kept to store the chosen one's on the activity. Index i is the same term in both arrays:
-double[][] vals = new double[0][];       // {rent, average distance}
-double[][] subUtils = new double[0][];   // {uRent, uLoc}
+// Per candidate values, kept to store the chosen one's on the activity (plain arrays, grown with V: no new array per candidate).
+// The sub-utilities are not kept: each is just the value times -VOM / -VOL, so they are recomputed for the chosen one only.
+double[] candRent = new double[0];
+double[] candDist = new double[0];   // weighted average distance to citizens' homes (metres)
 int nCand = 0;
 double maxV = Double.NEGATIVE_INFINITY;
 while (true) {
@@ -67,8 +68,8 @@ while (true) {
     if (cand.length < maxCand) {   // make room for the wider search, keeping the candidates found so far
         cand = Arrays.copyOf(cand, maxCand);
         V = Arrays.copyOf(V, maxCand);
-        vals = Arrays.copyOf(vals, maxCand);
-        subUtils = Arrays.copyOf(subUtils, maxCand);
+        candRent = Arrays.copyOf(candRent, maxCand);
+        candDist = Arrays.copyOf(candDist, maxCand);
     }
 
     for (int x = max(0, here.parXIndex - reach); x <= min(parCols - 1, here.parXIndex + reach); x++) {
@@ -99,8 +100,8 @@ while (true) {
 
             cand[nCand] = k; //gridPoint of candidate added to array of candidate locations
             V[nCand] = uRent + uLoc + uMove;
-            vals[nCand] = new double[]{rent, avgDist};
-            subUtils[nCand] = new double[]{uRent, uLoc};
+            candRent[nCand] = rent;
+            candDist[nCand] = avgDist;
             maxV = max(maxV, V[nCand]);
             nCand++;
 
@@ -131,10 +132,10 @@ while (pick < nCand - 1 && r >= e[pick]) {   // walk along the stacked weights u
 }
 
 // Store the chosen node's values and the expected welfare (logsum) on the activity
-act.varRent = vals[pick][0];
-act.varLoc = vals[pick][1];
-act.varURent = subUtils[pick][0];
-act.varULoc = subUtils[pick][1];
+act.varRent = candRent[pick];
+act.varLoc = candDist[pick];
+act.varURent = -act.parVOM * act.varRent;   // same formulas as the sub-utilities in the candidate loop
+act.varULoc = -act.parVOL * act.varLoc;
 act.varExpectedWelfare = maxV + log(total) / parLogitScale;   // total already has maxV factored out (see the MNL loop above)
 
 if (act == activities.get(0)) funTestPrint("Activity 0: " + nCand + " candidates, chose (" + cand[pick].parXIndex + "," + cand[pick].parYIndex + ")"
