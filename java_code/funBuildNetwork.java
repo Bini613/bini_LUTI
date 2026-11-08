@@ -210,19 +210,27 @@ Runnable bridgeClusters = () -> {
     traceln("Bridging links added: " + bridgesAdded);   // TEST
 };
 
-// Prune dead-end links (links with a node of only one link at either end) at random,
-// until dead-end links / all links is no more than parDeadEndMaxRatio.
-// Removing a dead-end link leaves its dead-end node with no links (isolated).
+// Prune dead-end stubs at random until dead-end links / all links is no more than parDeadEndMaxRatio.
+// Only stubs are pruned: dead-end links whose other end is a junction (3+ links). Removing one never creates
+// a new dead end (the junction keeps 2+ links), so roads aren't eaten back link by link.
+// Stops early if no stubs are left, even if the ratio is still above the target.
+// Removing a stub leaves its dead-end node with no links (isolated).
 Runnable pruneDeadEnds = () -> {
     int pruned = 0;
     while (true) {
-        // Recount every time: removing a link can turn its other end into a new dead end
-        List<Link> deadEndLinks = new ArrayList<>();
+        // Recount every time, since each removal changes link counts
+        int deadEndCount = 0;
+        List<Link> stubs = new ArrayList<>();
         for (Link l : links) {
-            if (l.parNodeA.colLinks.size() == 1 || l.parNodeB.colLinks.size() == 1) deadEndLinks.add(l);
+            int dA = l.parNodeA.colLinks.size();
+            int dB = l.parNodeB.colLinks.size();
+            if (dA == 1 || dB == 1) {
+                deadEndCount++;
+                if ((dA == 1 && dB >= 3) || (dB == 1 && dA >= 3)) stubs.add(l);
+            }
         }
-        if (deadEndLinks.isEmpty() || (double) deadEndLinks.size() / links.size() <= parDeadEndMaxRatio) break;
-        Link l = randomFrom(deadEndLinks);
+        if (stubs.isEmpty() || (double) deadEndCount / links.size() <= parDeadEndMaxRatio) break;
+        Link l = randomFrom(stubs);
         l.parNodeA.colLinks.remove(l);
         l.parNodeB.colLinks.remove(l);
         remove_links(l);
