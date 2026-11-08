@@ -4,8 +4,11 @@
 // One end (node n), based on how many links n already has
 java.util.function.ToDoubleFunction<GridPoint> oneEnd = n -> {
     int d = n.colLinks.size();
-    if (d == 0) return parConnectToNakedNodeBias;   // new link would make n a dead end
-    return pow(parJunctionFormationBias, d - 1);   // 1 for d=1 (extending a road), then bias, bias^2, ...: falls with each extra link but never reaches 0
+    if (d <= 1) return 1; //No penalty for an empty node or a dead end: extending a road onto an empty node is unpenalised
+    return parJunctionFormationBias * pow(d - 1, -parAdditionalJunctionDecay);
 };
 
-return oneEnd.applyAsDouble(a) * oneEnd.applyAsDouble(b);
+double factor = oneEnd.applyAsDouble(a) * oneEnd.applyAsDouble(b);
+// New stub in the middle of nowhere: both ends empty. Penalised once, here, so it doesn't affect road extensions
+if (a.colLinks.isEmpty() && b.colLinks.isEmpty()) factor *= parNewStubProb;
+return factor;

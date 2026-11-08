@@ -39,7 +39,7 @@ while ((double) connectedNodes / gridPoints.size() < parInitialRoadBuildCoverage
         GridPoint b = pl[1];
         boolean diagonal = a.parXIndex != b.parXIndex && a.parYIndex != b.parYIndex;
         if (diagonal && funFindLink(varGrid[b.parXIndex][a.parYIndex], varGrid[a.parXIndex][b.parYIndex]) != null) continue;   // would cross the square's other diagonal: dropped for good
-        double prob = parLinkProb * funJunctionsFactor(a, b) * funAngleFactor(a, b);
+        double prob = parLinkBaseProb * funJunctionsFactor(a, b) * funAngleFactor(a, b);
         if (randomTrue(min(1.0, prob))) {
             if (a.colLinks.isEmpty()) connectedNodes++;
             if (b.colLinks.isEmpty()) connectedNodes++;
