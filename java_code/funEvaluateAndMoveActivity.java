@@ -26,18 +26,27 @@
 GridPoint here = act.varLocation;
 int ai = act.getIndex();   // this activity's index: matches the position of its weight in each citizen's varActivityWeights, so long as no agents are added or removed during simulation. Otherwise, different coding solution would be needed.
 
-// Citizens' homes and their weights for this activity, gathered once (reused for every candidate)
-int nCit = citizens.size();
-int[] hx = new int[nCit];
-int[] hy = new int[nCit];
-double[] w = new double[nCit];
+// Citizens' weights for this activity, summed per home node, gathered once (reused for every candidate).
+// Citizens sharing a node are the same distance from any candidate, so each candidate loops over occupied nodes instead of every citizen.
+double[] nodeW = new double[parCols * parCols];   // total weight per node, index parIndex
 double sumW = 0;
-for (int i = 0; i < nCit; i++) {
-    Citizen c = citizens.get(i);
-    hx[i] = c.varHome.parXIndex;
-    hy[i] = c.varHome.parYIndex;
-    w[i] = c.varActivityWeights[ai];
-    sumW += w[i];
+for (Citizen c : citizens) {
+    nodeW[c.varHome.parIndex] += c.varActivityWeights[ai];
+    sumW += c.varActivityWeights[ai];
+}
+// Compress to just the nodes with weight
+int nOcc = 0;
+for (double v : nodeW) if (v > 0) nOcc++;
+int[] hx = new int[nOcc];
+int[] hy = new int[nOcc];
+double[] w = new double[nOcc];
+int i0 = 0;
+for (GridPoint g : gridPoints) {
+    if (nodeW[g.parIndex] <= 0) continue;
+    hx[i0] = g.parXIndex;
+    hy[i0] = g.parYIndex;
+    w[i0] = nodeW[g.parIndex];
+    i0++;
 }
 if (sumW <= 0) error("funEvaluateAndMoveActivity: no citizen has any weight for activity " + ai);
 
@@ -75,7 +84,7 @@ while (true) {
 
             // Weighted average straight-line distance from k to citizens' homes (metres)
             double sumWD = 0;
-            for (int i = 0; i < nCit; i++) {
+            for (int i = 0; i < nOcc; i++) {
                 int cx = x - hx[i], cy = y - hy[i];
                 sumWD += w[i] * sqrt(cx * cx + cy * cy);
             }
