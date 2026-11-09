@@ -9,6 +9,74 @@
 //     (without re-assignment, an activity move makes its row of varAccessTimes / varAccessDistances point to its old location).
 //   - Investment is not handled here: it happens at density equilibrium, in funRunCheckpoint (event evCheckpoint).
 
+// INITIALISATION PHASE (runs before the main rounds; varTurnCount, varRounds and the density checks are not touched during it)
+// Real cities don't start with activities and citizens placed arbitrarily far apart. So first every activity takes one turn
+// (shuffled order) to move towards where the citizens are, then citizens take parInitialisationRounds full rounds
+// (reshuffled each round) to respond to the activities and to each other. This settles the arbitrary starting layout
+// before the main run, so the city doesn't swing back and forth like a released spring.
+//   - Activities' choice doesn't use travel times (only rent and straight-line distance to citizens), so traffic is not
+//     re-assigned between activity moves: one assignment after the last activity is enough. Activities always take their turn here
+//     (parProbActivityRelocationSkip is not applied).
+//   - Citizen moves re-assign traffic every parRelocationsPerAssignment moves, as in the main run.
+//   - The phase ends with one more assignment, then the main rounds start on the next turn.
+//   - The whole phase is skipped if varInitialising (Main variable, boolean) starts as false.
+// Uses Main variables varInitialising (boolean, initial true), varInitTurn (int, initial 0) and varInitQueue (ArrayList<Agent>, initial null).
+if (varInitialising) {
+    int nAct = activities.size();
+    int nCit = citizens.size();
+    if (varInitQueue == null) {   // first call: build the whole initialisation order (activities once, then citizens parInitialisationRounds times)
+        varInitQueue = new ArrayList<>();
+        ArrayList<Agent> actOrder = new ArrayList<>();
+        for (Activity a : activities) actOrder.add(a);
+        Collections.shuffle(actOrder, getDefaultRandomGenerator());
+        varInitQueue.addAll(actOrder);
+        for (int r = 0; r < parInitialisationRounds; r++) {
+            ArrayList<Agent> citOrder = new ArrayList<>();
+            for (Citizen c : citizens) citOrder.add(c);
+            Collections.shuffle(citOrder, getDefaultRandomGenerator());   // fresh order every round
+            varInitQueue.addAll(citOrder);
+        }
+        funRuntimePrint("Initialisation: " + nAct + " activity turns, then " + parInitialisationRounds + " citizen rounds (" + varInitQueue.size() + " turns)");
+    }
+
+    if (varInitTurn >= varInitQueue.size()) {   // everyone has had their initialisation turns: finish the phase
+        funAssignTraffic();
+        varAssignmentCount++;
+        varRelocationsSinceAssignment = 0;
+        varInitialising = false;
+        varInitQueue = null;   // no longer needed
+        funRuntimePrint("Initialisation finished: main rounds start now");
+        return;   // this turn is used for the final assignment
+    }
+
+    if (varInitTurn == nAct) {   // the last activity has just had its turn: update traffic once for all activity moves
+        funAssignTraffic();
+        varAssignmentCount++;
+        varRelocationsSinceAssignment = 0;
+        funRuntimePrint("Initialisation: all activities have had their turn; citizens now respond");
+    }
+    else if (varInitTurn > nAct && (varInitTurn - nAct) % nCit == 0) {   // a citizen round has just finished
+        funRuntimePrint("Initialisation: citizen round " + ((varInitTurn - nAct) / nCit) + " of " + parInitialisationRounds + " finished");
+    }
+
+    Agent initAgent = varInitQueue.get(varInitTurn);
+    varInitTurn++;
+    if (initAgent instanceof Activity) {
+        funEvaluateAndMoveActivity((Activity) initAgent);   // no re-assignment here (see above)
+        return;
+    }
+    if (funEvaluateAndMoveCitizen((Citizen) initAgent)) {   // moved: count it towards the next periodic assignment
+        varRelocationsSinceAssignment++;
+        if (varRelocationsSinceAssignment >= parRelocationsPerAssignment) {
+            funAssignTraffic();
+            varAssignmentCount++;
+            varRelocationsSinceAssignment = 0;
+        }
+    }
+    return;
+}
+
+// MAIN ROUNDS
 int queueSize = varRelocationQueue.size();
 int pos = varTurnCount % queueSize;   // this turn's place in the queue
 if (pos == 0 && varTurnCount > 0) {   // back at the start of the queue: a round has just finished

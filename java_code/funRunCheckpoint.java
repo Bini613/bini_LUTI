@@ -3,6 +3,7 @@
 //   - funInvest tries to invest. If it did, traffic is re-assigned on the upgraded network (so access times reflect it
 //     straight away) and the density history is cleared, so the next equilibrium is judged only on post-investment reports.
 //   - If nothing was invested (budget used up, nothing allowed, or placeholder), the run ends: final reports, then stop.
+if (varInitialising) return;   // initialisation phase (funSimulateNextTurn): no density history, investment or stopping yet.
 if (!funCheckDensityEquilibrium()) return;   // still settling
 
 if (funInvest()) {
