@@ -40,6 +40,17 @@ traceln("After upgrading that road to a freeway (impedance " + parImpedanceMin +
 // Looks for a node with exactly 2 arterial links (the arterial passing through) and exactly 2 local links,
 // preferring one where the two local links point in opposite directions (a local road crossing straight over the arterial).
 // Skips the node upgraded above, so its earlier upgrade doesn't affect this check.
+// Arterials are recognised from geometry, with the same rule as funInitImpedance (both ends on one of the four axes
+// through the centre node, links touching the centre excluded). Impedance can't be used: both road types get a random
+// spread, so no arterial has exactly parImpedanceArterial, and the two ranges can overlap.
+int ci = parCols / 2;
+int cj = parCols / 2;
+java.util.function.Predicate<Link> isArterial = l -> {
+    int xa = l.parNodeA.parXIndex - ci, ya = l.parNodeA.parYIndex - cj;
+    int xb = l.parNodeB.parXIndex - ci, yb = l.parNodeB.parYIndex - cj;
+    if ((xa == 0 && ya == 0) || (xb == 0 && yb == 0)) return false;   // touches the centre: kept local
+    return (ya == 0 && yb == 0) || (xa == 0 && xb == 0) || (xa == ya && xb == yb) || (xa == -ya && xb == -yb);
+};
 GridPoint junction = null;
 List<Link> jArterials = null, jLocals = null;
 for (GridPoint g : gridPoints) {
@@ -47,8 +58,8 @@ for (GridPoint g : gridPoints) {
     List<Link> art = new ArrayList<>();
     List<Link> loc = new ArrayList<>();
     for (Link l : g.colLinks) {
-        if (l.varImpedance == parImpedanceArterial) art.add(l);
-        else if (l.varImpedance > parImpedanceArterial) loc.add(l);
+        if (isArterial.test(l)) art.add(l);
+        else loc.add(l);
     }
     if (art.size() != 2 || loc.size() != 2) continue;
     GridPoint o1 = (loc.get(0).parNodeA == g) ? loc.get(0).parNodeB : loc.get(0).parNodeA;   // far end of each local link
