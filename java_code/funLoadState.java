@@ -40,7 +40,8 @@ try {
         switch (v[0]) {
             case "PARAM":
                 if (ignoredSet.contains(v[1])) break;
-                String now = String.valueOf(getParameter(v[1]));   // null if the parameter no longer exists
+                Object nowValue = getParameter(v[1]);   // null if the parameter no longer exists. Stored as Object first: passed straight into
+                String now = String.valueOf(nowValue);  // String.valueOf, Java would pick its char[] version and fail on numbers
                 String saved = v.length > 2 ? v[2] : "";
                 if (!saved.equals(now)) mismatches.add(v[1] + " (saved " + saved + ", now " + now + ")");
                 break;
