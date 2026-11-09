@@ -34,6 +34,7 @@ java.util.function.DoubleFunction<GridPoint> pickNearCentre = lambda -> {
 for (int k = 0; k < parNumActivities; k++) {
     GridPoint g = pickNearCentre.apply(parActivitiesInitialSpread);
     Activity a = add_activities(); //this method creates a new instance of an Activity agent
+    a.funBuildActivityPreferences();   // draws VOM and VOL (straight after creation, so the random draws happen in the same order as before)
     a.varLocation = g;
     g.colActivities.add(a);   // GridPoint collection (ArrayList of Activity): every activity at a node
     funPlaceIcon(a, g);   // icon near the node (display only)
@@ -43,6 +44,7 @@ for (int k = 0; k < parNumActivities; k++) {
 for (int k = 0; k < parNumCitizens; k++) {
     GridPoint g = pickNearCentre.apply(parCitizensInitialSpread);
     Citizen c = add_citizens();
+    c.funBuildCitizenPreferences();   // draws activity weights, VOT, VOM and VOP (needs all activities created first, as they are above)
     c.varHome = g;
     g.colResidents.add(c);   // GridPoint collection (ArrayList of Citizen): everyone living at a node
     funPlaceIcon(c, g);   // icon near the node (display only)

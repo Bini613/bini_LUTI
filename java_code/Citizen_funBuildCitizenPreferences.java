@@ -1,4 +1,4 @@
-// Function in Citizen. Just action (returns nothing). No arguments. Called from Citizen's On startup.
+// Function in Citizen. Just action (returns nothing). No arguments. Called by funPlaceAgents right after each citizen is created (not when a saved state is loaded).
 // Draws this citizen's preferences:
 //   varActivityWeights: one weight per activity (index a matches main.activities.get(a)), summing to 1.
 //   parVOT, parVOM: value of time and money, each drawn from its own lognormal distribution (always positive).
