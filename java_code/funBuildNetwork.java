@@ -21,6 +21,7 @@ for (int i = 0; i < parCols; i++) { //pan across the x axis starting from the le
         }
     }
 }
+
 // 2. Repeated passes until the share of nodes with at least one link reaches parInitialRoadBuildCoverage.
 //    Each pass shuffles the remaining candidates (so the order has no spatial bias) and rolls each one;
 //    rejected candidates get another chance next pass, when more roads exist for the factors to favour.
@@ -39,7 +40,7 @@ while ((double) connectedNodes / gridPoints.size() < parInitialRoadBuildCoverage
         GridPoint b = pl[1];
         boolean diagonal = a.parXIndex != b.parXIndex && a.parYIndex != b.parYIndex;
         if (diagonal && funFindLink(varGrid[b.parXIndex][a.parYIndex], varGrid[a.parXIndex][b.parYIndex]) != null) continue;   // would cross the square's other diagonal: dropped for good
-        double prob = funJunctionsFactor(a, b) * funAngleFactor(a, b);
+        double prob = parBaseLinkProb * funJunctionsFactor(a, b) * funAngleFactor(a, b);
         if (randomTrue(min(1.0, prob))) {
             if (a.colLinks.isEmpty()) connectedNodes++;
             if (b.colLinks.isEmpty()) connectedNodes++;
@@ -91,53 +92,6 @@ traceln("Diagonals removed for arterials: " + diagonalsRemoved);   // TEST
 
 // Repair stages, defined here as local functions (lambdas) and run at the bottom of this block.
 // Each is a Runnable: a block of code stored in a variable, executed by calling .run() on it.
-
-// Give every isolated node one link to a neighbour (diagonals that would cross an existing link are excluded).
-// The neighbour is picked at random, weighted by the same junction and angle factors as the random stage,
-// so links that the random stage would favour are favoured here too. One link is always added.
-Runnable connectIsolated = () -> {
-    int[][] allDirs = {{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
-    int isolatedLinksAdded = 0;
-    List<GridPoint> order = new ArrayList<>();
-    for (GridPoint g : gridPoints) order.add(g);   // copy the population into a plain list that can be shuffled
-    Collections.shuffle(order, getDefaultRandomGenerator());   // random order, so bias of early fixes on later fixes is spread throughout grid
-    for (GridPoint p : order) {
-        if (p.colLinks.isEmpty()) {
-            List<GridPoint> nbrs = new ArrayList<>();
-            for (int[] d : allDirs) { //this loop builds a list of nieghbours around the grindpoint in question, excluding neighbours for whom a new link would cross an existing link (applicable to diagonals)
-                int ni = p.parXIndex + d[0];
-                int nj = p.parYIndex + d[1];
-                if (ni < 0 || ni >= parCols || nj < 0 || nj >= parCols) continue;   // off grid
-                if (d[0] != 0 && d[1] != 0 && funFindLink(varGrid[ni][p.parYIndex], varGrid[p.parXIndex][nj]) != null) continue;   // diagonal would cross
-                nbrs.add(varGrid[ni][nj]);
-            }
-            // Weight each neighbour with the same factors as the random stage 
-            List<Double> weights = new ArrayList<>();
-            double total = 0;
-            for (GridPoint b : nbrs) {
-                double w = funJunctionsFactor(p, b) * funAngleFactor(p, b);
-                weights.add(w);
-                total += w;
-            }
-            GridPoint chosen;
-            if (total <= 0) chosen = randomFrom(nbrs);   // every weight is zero: fall back to an unweighted choice
-            else {
-                // Below is a weighted pick. We line up all the weights as bars of length in a line, and the following algorithm draws a random point r along that length, and then figures out the index of the neighbour whose weight bar r landed upon.
-                double r
-                    = uniform(0, total);
-                int idx = 0;
-                while (idx < nbrs.size() - 1 && r >= weights.get(idx)) {
-                    r -= weights.get(idx);
-                    idx++;
-                }
-                chosen = nbrs.get(idx);
-            }
-            funAddLink(p, chosen);
-            isolatedLinksAdded++;
-        }
-    }
-    traceln("Isolated-node links added: " + isolatedLinksAdded);   // TEST
-};
 
 // Join separate clusters into one network
 Runnable bridgeClusters = () -> {
@@ -313,8 +267,6 @@ Runnable pruneStubs = () -> {
 };
 
 // Run the repair stages (comment a line out to switch that stage off)
-//connectIsolated.run();
-//traceln("Links after isolated-node fix: " + links.size());   // TEST
 bridgeClusters.run();
 traceln("Links after bridging: " + links.size());   // TEST
 // Dead-end smoothing sandwich: stitch road ends, prune stubs, then stitch again.
