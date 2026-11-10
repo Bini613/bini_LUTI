@@ -39,7 +39,7 @@ while ((double) connectedNodes / gridPoints.size() < parInitialRoadBuildCoverage
         GridPoint b = pl[1];
         boolean diagonal = a.parXIndex != b.parXIndex && a.parYIndex != b.parYIndex;
         if (diagonal && funFindLink(varGrid[b.parXIndex][a.parYIndex], varGrid[a.parXIndex][b.parYIndex]) != null) continue;   // would cross the square's other diagonal: dropped for good
-        double prob = parLinkBaseProb * funJunctionsFactor(a, b) * funAngleFactor(a, b);
+        double prob = funJunctionsFactor(a, b) * funAngleFactor(a, b);
         if (randomTrue(min(1.0, prob))) {
             if (a.colLinks.isEmpty()) connectedNodes++;
             if (b.colLinks.isEmpty()) connectedNodes++;
@@ -111,7 +111,7 @@ Runnable connectIsolated = () -> {
                 if (d[0] != 0 && d[1] != 0 && funFindLink(varGrid[ni][p.parYIndex], varGrid[p.parXIndex][nj]) != null) continue;   // diagonal would cross
                 nbrs.add(varGrid[ni][nj]);
             }
-            // Weight each neighbour with the same factors as the random stage (parLinkProb is left out: it's the same for every neighbour)
+            // Weight each neighbour with the same factors as the random stage 
             List<Double> weights = new ArrayList<>();
             double total = 0;
             for (GridPoint b : nbrs) {
