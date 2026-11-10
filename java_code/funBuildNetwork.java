@@ -266,6 +266,104 @@ Runnable pruneStubs = () -> {
     traceln("Dead-end stubs pruned: " + pruned);   // TEST
 };
 
+// Prune whole chains at random. A chain is a run of links joined end to end through nodes with exactly 2 links;
+// it ends at nodes with 1 link (dead end) or 3+ links (junction). Closed loops of 2-link nodes are chains too.
+// Each chain gets its length (grid steps) and the average distance of its link midpoints from the centre (grid steps).
+// It is then deleted unless it passes both rolls:
+//   stays with probability exp(-0.5 * (avgDist * parRadialRoadDispersion)^2)   (far from centre: less likely to stay)
+//   is cut with probability exp(-0.5 * (length / parChainCutLength)^2)        (short: more likely to be cut)
+// All chains are found and rolled first, then deleted, so deleting one doesn't change the others.
+// Chains containing an arterial link are never deleted. parChainCutLength = 0 switches the length roll off.
+Runnable pruneChains = () -> {
+    // Is link l part of an arterial? (same geometry as the arterial stage: centre row, column and the two diagonals,
+    // except the diagonal links touching the centre, which the arterial stage skips)
+    java.util.function.Predicate<Link> isArterial = l -> {
+        int ax = l.parNodeA.parXIndex - ci, ay = l.parNodeA.parYIndex - cj;
+        int bx = l.parNodeB.parXIndex - ci, by = l.parNodeB.parYIndex - cj;
+        if (ay == 0 && by == 0) return true;   // horizontal arterial
+        if (ax == 0 && bx == 0) return true;   // vertical arterial
+        boolean touchesCentre = (ax == 0 && ay == 0) || (bx == 0 && by == 0);
+        if (ax == ay && bx == by && !touchesCentre) return true;     // diagonal arterial
+        if (ax == -ay && bx == -by && !touchesCentre) return true;   // other diagonal arterial
+        return false;
+    };
+
+    // Walk a chain from node 'start' along link 'first', until reaching a node without exactly 2 links
+    // (or arriving back at 'start', for a closed loop). Returns the chain's links in order.
+    java.util.function.BiFunction<GridPoint, Link, List<Link>> walk = (start, first) -> {
+        List<Link> chain = new ArrayList<>();
+        GridPoint cur = start;
+        Link e = first;
+        while (true) {
+            chain.add(e);
+            GridPoint nxt = (e.parNodeA == cur) ? e.parNodeB : e.parNodeA;
+            if (nxt.colLinks.size() != 2 || nxt == start) break;   // reached a chain end (or closed the loop)
+            e = (nxt.colLinks.get(0) == e) ? nxt.colLinks.get(1) : nxt.colLinks.get(0);   // the link out the other side
+            cur = nxt;
+        }
+        return chain;
+    };
+
+    // 1. Find every chain once
+    List<List<Link>> chains = new ArrayList<>();
+    Set<Link> seen = new HashSet<>();
+    for (GridPoint g : gridPoints) {   // open chains: start from each chain end, along each of its links
+        if (g.colLinks.size() == 2) continue;
+        for (Link first : g.colLinks) {
+            if (seen.contains(first)) continue;   // already walked from the chain's other end
+            List<Link> chain = walk.apply(g, first);
+            seen.addAll(chain);
+            chains.add(chain);
+        }
+    }
+    for (Link first : links) {   // closed loops: whatever links are left over
+        if (seen.contains(first)) continue;
+        List<Link> chain = walk.apply(first.parNodeA, first);
+        seen.addAll(chain);
+        chains.add(chain);
+    }
+
+    // 2. Measure and roll each chain
+    List<List<Link>> toDelete = new ArrayList<>();
+    int arterialChains = 0;
+    for (List<Link> chain : chains) {
+        boolean arterial = false;
+        double length = 0;    // grid steps (a diagonal link is about 1.41)
+        double distSum = 0;   // sum of link midpoint distances from the centre, grid steps
+        for (Link l : chain) {
+            if (isArterial.test(l)) arterial = true;
+            int dx = l.parNodeB.parXIndex - l.parNodeA.parXIndex;
+            int dy = l.parNodeB.parYIndex - l.parNodeA.parYIndex;
+            length += sqrt(dx * dx + dy * dy);   // 1 for straight links, 1.41 for diagonals
+            double mx = (l.parNodeA.parXIndex + l.parNodeB.parXIndex) / 2.0 - ci;
+            double my = (l.parNodeA.parYIndex + l.parNodeB.parYIndex) / 2.0 - cj;
+            distSum += sqrt(mx * mx + my * my);
+        }
+        if (arterial) { arterialChains++; continue; }
+        double avgDist = distSum / length;
+        double zDist = avgDist * parRadialRoadDispersion;
+        double pDist = exp(-0.5 * zDist * zDist);
+        double pLen= 0;
+        if (parChainCutLength > 0) {
+            double zLen = length / parChainCutLength;
+            pLen = exp(-0.5 * zLen * zLen);
+        }
+        if (!randomTrue(pDist) || randomTrue(pLen)) toDelete.add(chain);
+    }
+
+    // 3. Delete the chosen chains (their nodes stay, possibly with no links)
+    int linksRemoved = 0;
+    for (List<Link> chain : toDelete) {
+        for (Link l : chain) {
+            l.parNodeA.colLinks.remove(l);
+            l.parNodeB.colLinks.remove(l);
+            remove_links(l);
+            linksRemoved++;
+        }
+    }
+    traceln("Chains: " + chains.size() + " (" + arterialChains + " on arterials, kept), deleted: " + toDelete.size() + ", links removed: " + linksRemoved);   // TEST
+};
+
 // Run the repair stages (comment a line out to switch that stage off)
 bridgeClusters.run();
 traceln("Links after bridging: " + links.size());   // TEST
@@ -275,6 +373,8 @@ stitchDeadEnds.run();
 pruneStubs.run();
 stitchDeadEnds.run();
 traceln("Links after smoothing dead ends: " + links.size());   // TEST
+pruneChains.run();
+traceln("Links after pruning chains: " + links.size());   // TEST
 
 // TEST: count grid squares that have both diagonals (should be 0)
 int crossings = 0;
