@@ -6,6 +6,6 @@
 //   if (!varReportPrinted) funPrintFinalReports("stopped manually");
 funRuntimePrint("Run ended at turn " + varTurnCount + " (round " + varRounds + "): " + reason);
 testPrintUtilityShares();
-testPrintDensity();
 testPrintVCRatio();
+testPrintDensity();
 varReportPrinted = true;   // Main boolean: stops On destroy printing the reports again
