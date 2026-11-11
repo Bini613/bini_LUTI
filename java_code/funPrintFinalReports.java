@@ -7,4 +7,5 @@
 funRuntimePrint("Run ended at turn " + varTurnCount + " (round " + varRounds + "): " + reason);
 testPrintUtilityShares();
 testPrintDensity();
+testPrintVCRatio();
 varReportPrinted = true;   // Main boolean: stops On destroy printing the reports again
