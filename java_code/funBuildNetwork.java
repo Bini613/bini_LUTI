@@ -57,7 +57,7 @@ for (GridPoint g : gridPoints) {
     if (g.colLinks.isEmpty() && parRadialRoadDispersion > 0) {
         double dx = g.parXIndex - ci;
         double dy = g.parYIndex - cj;
-        double dist = max(0, sqrt(dx * dx + dy * dy));   
+        double dist = sqrt(dx * dx + dy * dy);   
         if (dist >= parThinningStartingNode) { // 0 up to parThinningStartingNode steps out, so no thinning there
             double exponent = - 0.5 * pow(parRadialRoadDispersion * (dist - parThinningStartingNode), 2);
             if (randomTrue(1 - exp(exponent))) continue;   // made inaccessible, so not added to accessible list below
