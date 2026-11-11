@@ -5,8 +5,8 @@
 //   3. Radial bell-curve thinning: decides which nodes roads may reach
 //   4. Potential links between the remaining (accessible) nodes
 //   5. Random passes: links grow out from the existing network (chains continue or branch)
-//   6. Test traces, then save to savedNetwork.txt
-// Dead ends are not resolved yet.
+//   6. Resolve dead ends
+//   7. Test traces, then save to savedNetwork.txt
 
 // 1. Grid
 varGrid = new GridPoint[parCols][parCols];
@@ -114,7 +114,93 @@ while (!remaining.isEmpty() && passes < parMaxRandomPasses) {
 traceln("Random stage: " + passes + " passes, coverage of accessible nodes " + (double) connectedNodes / accessible.size());   // TEST
 traceln("Links after random stage: " + links.size());   // TEST
 
-// 6. Tests
+// 6. Dead ends: choose some to resolve, then walk each chosen one towards the centre until it joins the network.
+// 6a. Each dead end's chain: walk back from the dead-end tip through 2-link nodes to the first node without exactly
+//     2 links (a junction, or the other tip of an isolated segment). Length in grid steps (diagonal = 1.41).
+List<GridPoint> tips = new ArrayList<>();
+List<Double> chainLengths = new ArrayList<>();
+for (GridPoint tip : gridPoints) {
+    if (tip.colLinks.size() != 1) continue; //Not a dead end
+    double len = 0;
+    GridPoint cur = tip;
+    Link e = tip.colLinks.get(0);
+    while (true) {
+        GridPoint nxt = (e.parNodeA == cur) ? e.parNodeB : e.parNodeA;
+        int dx = nxt.parXIndex - cur.parXIndex;
+        int dy = nxt.parYIndex - cur.parYIndex;
+        len += sqrt(dx * dx + dy * dy);
+        if (nxt.colLinks.size() != 2) break;   // reached the chain's other end
+        e = (nxt.colLinks.get(0) == e) ? nxt.colLinks.get(1) : nxt.colLinks.get(0);   // the link out the other side
+        cur = nxt;
+    }
+    tips.add(tip);
+    chainLengths.add(len);
+}
+int deadEndsBefore = tips.size();
+
+// 6b. Choose: probability scales linearly with chain length, from parEndStubResolveProb (shortest) to 1 (longest)
+List<GridPoint> chosen = new ArrayList<>();
+if (!tips.isEmpty()) {
+    double lMin = Collections.min(chainLengths);
+    double lMax = Collections.max(chainLengths);
+    for (int k = 0; k < tips.size(); k++) {
+        double frac = (lMax > lMin) ? (chainLengths.get(k) - lMin) / (lMax - lMin) : 1;   // all the same length: all count as longest
+        double pChoose = parEndStubResolveProb + (1 - parEndStubResolveProb) * frac;
+        if (randomTrue(pChoose)) chosen.add(tips.get(k));
+    }
+}
+Collections.shuffle(chosen, getDefaultRandomGenerator());   // resolve in random order, so there's no spatial bias
+
+// 6c. Resolve: from the tip, step to the neighbour closest to the centre, until reaching a node that already has links.
+//     Each step is deterministic: the closest-to-centre neighbour that is on the grid, accessible, not already linked
+//     to the current node, doesn't cross an existing diagonal, and is strictly closer to the centre than the current node
+//     (so the walk can't go round in circles). Joining its own chain is allowed. If no step qualifies, the walk stops
+//     and the road stays a dead end. The centre is on the arterials, so most walks join well before reaching it.
+List<int[]> allDirs = Arrays.asList(new int[][]{{1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}});   // a list so it can be shuffled
+int resolved = 0;
+int stuck = 0;
+int walkLinks = 0;
+for (GridPoint tip : chosen) {
+    if (tip.colLinks.size() != 1) continue;   // no longer a dead end: an earlier walk joined onto it
+    GridPoint cur = tip;
+    while (true) {
+        double curDist = sqrt(pow(cur.parXIndex - ci, 2) + pow(cur.parYIndex - cj, 2));
+        GridPoint best = null;
+        double bestDist = curDist;   // a step must get strictly closer than this
+        Collections.shuffle(allDirs, getDefaultRandomGenerator());   // random direction order every step, so ties have no directional bias
+        for (int[] d : allDirs) {
+            int ni = cur.parXIndex + d[0];
+            int nj = cur.parYIndex + d[1];
+            if (ni < 0 || ni >= parCols || nj < 0 || nj >= parCols) continue;   // off grid
+            GridPoint b = varGrid[ni][nj];
+            //if (!accessible.contains(b)) continue; // made inaccessible by radial thinning. Commented out by default since most tips only formed due to inaccessible neighbours.
+            if (funFindLink(cur, b) != null) continue;                            // the existing link itself
+            if (d[0] != 0 && d[1] != 0 && funFindLink(varGrid[ni][cur.parYIndex], varGrid[cur.parXIndex][nj]) != null) continue;   // diagonal would cross
+            double bDist = sqrt(pow(ni - ci, 2) + pow(nj - cj, 2));
+            if (bDist < bestDist) {
+                bestDist = bDist;
+                best = b;
+            }
+        }
+        if (best == null) { stuck++; break; }   // no step gets closer: stays a dead end
+        boolean joins = !best.colLinks.isEmpty();   // check before linking
+        funAddLink(cur, best);
+        walkLinks++;
+        if (joins) { resolved++; break; }   // reached the network (possibly its own chain): done
+        cur = best;                          // stepped onto an empty node: keep walking
+    }
+}
+traceln("Dead ends: " + deadEndsBefore + ", chosen: " + chosen.size() + ", resolved: " + resolved + ", stuck: " + stuck + ", links added: " + walkLinks);   // TEST
+
+// Count dead ends (1 link) and junctions (3+ links) after resolving
+int deadEnds = 0;
+int junctions = 0;
+for (GridPoint p : gridPoints) {
+    if (p.colLinks.size() == 1) deadEnds++;
+    else if (p.colLinks.size() >= 3) junctions++;
+}
+
+// 7. Tests
 // Count grid squares that have both diagonals (should be 0)
 int crossings = 0;
 for (int i = 0; i + 1 < parCols; i++) {
@@ -123,15 +209,7 @@ for (int i = 0; i + 1 < parCols; i++) {
     }
 }
 traceln("Crossing diagonals: " + crossings + " (should be 0)");   // TEST
-
-// Count dead ends (1 link) and junctions (3+ links)
-int deadEnds = 0;
-int junctions = 0;
-for (GridPoint p : gridPoints) {
-    if (p.colLinks.size() == 1) deadEnds++;
-    else if (p.colLinks.size() >= 3) junctions++;
-}
-traceln("Dead ends: " + deadEnds + ", junctions: " + junctions);   // TEST
+traceln("Dead ends left: " + deadEnds + ", junctions: " + junctions);   // TEST
 traceln("Avg links per node: " + 2.0 * links.size() / gridPoints.size());   // TEST (Average is calculated by taking out every node independently and counting its links, adding to total and dividing by nubmer of links. Every link contributes to the count of both nodes it touches, so each link counts twice towards the total)
 
 // Save the network to a text file in the model folder, so later runs can load it instead of rebuilding.
