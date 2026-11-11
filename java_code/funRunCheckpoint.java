@@ -1,4 +1,4 @@
-// Function in Main. Just action (returns nothing). No arguments. Called by the cyclic event evCheckpoint.
+// Function in Main. Just action (returns nothing). No arguments. Called by funSimulateNextTurn at appropriate intervals, and on start up when loading a saved state.
 // At each checkpoint: if density has not settled yet, nothing happens. Once it has (funCheckDensityEquilibrium):
 //   - The first equilibrium is saved to savedState.txt (funSaveState), if the road network was loaded from file
 //     (varNetworkLoaded) and this state hasn't been saved or loaded already (varStateSaved).

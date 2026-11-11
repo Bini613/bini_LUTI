@@ -17,15 +17,15 @@
 //     and the first checkpoint goes straight to investment (varAtLoadedEquilibrium = true), since the city is already settled.
 // Land, density, rent and traffic are rebuilt by the rest of On startup, as after funPlaceAgents.
 
-String[] ignored = {"parRoadUpgradeCost", "parInvestmentRate", "parShowTestOutput", "parShowRuntimeOutput", "parIconJitter",
-                    "parMaxRdPx", "parMinRdPx", "parRentColourScaleMultiple", "parMaxRounds", "parMinRounds",
-                    "parLoadSavedNetwork", "parLoadSavedState", "parRelocationInterval", "parParallelAssignment"};
-
 java.io.File f = new java.io.File("savedState.txt");
 if (!f.exists()) {
     traceln("No saved state found: placing agents as normal");
     return false;
 }
+
+String[] ignored = {"parRoadUpgradeCost", "parInvestmentRate", "parShowTestOutput", "parShowRuntimeOutput", "parIconJitter",
+                    "parMaxRdPx", "parMinRdPx", "parRentColourScaleMultiple", "parMaxRounds", "parMinRounds",
+                    "parLoadSavedNetwork", "parLoadSavedState", "parRelocationInterval", "parParallelAssignment"};
 
 // 1. Read and check the whole file before creating anything, so a bad or outdated file leaves the model untouched
 List<String[]> savedCitizens = new ArrayList<>();

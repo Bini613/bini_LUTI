@@ -7,7 +7,8 @@
 //   - Only actual moves count towards varRelocationsSinceAssignment (skips and stays change nothing).
 //   - Traffic is re-assigned when that count reaches parRelocationsPerAssignment, or straight after any activity move
 //     (without re-assignment, an activity move makes its row of varAccessTimes / varAccessDistances point to its old location).
-//   - Investment is not handled here: it happens at density equilibrium, in funRunCheckpoint (event evCheckpoint).
+//   - Checkpoints (funRunCheckpoint: equilibrium check, then invest or end the run) are called from here, by turn count
+//     (see MAIN ROUNDS below), replacing the old timed event evCheckpoint.
 
 // INITIALISATION PHASE (runs before the main rounds; varTurnCount, varRounds and the density checks are not touched during it)
 // Real cities don't start with activities and citizens placed arbitrarily far apart. So first every activity takes one turn
@@ -77,6 +78,19 @@ if (varInitialising) {
 }
 
 // MAIN ROUNDS
+// Checkpoint (equilibrium check, then invest or end the run), counted in main-round turns rather than model time, so it
+// falls after the same number of turns whatever the path (virgin or loaded) or event timing. The first one comes once
+// parMinRounds + 1 full rounds have passed, then every half round. It runs before this turn's queue position is worked out,
+// since a checkpoint may reset the turn counter and queue.
+int turnsPerRound = parNumCitizens + parNumActivities;
+int firstCheckpoint = parMinRounds * turnsPerRound;
+int checkpointEvery = turnsPerRound / 2;
+if (varTurnCount >= firstCheckpoint && (varTurnCount - firstCheckpoint) % checkpointEvery == 0) {
+    traceln("Checkpoint at turn " + varTurnCount + ", after " + (varTurnCount / turnsPerRound) + " full rounds");   // varRounds only goes up later in this call, so it isn't used here
+    funRunCheckpoint();
+    if (varReportPrinted) return;   // the checkpoint ended the run
+}
+
 int queueSize = varRelocationQueue.size();
 int pos = varTurnCount % queueSize;   // this turn's place in the queue
 if (pos == 0 && varTurnCount > 0) {   // back at the start of the queue: a round has just finished

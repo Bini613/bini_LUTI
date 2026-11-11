@@ -1,4 +1,4 @@
-// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint (cyclic event evCheckpoint).
+// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint.
 // Equilibrium check on average density over occupied nodes (nodes with at least one citizen or activity).
 // Every report's average is appended to colAverageDensity (Collection in Main: ArrayList of Double), a growing history.
 // The current average is compared with the mean of the previous parDensityEquilibriumWindow reports:
