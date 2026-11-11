@@ -24,13 +24,17 @@ int ci = parCols / 2; // truncates if parCols is odd; for even parCols, one step
 int cj = parCols / 2;
 int[][] axes = {{1,0}, {0,1}, {1,1}, {1,-1}};
 int arterialLinksAdded = 0;
+Set<GridPoint> arterialTips = new HashSet<>();   // the arterials' end nodes at the grid edge: never treated as dead ends
 for (int[] d : axes) {
     for (int s = -1; s <= 1; s += 2) {   // walk outwards from the centre, both ways
         int i = ci, j = cj;
         while (true) {
             int ni = i + s * d[0];
             int nj = j + s * d[1];
-            if (ni < 0 || ni >= parCols || nj < 0 || nj >= parCols) break; // reached edge
+            if (ni < 0 || ni >= parCols || nj < 0 || nj >= parCols) { // reached edge
+                arterialTips.add(varGrid[i][j]);
+                break;
+            }
             boolean centreDiagonal = (i == ci && j == cj) && d[0] != 0 && d[1] != 0;   // diagonal arterials skip their first step out of the centre, so the centre is a 4-way junction, not 8-way
             if (!centreDiagonal) {
                 funAddLink(varGrid[i][j], varGrid[ni][nj]);
@@ -121,6 +125,7 @@ List<GridPoint> tips = new ArrayList<>();
 List<Double> chainLengths = new ArrayList<>();
 for (GridPoint tip : gridPoints) {
     if (tip.colLinks.size() != 1) continue; //Not a dead end
+    if (arterialTips.contains(tip)) continue; // an arterial's end at the grid edge: not a dead end
     double len = 0;
     GridPoint cur = tip;
     Link e = tip.colLinks.get(0);
@@ -196,7 +201,7 @@ traceln("Dead ends: " + deadEndsBefore + ", chosen: " + chosen.size() + ", resol
 int deadEnds = 0;
 int junctions = 0;
 for (GridPoint p : gridPoints) {
-    if (p.colLinks.size() == 1) deadEnds++;
+    if (p.colLinks.size() == 1 && !arterialTips.contains(p)) deadEnds++;   // arterial tips aren't counted
     else if (p.colLinks.size() >= 3) junctions++;
 }
 
