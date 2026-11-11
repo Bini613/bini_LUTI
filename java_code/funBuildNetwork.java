@@ -44,7 +44,8 @@ for (int[] d : axes) {
 traceln("Arterial links added: " + arterialLinksAdded);   // TEST
 
 // 3. Radial bell-curve thinning: each node is made inaccessible with probability
-//    1 - exp(-0.5 * (dist * parRadialRoadDispersion)^2), dist = grid steps from the centre.
+//    1 - exp(-0.5 * ((dist - parThinningStartingNode) * parRadialRoadDispersion)^2), dist = grid steps from the centre.
+//    Nodes within parThinningStartingNode steps of the centre are never thinned (probability 0).
 //    Arterial nodes (already linked) always stay accessible, so branches can start anywhere along them.
 //    parRadialRoadDispersion = 0 keeps every node.
 Set<GridPoint> accessible = new HashSet<>();
@@ -52,8 +53,11 @@ for (GridPoint g : gridPoints) {
     if (g.colLinks.isEmpty() && parRadialRoadDispersion > 0) {
         double dx = g.parXIndex - ci;
         double dy = g.parYIndex - cj;
-        double z = sqrt(dx * dx + dy * dy) * parRadialRoadDispersion;
-        if (randomTrue(1 - exp(-0.5 * z * z))) continue;   // made inaccessible, so not added to accessible list below
+        double dist = max(0, sqrt(dx * dx + dy * dy));   
+        if (dist >= parThinningStartingNode) { // 0 up to parThinningStartingNode steps out, so no thinning there
+            double exponent = - 0.5 * pow(parRadialRoadDispersion * (dist - parThinningStartingNode), 2);
+            if (randomTrue(1 - exp(exponent))) continue;   // made inaccessible, so not added to accessible list below
+        }
     }
     accessible.add(g);
 }
@@ -79,7 +83,7 @@ for (int i = 0; i < parCols; i++) { // pan across the x axis starting from the l
 }
 traceln("Potential links: " + potentialLinks.size());   // TEST
 
-// 5. Repeated passes until the share of accessible nodes with at least one link reaches parInitialAccessibleNodesCoverage.
+// 5. Repeated passes until all accesible nodes are linked or max number of passes has occured.
 //    Each pass shuffles the remaining candidates (so the order has no spatial bias) and rolls each one;
 //    rejected candidates get another chance next pass, when more roads exist for the factors to favour.
 //    With parNewStubProb = 0, a link between two unlinked nodes has probability 0, so roads only grow from the
@@ -88,12 +92,11 @@ int connectedNodes = 0;   // accessible nodes with at least one link
 for (GridPoint g : accessible) if (!g.colLinks.isEmpty()) connectedNodes++; //Start the count with the existing arterials
 int passes = 0;
 List<GridPoint[]> remaining = potentialLinks;
-while ((double) connectedNodes / accessible.size() < parInitialAccessibleNodesCoverage && !remaining.isEmpty() && passes < parMaxRandomPasses) {
+while (!remaining.isEmpty() && passes < parMaxRandomPasses) {
     passes++;
     Collections.shuffle(remaining, getDefaultRandomGenerator());
     List<GridPoint[]> rejected = new ArrayList<>();
     for (GridPoint[] pl : remaining) {
-        if ((double) connectedNodes / accessible.size() >= parInitialAccessibleNodesCoverage) break;   // target reached mid-pass
         GridPoint a = pl[0];
         GridPoint b = pl[1];
         boolean diagonal = a.parXIndex != b.parXIndex && a.parYIndex != b.parYIndex;
