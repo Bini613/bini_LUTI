@@ -8,10 +8,14 @@
 //   Land consumed by each link:   w_ref * length[l] * I[l]^(-delta)   (split half to each end node)
 //   All links:         w_ref * sum over links of (length[l] * I[l]^(-delta))  =  share * N * L0
 //   Solving:           w_ref = share * N * L0 / sum over links of (length[l] * I[l]^(-delta))
-// (N = number of nodes, L0 = parCellLand, the land in one node's cell)
+// (N = number of nodes with at least one link, L0 = parCellLand, the land in one node's cell)
+// Only linked nodes count, so the road share is of the developed (road-served) land, not of empty land the network never reaches.
 
 double sumLengthWeighted = 0;
 for (Link l : links) sumLengthWeighted += l.parLength * pow(l.varImpedance, -parRoadLandUsageExponent);
 if (sumLengthWeighted <= 0) error("Road width calibration failed: links or their poperties are missing");
 
-varRoadWidthRef = parStartingRoadLandShare * gridPoints.size() * parCellLand / sumLengthWeighted;
+int linkedNodes = 0;
+for (GridPoint g : gridPoints) if (!g.colLinks.isEmpty()) linkedNodes++;
+
+varRoadWidthRef = parStartingRoadLandShare * linkedNodes * parCellLand / sumLengthWeighted;
