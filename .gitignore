@@ -1,4 +1,9 @@
-# Track only the java_code folder
+# Track only the java_code folder and the AnyLogic model folder
 /*
 !/.gitignore
 !/java_code/
+!/bini_LUTI/
+
+# Inside the model folder: skip AnyLogic autosaves and the run logs (regenerated every run)
+/bini_LUTI/*.autosave
+/bini_LUTI/runs/
