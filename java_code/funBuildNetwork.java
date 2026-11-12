@@ -47,7 +47,31 @@ for (int[] d : axes) {
 }
 traceln("Arterial links added: " + arterialLinksAdded);   // TEST
 
-// 3. Radial bell-curve thinning: each node is made inaccessible with probability
+// 3a. Arterial cut-off: delete every arterial link with an end further from the centre than dCut, the distance at which
+//     the thinning probability below reaches parArterialCutOff:
+//       1 - exp(-0.5 * (sigma * (dCut - d0))^2) = c   =>   dCut = d0 + sqrt(-2 * ln(1 - c)) / sigma
+//     (sigma = parRadialRoadDispersion, d0 = parThinningStartingNode, c = parArterialCutOff).
+//     No cut if thinning is off (sigma = 0) or c >= 1. The nodes left without links are thinned like any other node below.
+if (parRadialRoadDispersion > 0 && parArterialCutOff < 1) {
+    double dCut = parThinningStartingNode + sqrt(-2 * log(1 - parArterialCutOff)) / parRadialRoadDispersion;
+    List<Link> toCut = new ArrayList<>();
+    for (Link l : links) {
+        double dA = sqrt(pow(l.parNodeA.parXIndex - ci, 2) + pow(l.parNodeA.parYIndex - cj, 2));
+        double dB = sqrt(pow(l.parNodeB.parXIndex - ci, 2) + pow(l.parNodeB.parYIndex - cj, 2));
+        if (dA > dCut || dB > dCut) toCut.add(l);   // collected first: a population can't be changed while looping over it
+    }
+    for (Link l : toCut) {
+        l.parNodeA.colLinks.remove(l);
+        l.parNodeB.colLinks.remove(l);
+        remove_links(l);
+    }
+    // The arterials now end at the cut, so their new end nodes (the only nodes with 1 link so far) are the arterial tips
+    arterialTips.clear();
+    for (GridPoint g : gridPoints) if (g.colLinks.size() == 1) arterialTips.add(g);
+    traceln("Arterial cut-off at " + roundToDecimal(dCut, 1) + " grid steps: " + toCut.size() + " arterial links removed");   // TEST
+}
+
+// 3b. Radial bell-curve thinning: each node is made inaccessible with probability
 //    1 - exp(-0.5 * ((dist - parThinningStartingNode) * parRadialRoadDispersion)^2), dist = grid steps from the centre.
 //    Nodes within parThinningStartingNode steps of the centre are never thinned (probability 0).
 //    Arterial nodes (already linked) always stay accessible, so branches can start anywhere along them.
