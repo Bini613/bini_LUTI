@@ -5,7 +5,8 @@
 //   - The first equilibrium is saved to savedState.txt (funSaveState), if the road network was loaded from file
 //     (varNetworkLoaded) and this state hasn't been saved or loaded already (varStateSaved). It is then followed by
 //     funResumeFromEquilibrium, the same restart a run loading this state goes through, so both continue identically.
-//   - Traffic is assigned, and then we check if welfare has passed its peak, and either finish simulation if it has, or run an investment if it has not. 
+//   - Traffic is assigned, and then we check if welfare has passed its peak, and either finish simulation if it has, or run an investment if it has not.
+//     If funInvest finds no link it can upgrade, the run ends (no welfare peak reached).
 if (varInitialising) return;   // initialisation phase (funSimulateNextTurn): no density history, investment or stopping yet.
 boolean settled;
 if (varAtLoadedEquilibrium) { // For runs loading from saved state file
@@ -40,8 +41,12 @@ if (funCheckWelfarePeak()) {
     finishSimulation();
 }
 //If no welfare peak, then invest, and wait for next density equilibrium to check welfare peak or invest again.
+else if (!funInvest()) {   // no link could be upgraded: nothing more to do
+    funPrintFinalReports("No upgradable links left before a welfare peak was reached");
+    varShowGraphics = true;
+    finishSimulation();
+}
 else {
-    funInvest();
     funAssignTraffic(); // Assign according to upgraded network.
     varAssignmentCount++;
     varRelocationsSinceAssignment = 0;
