@@ -60,11 +60,7 @@ if (parRadialRoadDispersion > 0 && parArterialCutOff < 1) {
         double dB = sqrt(pow(l.parNodeB.parXIndex - ci, 2) + pow(l.parNodeB.parYIndex - cj, 2));
         if (dA > dCut || dB > dCut) toCut.add(l);   // collected first: a population can't be changed while looping over it
     }
-    for (Link l : toCut) {
-        l.parNodeA.colLinks.remove(l);
-        l.parNodeB.colLinks.remove(l);
-        remove_links(l);
-    }
+    for (Link l : toCut) funRemoveLink(l);
     // The arterials now end at the cut, so their new end nodes (the only nodes with 1 link so far) are the arterial tips
     arterialTips.clear();
     for (GridPoint g : gridPoints) if (g.colLinks.size() == 1) arterialTips.add(g);
