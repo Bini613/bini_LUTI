@@ -25,7 +25,8 @@ if (!f.exists()) {
 
 String[] ignored = {"parRoadUpgradeCost", "parInvestmentRate", "parShowTestOutput", "parShowRuntimeOutput", "parIconJitter",
                     "parMaxRdPx", "parMinRdPx", "parRentColourScaleMultiple", "parMaxRounds", "parMinRounds",
-                    "parLoadSavedNetwork", "parLoadSavedState", "parRelocationInterval", "parParallelAssignment", "parWelfarePeakMargin"};
+                    "parLoadSavedNetwork", "parLoadSavedState", "parRelocationInterval", "parParallelAssignment", "parWelfarePeakMargin",
+                    "parNumUpgrades", "parUpgradeAggresiveness"};
 
 // 1. Read and check the whole file before creating anything, so a bad or outdated file leaves the model untouched
 List<String[]> savedCitizens = new ArrayList<>();
