@@ -3,7 +3,8 @@
 // with funLoadState instead of waiting for the first equilibrium again. Only meaningful when the road network was loaded
 // from savedNetwork.txt, since the state belongs to that network (funRunCheckpoint checks this before calling).
 // Saved: every Main parameter (to check the state still matches the settings when loading), then
-//   CITIZEN  home node index, VOT, VOM, VOP, then one weight per activity
+//   CITIZEN  home node index, VOT, VOM, VOP, expected welfare (logsum from its last turn, used by funCheckUtilityPeak),
+//            then one weight per activity
 //   ACTIVITY location node index, VOM, VOL          (in population order, so weight positions still match activities)
 //   LINK     node A index, node B index, impedance, flow
 // Land, density, rent and travel times are not saved: they are rebuilt from these after loading.
@@ -12,7 +13,7 @@ try (java.io.PrintWriter out = new java.io.PrintWriter("savedState.txt")) {
     out.println("SAVED_STATE turn " + varTurnCount + " round " + varRounds);
     for (String name : getParameterNames()) out.println("PARAM\t" + name + "\t" + getParameter(name));
     for (Citizen c : citizens) {
-        StringBuilder s = new StringBuilder("CITIZEN\t" + c.varHome.parIndex + "\t" + c.parVOT + "\t" + c.parVOM + "\t" + c.parVOP);
+        StringBuilder s = new StringBuilder("CITIZEN\t" + c.varHome.parIndex + "\t" + c.parVOT + "\t" + c.parVOM + "\t" + c.parVOP + "\t" + c.varExpectedWelfare);
         for (double w : c.varActivityWeights) s.append("\t").append(w);
         out.println(s);
     }

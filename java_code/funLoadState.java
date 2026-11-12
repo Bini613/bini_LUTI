@@ -11,9 +11,10 @@
 //   - Every saved link must exist in the current network, and the link counts must match (same savedNetwork.txt).
 // After loading:
 //   - Preferences are not drawn for loaded agents (funPlaceAgents does that, not the agents' On startup): the saved values are set directly.
+//   - Each citizen's expected welfare is restored too, so the first utility-peak check sees the same values as the straight-through run.
 //   - The initialisation phase is skipped (varInitialising = false), the state is not saved again (varStateSaved = true),
 //     and the first checkpoint goes straight to investment (varAtLoadedEquilibrium = true), since the city is already settled.
-// Main on startup then sets up land and calls funResumeFromEquilibrium (reseed with parSeed + 2, density, traffic, queue,
+// Main on startup then sets up land and calls funResumeFromEquilibrium (reseed with parSeed + 2, density, queue,
 // counters), the same restart the straight-through run goes through at its first equilibrium, so both continue identically.
 
 java.io.File f = new java.io.File("savedState.txt");
@@ -24,7 +25,7 @@ if (!f.exists()) {
 
 String[] ignored = {"parRoadUpgradeCost", "parInvestmentRate", "parShowTestOutput", "parShowRuntimeOutput", "parIconJitter",
                     "parMaxRdPx", "parMinRdPx", "parRentColourScaleMultiple", "parMaxRounds", "parMinRounds",
-                    "parLoadSavedNetwork", "parLoadSavedState", "parRelocationInterval", "parParallelAssignment"};
+                    "parLoadSavedNetwork", "parLoadSavedState", "parRelocationInterval", "parParallelAssignment", "parUtilityPeakMargin"};
 
 // 1. Read and check the whole file before creating anything, so a bad or outdated file leaves the model untouched
 List<String[]> savedCitizens = new ArrayList<>();
@@ -89,8 +90,9 @@ for (String[] v : savedCitizens) {
     c.parVOT = Double.parseDouble(v[2]);
     c.parVOM = Double.parseDouble(v[3]);
     c.parVOP = Double.parseDouble(v[4]);
-    c.varActivityWeights = new double[v.length - 5];
-    for (int a = 0; a < c.varActivityWeights.length; a++) c.varActivityWeights[a] = Double.parseDouble(v[5 + a]);
+    c.varExpectedWelfare = Double.parseDouble(v[5]);   // needed by the first funCheckUtilityPeak, before the citizen has had a turn
+    c.varActivityWeights = new double[v.length - 6];
+    for (int a = 0; a < c.varActivityWeights.length; a++) c.varActivityWeights[a] = Double.parseDouble(v[6 + a]);
     c.varHome = g;
     g.colResidents.add(c);
     funPlaceIcon(c, g);
