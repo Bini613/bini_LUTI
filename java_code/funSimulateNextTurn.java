@@ -1,7 +1,7 @@
 // Function in Main. Just action (returns nothing). No arguments. Called by the cyclic event evSimulateNextTurn.
 // One turn: the next agent in varRelocationQueue chooses a location and moves there (or stays).
 //   - Round handling: the queue position is varTurnCount % queue size. When it wraps back to 0, the round is over:
-//     varRounds goes up, the run stops after parMaxRounds rounds, otherwise the queue is reshuffled for the next round.
+//     varRounds goes up and the queue is reshuffled for the next round.
 //   - Citizen: funEvaluateAndMoveCitizen (chooses, stores its values, and moves or stays).
 //   - Activity: skips its turn with probability parProbActivityRelocationSkip; otherwise funEvaluateAndMoveActivity (chooses, stores its values, and moves or stays).
 //   - Only actual moves count towards varRelocationsSinceAssignment (skips and stays change nothing).
@@ -80,7 +80,7 @@ if (varInitialising) {
 // MAIN ROUNDS
 // Checkpoint (equilibrium check, then invest or end the run), counted in main-round turns rather than model time, so it
 // falls after the same number of turns whatever the path (virgin or loaded) or event timing. The first one comes once
-// parMinRounds + 1 full rounds have passed, then every half round. It runs before this turn's queue position is worked out,
+// parMinRounds full rounds have passed, then every half round. It runs before this turn's queue position is worked out,
 // since a checkpoint may reset the turn counter and queue.
 int turnsPerRound = parNumCitizens + parNumActivities;
 int firstCheckpoint = parMinRounds * turnsPerRound;
@@ -96,11 +96,6 @@ int pos = varTurnCount % queueSize;   // this turn's place in the queue
 if (pos == 0 && varTurnCount > 0) {   // back at the start of the queue: a round has just finished
     varRounds++;
     funTestPrint("Round " + varRounds + " finished after " + varTurnCount + " turns");   // TEST
-    if (varRounds >= parMaxRounds) {
-        funPrintFinalReports("parMaxRounds reached");   // end-of-run reports
-        finishSimulation();
-        return;
-    }
     funShuffleResetRelocationQueue();   // new random order for the next round
 }
 

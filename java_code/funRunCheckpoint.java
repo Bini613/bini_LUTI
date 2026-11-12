@@ -1,21 +1,26 @@
 // Function in Main. Just action (returns nothing). No arguments. Called by funSimulateNextTurn at appropriate intervals, and on start up when loading a saved state.
-// At each checkpoint: if density has not settled yet, nothing happens. Once it has (funCheckDensityEquilibrium):
+// At each checkpoint: 
+//   - Terminate simulation if maximum rounds parMaxRounds have happened. Otherwise:
+//   - Check if density has reached equilibrium, return if it hasn't. Otherwise:
 //   - The first equilibrium is saved to savedState.txt (funSaveState), if the road network was loaded from file
 //     (varNetworkLoaded) and this state hasn't been saved or loaded already (varStateSaved). It is then followed by
 //     funResumeFromEquilibrium, the same restart a run loading this state goes through, so both continue identically.
-//   - funInvest tries to invest. If it did, traffic is re-assigned on the upgraded network (so access times reflect it
-//     straight away) and the density history is cleared, so the next equilibrium is judged only on post-investment reports.
-//   - If nothing was invested (budget used up, nothing allowed, or placeholder), the run ends: final reports, then stop.
-// After a saved state is loaded (varAtLoadedEquilibrium), the first checkpoint counts as settled without checking,
-// since the loaded city is already at equilibrium.
+//   - Traffic is assigned, and then we check if utility has passed its peak, and either finish simulation if it has, or run an investment if it has not. 
 if (varInitialising) return;   // initialisation phase (funSimulateNextTurn): no density history, investment or stopping yet.
 boolean settled;
-if (varAtLoadedEquilibrium) {
+if (varAtLoadedEquilibrium) { // For runs loading from saved state file
     settled = true;
     varAtLoadedEquilibrium = false;   // only the first checkpoint after loading will run this if block
     funRuntimePrint("Starting from the loaded equilibrium at turn " + varTurnCount);
 }
 else settled = funCheckDensityEquilibrium();
+
+if (varTurnCount >= parMaxRounds * (parNumCitizens + parNumActivities)) {
+    funPrintFinalReports("max rounds reached");
+    varShowGraphics = true;
+    finishSimulation();
+    return;
+}
 if (!settled) return;   // still settling
 
 if (varNetworkLoaded && !varStateSaved) {
@@ -24,13 +29,22 @@ if (varNetworkLoaded && !varStateSaved) {
     funResumeFromEquilibrium();   // same restart as a run that loads this state, so both continue identically from here
 }
 
-if (funInvest()) {
-    funAssignTraffic();
-    colAverageDensity.clear();
-    funRuntimePrint("Investment made at turn " + varTurnCount + " (round " + varRounds + "); waiting for the next equilibrium");
-    return;
+// both loaded and through-run paths: fresh flows + access times for the settled city. 
+//Future checkpoints coming from either also need this, because they will either be ending the simulation and need final data, or will be performing an investment.
+funAssignTraffic();                       
+varAssignmentCount++;
+varRelocationsSinceAssignment = 0;
+if (funCheckUtilityPeak()) {
+    funPrintFinalReports("Utility peaked, no further investment");
+    varShowGraphics = true;   // show the final graphics only
+    finishSimulation();
 }
-
-funPrintFinalReports("density equilibrium, no further investment");
-varShowGraphics = true;   // show the final graphics only
-finishSimulation();
+//If no utility peak, then invest, and wait for next density equilibrium to check utility peak or invest again.
+else {
+    funInvest();
+    funAssignTraffic(); // Assign according to upgraded network.
+    varAssignmentCount++;
+    varRelocationsSinceAssignment = 0;
+    colAverageDensity.clear();
+    funRuntimePrint("Investment made at turn " + varTurnCount + " (round " + varRounds + "); waiting for the next density equilibrium");
+}

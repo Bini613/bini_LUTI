@@ -7,19 +7,17 @@
 //   1. Reseed with parSeed + 2: both continue on the same random sequence.
 //   2. Rebuild the density surface from scratch: the straight-through run's surface was built up move by move, and its
 //      rounding differs slightly from a fresh build, which could flip a later choice.
-//   3. Assign traffic: the straight-through run may be several moves past its last assignment. Both warm-start from the
-//      same flows, so both get the same flows and access times.
-//   4. Reshuffle the relocation queue (draws from the new seed).
-//   5. Reset the turn and round counters, the moves-since-assignment counter and the density history, so checkpoints,
+//   3. Reshuffle the relocation queue (draws from the new seed).
+//   4. Reset the turn and round counters, the moves-since-assignment counter and the density history, so checkpoints,
 //      re-assignments and rounds fall on the same turns in both runs.
-// Steps 2 and 3 draw no random numbers, so the reseed only has to come before the shuffle.
+//   Traffic reassignment is necessary so that loaded runs and through-runs resume from same flow data (so the through-run doesn't use flow data that may be a few relocations old). That assignment takes place in the checkpoint function that calls the present function. 
+// Step 2 draws no random numbers, so the reseed only has to come before the shuffle.
 getDefaultRandomGenerator().setSeed(parSeed + 2);
 funBuildDensitySurface();
-funAssignTraffic();
 funShuffleResetRelocationQueue();
 varTurnCount = 0;
 varRounds = 0;
 varRelocationsSinceAssignment = 0;
 varAssignmentCount = 0;
 colAverageDensity.clear();
-funRuntimePrint("Resumed from equilibrium: reseeded with parSeed + 2, density, traffic and queue rebuilt, counters reset");
+funRuntimePrint("Resumed from equilibrium: reseeded with parSeed + 2, density and queue rebuilt, counters reset");
