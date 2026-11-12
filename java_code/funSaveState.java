@@ -3,7 +3,7 @@
 // with funLoadState instead of waiting for the first equilibrium again. Only meaningful when the road network was loaded
 // from savedNetwork.txt, since the state belongs to that network (funRunCheckpoint checks this before calling).
 // Saved: every Main parameter (to check the state still matches the settings when loading), then
-//   CITIZEN  home node index, VOT, VOM, VOP, expected welfare (logsum from its last turn, used by funCheckUtilityPeak),
+//   CITIZEN  home node index, VOT, VOM, VOP, expected welfare (logsum from its last turn, used by funCheckWelfarePeak),
 //            then one weight per activity
 //   ACTIVITY location node index, VOM, VOL          (in population order, so weight positions still match activities)
 //   LINK     node A index, node B index, impedance, flow
