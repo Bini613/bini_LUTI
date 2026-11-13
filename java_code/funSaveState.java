@@ -1,7 +1,7 @@
 // Function in Main. Just action (returns nothing). No arguments. Called by funRunCheckpoint at the first density equilibrium.
 // Saves the settled city to savedState.txt in the model folder (overwritten each time), so later runs can start from it
-// with funLoadState instead of waiting for the first equilibrium again. Only meaningful when the road network was loaded
-// from savedNetwork.txt, since the state belongs to that network (funRunCheckpoint checks this before calling).
+// with funLoadState instead of waiting for the first equilibrium again. The state belongs to the network in savedNetwork.txt,
+// which is always this run's network: either loaded from it, or built and saved to it by funBuildNetwork.
 // Saved: every Main parameter (to check the state still matches the settings when loading), then
 //   CITIZEN  home node index, VOT, VOM, VOP, expected welfare (logsum from its last turn, used by funCheckWelfarePeak),
 //            then one weight per activity

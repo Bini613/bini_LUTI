@@ -2,8 +2,8 @@
 // At each checkpoint: 
 //   - Terminate simulation if maximum rounds parMaxRounds have happened. Otherwise:
 //   - Check if density has reached equilibrium, return if it hasn't. Otherwise:
-//   - The first equilibrium is saved to savedState.txt (funSaveState), if the road network was loaded from file
-//     (varNetworkLoaded) and this state hasn't been saved or loaded already (varStateSaved). It is then followed by
+//   - The first equilibrium is saved to savedState.txt (funSaveState), if this state hasn't been saved or loaded already
+//     (varStateSaved). The network is always on file (loaded from, or just saved to, savedNetwork.txt). It is then followed by
 //     funResumeFromEquilibrium, the same restart a run loading this state goes through, so both continue identically.
 //   - Traffic is assigned, and then we check if welfare has passed its peak, and either finish simulation if it has, or run an investment if it has not.
 //     If funInvest finds no link it can upgrade, the run ends (no welfare peak reached).
@@ -24,7 +24,7 @@ if (varTurnCount >= parMaxRounds * (parNumCitizens + parNumActivities)) {
 }
 if (!settled) return;   // still settling
 
-if (varNetworkLoaded && !varStateSaved) {
+if (!varStateSaved) {
     funSaveState();
     varStateSaved = true;
     funResumeFromEquilibrium();   // same restart as a run that loads this state, so both continue identically from here
