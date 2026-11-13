@@ -19,5 +19,5 @@ varTurnCount = 0;
 varRounds = 0;
 varRelocationsSinceAssignment = 0;
 varAssignmentCount = 0;
-colAverageDensity.clear();
+colAverageSpread.clear();
 funRuntimePrint("Resumed from equilibrium: reseeded with parSeed + 2, density and queue rebuilt, counters reset");
