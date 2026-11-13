@@ -511,6 +511,36 @@ This kernel is used for each position when adding up land area and population co
 						</InitialValue>
 					</Properties>
 				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1794501655911</Id>
+					<Name><![CDATA[varBestMeanWelfare]]></Name>
+					<X>970</X><Y>1270</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[Double.NEGATIVE_INFINITY]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1794505587931</Id>
+					<Name><![CDATA[varInvestRandom]]></Name>
+					<X>800</X><Y>1260</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[java.util.Random]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[new java.util.Random(parSeed + 3)]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
 				<Variable Class="Parameter">
 					<Id>1793468131891</Id>
 					<Name><![CDATA[parCols]]></Name>
@@ -716,7 +746,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[true]]></Code>
+							<Code><![CDATA[false]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793585115537</Id>
@@ -1967,7 +1997,7 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[100]]></Code>
+							<Code><![CDATA[1000]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793948736689</Id>
@@ -2260,7 +2290,7 @@ Should be tuned in reference to population size]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[true]]></Code>
+							<Code><![CDATA[false]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794209054274</Id>
@@ -2408,6 +2438,78 @@ Should be tuned in reference to population size]]></Description>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794475177964</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1794501608137</Id>
+					<Name><![CDATA[parWelfarePeakMargin]]></Name>
+					<X>970</X><Y>1290</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[10000]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794501608135</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1794505742984</Id>
+					<Name><![CDATA[parNumUpgrades]]></Name>
+					<X>800</X><Y>1280</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[100]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794505742982</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1794505773135</Id>
+					<Name><![CDATA[parUpgradeAggresiveness]]></Name>
+					<X>800</X><Y>1300</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[0.1]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794505773133</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -4703,7 +4805,7 @@ act.varURent = -act.parVOM * act.varRent;   // same formulas as the sub-utilitie
 act.varULoc = -act.parVOL * act.varLoc;
 act.varExpectedWelfare = maxV + log(total) / parLogitScale;   // total already has maxV factored out (see the MNL loop above)
 
-if (act == activities.get(0)) funRuntimePrint("Activity 0: " + nCand + " candidates, chose (" + cand[pick].parXIndex + "," + cand[pick].parYIndex + ")"
+if (act == activities.get(0)) funTestPrint("Activity 0: " + nCand + " candidates, chose (" + cand[pick].parXIndex + "," + cand[pick].parYIndex + ")"
         + (cand[pick] == here ? " (stay)" : "") + " with probability " + roundToDecimal(e[pick] / total, 3) + ", utility " + roundToDecimal(V[pick], 0));   // TEST
 
 // Move to the chosen node; funMoveActivity does nothing if it is the current location
@@ -4870,7 +4972,7 @@ int turnsPerRound = parNumCitizens + parNumActivities;
 int firstCheckpoint = parMinRounds * turnsPerRound;
 int checkpointEvery = turnsPerRound / 2;
 if (varTurnCount >= firstCheckpoint && (varTurnCount - firstCheckpoint) % checkpointEvery == 0) {
-    traceln("Checkpoint at turn " + varTurnCount + ", after " + (varTurnCount / turnsPerRound) + " full rounds");   // varRounds only goes up later in this call, so it isn't used here
+    //traceln("Checkpoint at turn " + varTurnCount + ", after " + (varTurnCount / turnsPerRound) + " full rounds");   // varRounds only goes up later in this call, so it isn't used here
     funRunCheckpoint();
     if (varReportPrinted) return;   // the checkpoint ended the run
 }
@@ -4956,21 +5058,108 @@ if (parShowTestOutput) traceln(msg);
 ]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
 					<ReturnType><![CDATA[boolean]]></ReturnType>
 					<Id>1793953190574</Id>
 					<Name><![CDATA[funInvest]]></Name>
-					<X>580</X><Y>1340</Y>
+					<X>800</X><Y>1320</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint at each density equilibrium.
-// PLACEHOLDER: the investment strategy goes here (last build stage). It should change link impedances only through
-// funApplyImpedanceChange, and never upgrade a link whose end nodes would then exceed the road-land limit.
-// Returns true if it made any investment, false if nothing was affordable or allowed (budget used up, or every
-// candidate blocked), which ends the run. A starting budget of 0 therefore gives the no-investment baseline.
-return false;   // placeholder: no investment yet
+					<Body><![CDATA[// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint at each density equilibrium
+// when welfare hasn't peaked yet (funCheckWelfarePeak), straight after funAssignTraffic, so flows are fresh.
+// Upgrades parNumUpgrades links. Link costs are not considered.
+// Returns true if any link's impedance changed, false if no link could be upgraded at all (funRunCheckpoint then ends the run).
+//
+// Each upgrade:
+//   1. Draw a link at random, weighted by score V^2 / C  (= V * V/C: busy AND congested links are favoured).
+//      Links with no flow score 0 and are never drawn. Each link can be drawn at most once per investment
+//      (scores aren't recomputed between draws, since flows only change at the next assignment).
+//   2. New impedance = current - parUpgradeAggresiveness, but never below parImpedanceMin.
+//   3. Land check: the wider road must not push either end node's land below parMinAvailableLand.
+//      If it would, the link is instead upgraded as far as the land allows (if at all), then blacklisted.
+//      That partial upgrade doesn't count towards parNumUpgrades, so an investment can upgrade slightly more than planned.
+//   4. Otherwise apply the full step with funApplyImpedanceChange (capacity, travel time, end-node land, nearby density and rent).
+//      A link that reaches parImpedanceMin is blacklisted too.
+// Blacklisted links (Link variable varUpgradeBlocked) are never drawn again. Blacklisting is permanent: impedance only
+// goes down and roads only take more land. Stops early if no link is left to draw.
+//
+// Land-limited impedance: with slack S = the smaller of the two end nodes' (parCellLand - road land - parMinAvailableLand),
+// the road may grow by at most S:  0.5 * w_ref * L * (I_new^-delta - I^-delta) <= S
+//   =>  I_new = (I^-delta + S / (0.5 * w_ref * L))^(-1/delta)
+//
+// Random draws use the investment's own generator varInvestRandom, so investing doesn't shift the random sequence of
+// the relocations (which would mix the investment's effect with random-number noise when comparing runs).
+// Uses:
+//   Main parameters  parNumUpgrades (int), parUpgradeAggresiveness (double, impedance subtracted per upgrade), parImpedanceMin
+//   Main variable    varInvestRandom (java.util.Random, initial value: new java.util.Random(parSeed + 3))
+//   Link variable    varUpgradeBlocked (boolean, initial value false)
+
+double delta = parRoadLandUsageExponent;
+Set<Link> drawn = new HashSet<>();   // links already drawn in this investment (upgraded or blacklisted)
+int upgrades = 0;          // full steps (count towards parNumUpgrades)
+int partialUpgrades = 0;   // land-limited upgrades just before blacklisting (don't count)
+int blacklisted = 0;
+while (upgrades < parNumUpgrades) {
+    // 1. Weighted draw among links not blacklisted, not yet drawn, and carrying flow
+    double total = 0;
+    for (Link l : links) {
+        if (l.varUpgradeBlocked || drawn.contains(l) || l.varFlowVol <= 0) continue;
+        total += l.varFlowVol * l.varFlowVol / l.varCapacity;
+    }
+    if (total <= 0) break;   // nothing left to upgrade
+    double r = varInvestRandom.nextDouble() * total;   // random point along the stacked scores
+    Link pick = null;
+    for (Link l : links) {
+        if (l.varUpgradeBlocked || drawn.contains(l) || l.varFlowVol <= 0) continue;
+        pick = l;   // keeps the last eligible link in case rounding leaves r just past the end
+        r -= l.varFlowVol * l.varFlowVol / l.varCapacity;
+        if (r < 0) break;
+    }
+    drawn.add(pick);
+
+    // 2. New impedance
+    if (pick.varImpedance <= parImpedanceMin) {   // already at the minimum: can't be upgraded
+        pick.varUpgradeBlocked = true;
+        blacklisted++;
+        continue;
+    }
+    double newImpedance = max(parImpedanceMin, pick.varImpedance - parUpgradeAggresiveness);
+
+    // 3. Land check at both end nodes (unfloored land, same formula as GridPoint.funUpdateAvailableLand)
+    double halfArea = 0.5 * varRoadWidthRef * pick.parLength;   // road land per unit of I^-delta, at each end node
+    double slack = Double.POSITIVE_INFINITY;                     // land each end node can still give up (smaller of the two)
+    for (GridPoint g : new GridPoint[] {pick.parNodeA, pick.parNodeB}) {
+        double roadLand = 0;
+        for (Link l : g.colLinks) roadLand += 0.5 * varRoadWidthRef * l.parLength * pow(l.varImpedance, -delta);
+        slack = min(slack, parCellLand - roadLand - parMinAvailableLand);
+    }
+    double extraRoadLand = halfArea * (pow(newImpedance, -delta) - pow(pick.varImpedance, -delta));
+    if (extraRoadLand > slack) {   // full step needs too much land: upgrade as far as the land allows, then blacklist
+        if (slack > 0) {
+            double landLimitedImpedance = pow(pow(pick.varImpedance, -delta) + slack / halfArea, -1 / delta);
+            funApplyImpedanceChange(pick, landLimitedImpedance);
+            partialUpgrades++;
+        }
+        pick.varUpgradeBlocked = true; // If there was some land left, if statement above fills it with road, then we block it from future upgrades here. If there already was no land left, then jump straight to blocking it here.
+        blacklisted++;
+        continue;
+    }
+
+    // 4. Apply the full step
+    funApplyImpedanceChange(pick, newImpedance);
+    upgrades++;
+    if (newImpedance <= parImpedanceMin) {   // reached the minimum: no further upgrades possible
+        pick.varUpgradeBlocked = true;
+        blacklisted++;
+    }
+}
+
+funRuntimePrint("Investment at turn " + varTurnCount + " (round " + varRounds + "): "
+				+ upgrades + " of " + parNumUpgrades + " links upgraded, " + partialUpgrades + " land-limited upgrades, "
+      			+ blacklisted + " newly blacklisted" + (upgrades < parNumUpgrades ? " (no more upgradable links)" : ""));
+return upgrades + partialUpgrades > 0;
 ]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -5156,9 +5345,9 @@ double pastMean = sumPast / window;
 double change = abs(current - pastMean) / pastMean;
 if (change > parDensityEquilibriumTolerance) return false;   // still changing: keep running
 
-funRuntimePrint("Density equilibrium reached at turn " + varTurnCount + " (round " + varRounds + "): average occupied-node density "
-        + String.format("%.3e", current) + " agents/m^2, change vs mean of last " + window + " reports " + roundToDecimal(100 * change, 5) + "% (tolerance "
-        + roundToDecimal(100 * parDensityEquilibriumTolerance, 5) + "%), parDensityRef " + String.format("%.3e", parDensityRef));
+//funRuntimePrint("Density equilibrium reached at turn " + varTurnCount + " (round " + varRounds + "): average occupied-node density "
+//        + String.format("%.3e", current) + " agents/m^2, change vs mean of last " + window + " reports " + roundToDecimal(100 * change, 5) + "% (tolerance "
+//        + roundToDecimal(100 * parDensityEquilibriumTolerance, 5) + "%), parDensityRef " + String.format("%.3e", parDensityRef));
 return true;
 ]]></Body>
 				</Function>
@@ -5207,7 +5396,8 @@ varReportPrinted = true;   // Main boolean: stops On destroy printing the report
 //   - The first equilibrium is saved to savedState.txt (funSaveState), if the road network was loaded from file
 //     (varNetworkLoaded) and this state hasn't been saved or loaded already (varStateSaved). It is then followed by
 //     funResumeFromEquilibrium, the same restart a run loading this state goes through, so both continue identically.
-//   - Traffic is assigned, and then we check if utility has passed its peak, and either finish simulation if it has, or run an investment if it has not. 
+//   - Traffic is assigned, and then we check if welfare has passed its peak, and either finish simulation if it has, or run an investment if it has not.
+//     If funInvest finds no link it can upgrade, the run ends (no welfare peak reached).
 if (varInitialising) return;   // initialisation phase (funSimulateNextTurn): no density history, investment or stopping yet.
 boolean settled;
 if (varAtLoadedEquilibrium) { // For runs loading from saved state file
@@ -5236,19 +5426,23 @@ if (varNetworkLoaded && !varStateSaved) {
 funAssignTraffic();                       
 varAssignmentCount++;
 varRelocationsSinceAssignment = 0;
-if (funCheckUtilityPeak()) {
-    funPrintFinalReports("Utility peaked, no further investment");
+if (funCheckWelfarePeak()) {
+    funPrintFinalReports("Welfare peaked, no further investment");
     varShowGraphics = true;   // show the final graphics only
     finishSimulation();
 }
-//If no utility peak, then invest, and wait for next density equilibrium to check utility peak or invest again.
+//If no welfare peak, then invest, and wait for next density equilibrium to check welfare peak or invest again.
+else if (!funInvest()) {   // no link could be upgraded: nothing more to do
+    funPrintFinalReports("No upgradable links left before a welfare peak was reached");
+    varShowGraphics = true;
+    finishSimulation();
+}
 else {
-    funInvest();
+    for (Link l : links) l.varFlowVol = 0;   // cold start: the old flows are far from the upgraded network's equilibrium, so a warm start's small steps would take too long
     funAssignTraffic(); // Assign according to upgraded network.
     varAssignmentCount++;
     varRelocationsSinceAssignment = 0;
     colAverageDensity.clear();
-    funRuntimePrint("Investment made at turn " + varTurnCount + " (round " + varRounds + "); waiting for the next density equilibrium");
 }
 ]]></Body>
 				</Function>
@@ -5329,7 +5523,8 @@ varLogFile = null;
 // with funLoadState instead of waiting for the first equilibrium again. Only meaningful when the road network was loaded
 // from savedNetwork.txt, since the state belongs to that network (funRunCheckpoint checks this before calling).
 // Saved: every Main parameter (to check the state still matches the settings when loading), then
-//   CITIZEN  home node index, VOT, VOM, VOP, then one weight per activity
+//   CITIZEN  home node index, VOT, VOM, VOP, expected welfare (logsum from its last turn, used by funCheckWelfarePeak),
+//            then one weight per activity
 //   ACTIVITY location node index, VOM, VOL          (in population order, so weight positions still match activities)
 //   LINK     node A index, node B index, impedance, flow
 // Land, density, rent and travel times are not saved: they are rebuilt from these after loading.
@@ -5338,7 +5533,7 @@ try (java.io.PrintWriter out = new java.io.PrintWriter("savedState.txt")) {
     out.println("SAVED_STATE turn " + varTurnCount + " round " + varRounds);
     for (String name : getParameterNames()) out.println("PARAM\t" + name + "\t" + getParameter(name));
     for (Citizen c : citizens) {
-        StringBuilder s = new StringBuilder("CITIZEN\t" + c.varHome.parIndex + "\t" + c.parVOT + "\t" + c.parVOM + "\t" + c.parVOP);
+        StringBuilder s = new StringBuilder("CITIZEN\t" + c.varHome.parIndex + "\t" + c.parVOT + "\t" + c.parVOM + "\t" + c.parVOP + "\t" + c.varExpectedWelfare);
         for (double w : c.varActivityWeights) s.append("\t").append(w);
         out.println(s);
     }
@@ -5373,9 +5568,10 @@ try (java.io.PrintWriter out = new java.io.PrintWriter("savedState.txt")) {
 //   - Every saved link must exist in the current network, and the link counts must match (same savedNetwork.txt).
 // After loading:
 //   - Preferences are not drawn for loaded agents (funPlaceAgents does that, not the agents' On startup): the saved values are set directly.
+//   - Each citizen's expected welfare is restored too, so the first welfare-peak check sees the same values as the straight-through run.
 //   - The initialisation phase is skipped (varInitialising = false), the state is not saved again (varStateSaved = true),
 //     and the first checkpoint goes straight to investment (varAtLoadedEquilibrium = true), since the city is already settled.
-// Main on startup then sets up land and calls funResumeFromEquilibrium (reseed with parSeed + 2, density, traffic, queue,
+// Main on startup then sets up land and calls funResumeFromEquilibrium (reseed with parSeed + 2, density, queue,
 // counters), the same restart the straight-through run goes through at its first equilibrium, so both continue identically.
 
 java.io.File f = new java.io.File("savedState.txt");
@@ -5386,7 +5582,8 @@ if (!f.exists()) {
 
 String[] ignored = {"parRoadUpgradeCost", "parInvestmentRate", "parShowTestOutput", "parShowRuntimeOutput", "parIconJitter",
                     "parMaxRdPx", "parMinRdPx", "parRentColourScaleMultiple", "parMaxRounds", "parMinRounds",
-                    "parLoadSavedNetwork", "parLoadSavedState", "parRelocationInterval", "parParallelAssignment"};
+                    "parLoadSavedNetwork", "parLoadSavedState", "parRelocationInterval", "parParallelAssignment", "parWelfarePeakMargin",
+                    "parNumUpgrades", "parUpgradeAggresiveness"};
 
 // 1. Read and check the whole file before creating anything, so a bad or outdated file leaves the model untouched
 List<String[]> savedCitizens = new ArrayList<>();
@@ -5451,8 +5648,9 @@ for (String[] v : savedCitizens) {
     c.parVOT = Double.parseDouble(v[2]);
     c.parVOM = Double.parseDouble(v[3]);
     c.parVOP = Double.parseDouble(v[4]);
-    c.varActivityWeights = new double[v.length - 5];
-    for (int a = 0; a < c.varActivityWeights.length; a++) c.varActivityWeights[a] = Double.parseDouble(v[5 + a]);
+    c.varExpectedWelfare = Double.parseDouble(v[5]);   // needed by the first funCheckWelfarePeak, before the citizen has had a turn
+    c.varActivityWeights = new double[v.length - 6];
+    for (int a = 0; a < c.varActivityWeights.length; a++) c.varActivityWeights[a] = Double.parseDouble(v[6 + a]);
     c.varHome = g;
     g.colResidents.add(c);
     funPlaceIcon(c, g);
@@ -5574,13 +5772,42 @@ remove_links(l);
 					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
 					<ReturnType><![CDATA[boolean]]></ReturnType>
 					<Id>1794499548620</Id>
-					<Name><![CDATA[funCheckUtilityPeak]]></Name>
-					<X>770</X><Y>1320</Y>
+					<Name><![CDATA[funCheckWelfarePeak]]></Name>
+					<X>970</X><Y>1310</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[return false;]]></Body>
+					<Body><![CDATA[// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint at each density equilibrium.
+// Returns true once citizen welfare has passed its peak, i.e. further investment is making citizens worse off.
+//
+// Measure: mean over all citizens of varExpectedWelfare (logsum stored on each citizen's last turn, rand per month).
+// After an investment, the next check only comes once density has settled again (at least parDensityEquilibriumWindow
+// half-round checkpoints later), so every citizen has had a turn since the investment. On the loaded path the values come
+// from savedState.txt (funLoadState), so the first check matches the straight-through run.
+//
+// Peak rule: the best mean so far is kept in varBestMeanWelfare.
+//   - New best: store it, return false (keep investing).
+//   - More than parWelfarePeakMargin below the best: the peak has passed, return true (stop).
+//   - Otherwise (within the margin): treated as noise, return false (keep investing).
+// The first check (no investment yet) always sets the first best, so the no-investment city is the baseline.
+// Uses Main variable varBestMeanWelfare (double, initial value Double.NEGATIVE_INFINITY)
+// and Main parameter parWelfarePeakMargin (double, rand per month, e.g. 20).
+
+double sum = 0;
+for (Citizen c : citizens) sum += c.varExpectedWelfare;
+double meanW = sum / citizens.size();
+
+if (meanW > varBestMeanWelfare) {
+    varBestMeanWelfare = meanW;
+    funRuntimePrint("Mean citizen welfare " + roundToDecimal(meanW, 1) + " (new best) at turn " + varTurnCount);
+    return false;
+}
+boolean peaked = meanW < varBestMeanWelfare - parWelfarePeakMargin;
+funRuntimePrint("Mean citizen welfare " + roundToDecimal(meanW, 1) + " (best " + roundToDecimal(varBestMeanWelfare, 1)
+        + ", margin " + parWelfarePeakMargin + ")" + (peaked ? ": peak passed" : ": within margin") + " at turn " + varTurnCount);
+return peaked;
+]]></Body>
 				</Function>
 			</Functions>
 
@@ -6498,16 +6725,18 @@ traceln("Node (" + parXIndex + "," + parYIndex + ") rent " + roundToDecimal(varR
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
-					<Id>1794479844270</Id>
-					<Name><![CDATA[varCost]]></Name>
-					<Description><![CDATA[Recurring lifetime cost amortised (cost of keeping this road indefinitely)]]></Description>
-					<X>430</X><Y>370</Y>
+					<Id>1794505633016</Id>
+					<Name><![CDATA[varUpgradeBlocked]]></Name>
+					<X>280</X><Y>220</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double]]></Type>        
+						<Type><![CDATA[boolean]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[false]]></Code>
+						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -6619,17 +6848,6 @@ varCapacity = main.parCapacityRef * pow(varImpedance, -main.parCapacityGamma);]]
 // Bureau of Public Roads (BPR) congestion function: sets varTravelTime from the free-flow time and the volume/capacity ratio.
 //   t = t0 * (1 + parCongestionAlpha * (V / C)^parCongestionBeta)
 varTravelTime = funFreeFlowTime() * (1 + main.parCongestionAlpha * pow(varFlowVol / varCapacity, main.parCongestionBeta));]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1794479932893</Id>
-					<Name><![CDATA[funUpdateCost]]></Name>
-					<X>430</X><Y>390</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
 				</Function>
 			</Functions>
 
@@ -8247,6 +8465,15 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[parArterialCutOff]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[parWelfarePeakMargin]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[parNumUpgrades]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[parUpgradeAggresiveness]]></ParameterName>
 				</Parameter>
 			</Parameters>
 			<PresentationProperties>
