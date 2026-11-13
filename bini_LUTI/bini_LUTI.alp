@@ -56,6 +56,10 @@ funSetAvailableLands();             // sets available land value for every grid 
 funBuildDensitySurface();           // sets varCrowding and varNearbyLand for each node
 funAssignTraffic();                 // first equilibrium traffic flows and volumes
 funShuffleResetRelocationQueue();   // new shuffled relocation queue
+
+
+//testAvailableLands();
+//testApplyImpedanceChange();
 ]]></StartupCode>
 			<DestroyCode><![CDATA[if (!varReportPrinted) funPrintFinalReports("stopped manually");
 funStopRunLog();]]></DestroyCode>
@@ -1248,7 +1252,7 @@ It needn't be multiplied by parPeoplePerHousehold, because the travel cost sub-u
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.00555]]></Code>
+							<Code><![CDATA[0//0.00555]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793669671257</Id>
@@ -1604,7 +1608,7 @@ Roads is taken to a fill in for general transportatoin land area, so set backs a
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.08]]></Code>
+							<Code><![CDATA[0.25]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793743602540</Id>
@@ -1678,7 +1682,7 @@ Roads is taken to a fill in for general transportatoin land area, so set backs a
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
+							<Code><![CDATA[1.5]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793748808512</Id>
@@ -1705,7 +1709,7 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[500*parStepLength/500]]></Code>
+							<Code><![CDATA[400*parStepLength/500]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793748836186</Id>
@@ -2137,7 +2141,7 @@ Should be tuned in reference to population size]]></Description>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1794034711658</Id>
-					<Name><![CDATA[parDensityEquilibriumTolerance]]></Name>
+					<Name><![CDATA[parSpreadEquilibriumTolerance]]></Name>
 					<X>580</X><Y>1280</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2161,7 +2165,7 @@ Should be tuned in reference to population size]]></Description>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1794037682012</Id>
-					<Name><![CDATA[parDensityEquilibriumWindow]]></Name>
+					<Name><![CDATA[parSpreadEquilibriumWindow]]></Name>
 					<X>580</X><Y>1300</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2522,7 +2526,7 @@ Should be tuned in reference to population size]]></Description>
 				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1794037714993</Id>
-					<Name><![CDATA[colAverageDensity]]></Name>
+					<Name><![CDATA[colAverageSpread]]></Name>
 					<X>580</X><Y>1260</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -5098,7 +5102,7 @@ if (parShowTestOutput) traceln(msg);
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint at each density equilibrium
+					<Body><![CDATA[// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint at each spread equilibrium
 // when welfare hasn't peaked yet (funCheckWelfarePeak), straight after funAssignTraffic, so flows are fresh.
 // Upgrades parNumUpgrades links. Link costs are not considered.
 // Returns true if any link's impedance changed, false if no link could be upgraded at all (funRunCheckpoint then ends the run).
@@ -5339,46 +5343,57 @@ if (nA > 0) {
 					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
 					<ReturnType><![CDATA[boolean]]></ReturnType>
 					<Id>1794035417322</Id>
-					<Name><![CDATA[funCheckDensityEquilibrium]]></Name>
+					<Name><![CDATA[funCheckSpreadEquilibrium]]></Name>
 					<X>580</X><Y>1320</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint.
-// Equilibrium check on average density over occupied nodes (nodes with at least one citizen or activity).
-// Every report's average is appended to colAverageDensity (Collection in Main: ArrayList of Double), a growing history.
-// The current average is compared with the mean of the previous parDensityEquilibriumWindow reports:
+// Equilibrium check on the citizens' spread: the standard distance of their homes from the citizens' mean position (centroid),
+//   spread = sqrt( (1/N) * sum over citizens of ((x - x_mean)^2 + (y - y_mean)^2) )   (metres; the 2D standard deviation of positions)
+// A compact city has a small spread; expansion raises it and contraction lowers it.
+// Every report's spread is appended to colAverageSpread (Collection in Main: ArrayList of Double; name kept from the
+// earlier spread measure), a growing history.
+// The current spread is compared with the mean of the previous parSpreadEquilibriumWindow reports:
 //   relative change = |current - mean of last N| / mean of last N
 // Comparing with several past reports, rather than just the last one, catches slow steady trends that look flat from one report to the next.
-// If the change is within parDensityEquilibriumTolerance (e.g. 0.05 = 5%), prints the density and returns true; otherwise returns false.
+// If the change is within parSpreadEquilibriumTolerance (e.g. 0.05 = 5%), prints the spread and returns true; otherwise returns false.
 // What happens at equilibrium (invest or end the run) is decided by the caller, funRunCheckpoint.
-// Until there are parDensityEquilibriumWindow earlier reports to compare with, it only stores the average.
-// The caller clears colAverageDensity after an investment, so the next equilibrium is judged only on post-investment reports.
+// Until there are parSpreadEquilibriumWindow earlier reports to compare with, it only stores the spread.
+// The caller clears colAverageSpread after an investment, so the next equilibrium is judged only on post-investment reports.
 
-double sum = 0;
-int count = 0;
-for (GridPoint g : gridPoints) {
-    if (g.colResidents.isEmpty() && g.colActivities.isEmpty()) continue;   // unoccupied node
-    sum += funComputeDensity(g, g, 0);   // ownWeight 0: everyone included
-    count++;
+// Centroid of the citizens' homes (grid steps), then the mean squared distance from it
+double sumX = 0, sumY = 0;
+for (Citizen c : citizens) {
+    sumX += c.varHome.parXIndex;
+    sumY += c.varHome.parYIndex;
 }
-double current = sum / count;
+int nCit = citizens.size();
+double meanX = sumX / nCit;
+double meanY = sumY / nCit;
+double sumSq = 0;
+for (Citizen c : citizens){
+   double dx = c.varHome.parXIndex - meanX;
+   double dy = c.varHome.parYIndex - meanY;
+   sumSq += dx * dx + dy * dy;
+} 
+double current = sqrt(sumSq / nCit) * parStepLength;   // spread in metres
 
-int n = colAverageDensity.size();          // earlier reports stored so far
-int window = parDensityEquilibriumWindow;
-colAverageDensity.add(current);            // stored for later reports' comparisons
+int n = colAverageSpread.size();          // earlier reports stored so far
+int window = parSpreadEquilibriumWindow;
+colAverageSpread.add(current);            // stored for later reports' comparisons
 if (n < window) return false;              // not enough history yet
 
 double sumPast = 0;
-for (int i = n - window; i < n; i++) sumPast += colAverageDensity.get(i);   // the last 'window' reports before this one
+for (int i = n - window; i < n; i++) sumPast += colAverageSpread.get(i);   // the last 'window' reports before this one
 double pastMean = sumPast / window;
 double change = abs(current - pastMean) / pastMean;
-if (change > parDensityEquilibriumTolerance) return false;   // still changing: keep running
+if (change > parSpreadEquilibriumTolerance) return false;   // still changing: keep running
 
-funRuntimePrint("Density equilibrium reached at turn " + varTurnCount + " (round " + varRounds + "): average occupied-node density "
-        + String.format("%.3e", current) + " agents/m^2, change vs mean of last " + window + " reports " + roundToDecimal(100 * change, 5) + "% (tolerance "
-        + roundToDecimal(100 * parDensityEquilibriumTolerance, 5) + "%), parDensityRef " + String.format("%.3e", parDensityRef));
+funRuntimePrint("Spread equilibrium reached at turn " + varTurnCount + " (round " + varRounds + "): citizens' spread from their centroid "
+        + roundToDecimal(current, 0) + " m, change vs mean of last " + window + " reports " + roundToDecimal(100 * change, 5) + "% (tolerance "
+        + roundToDecimal(100 * parSpreadEquilibriumTolerance, 5) + "%)");
 return true;
 ]]></Body>
 				</Function>
@@ -5423,20 +5438,20 @@ varReportPrinted = true;   // Main boolean: stops On destroy printing the report
 					<Body><![CDATA[// Function in Main. Just action (returns nothing). No arguments. Called by funSimulateNextTurn at appropriate intervals, and on start up when loading a saved state.
 // At each checkpoint: 
 //   - Terminate simulation if maximum rounds parMaxRounds have happened. Otherwise:
-//   - Check if density has reached equilibrium, return if it hasn't. Otherwise:
+//   - Check if spread has reached equilibrium, return if it hasn't. Otherwise:
 //   - The first equilibrium is saved to savedState.txt (funSaveState), if this state hasn't been saved or loaded already
 //     (varStateSaved). The network is always on file (loaded from, or just saved to, savedNetwork.txt). It is then followed by
 //     funResumeFromEquilibrium, the same restart a run loading this state goes through, so both continue identically.
 //   - Traffic is assigned, and then we check if welfare has passed its peak, and either finish simulation if it has, or run an investment if it has not.
 //     If funInvest finds no link it can upgrade, the run ends (no welfare peak reached).
-if (varInitialising) return;   // initialisation phase (funSimulateNextTurn): no density history, investment or stopping yet.
+if (varInitialising) return;   // initialisation phase (funSimulateNextTurn): no spread history, investment or stopping yet.
 boolean settled;
 if (varAtLoadedEquilibrium) { // For runs loading from saved state file
     settled = true;
     varAtLoadedEquilibrium = false;   // only the first checkpoint after loading will run this if block
     funRuntimePrint("Starting from the loaded equilibrium at turn " + varTurnCount);
 }
-else settled = funCheckDensityEquilibrium();
+else settled = funCheckSpreadEquilibrium();
 
 if (varTurnCount >= parMaxRounds * (parNumCitizens + parNumActivities)) {
     funPrintFinalReports("max rounds reached");
@@ -5462,7 +5477,7 @@ if (funCheckWelfarePeak()) {
     varShowGraphics = true;   // show the final graphics only
     finishSimulation();
 }
-//If no welfare peak, then invest, and wait for next density equilibrium to check welfare peak or invest again.
+//If no welfare peak, then invest, and wait for next spread equilibrium to check welfare peak or invest again.
 else if (!funInvest()) {   // no link could be upgraded: nothing more to do
     funPrintFinalReports("No upgradable links left before a welfare peak was reached");
     varShowGraphics = true;
@@ -5472,7 +5487,7 @@ else {
     funAssignTraffic(); // Assign according to upgraded network.
     varAssignmentCount++;
     varRelocationsSinceAssignment = 0;
-    colAverageDensity.clear();
+    colAverageSpread.clear();
 }
 ]]></Body>
 				</Function>
@@ -5587,7 +5602,7 @@ try (java.io.PrintWriter out = new java.io.PrintWriter("savedState.txt")) {
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// Function in Main. Returns value, type: boolean. No arguments. Called by Main on startup, in place of funInitImpedance and
 // funPlaceAgents, only when the road network was loaded from savedNetwork.txt and parLoadSavedState is true.
-// Recreates the city saved by funSaveState (savedState.txt) at its first density equilibrium: citizens and activities
+// Recreates the city saved by funSaveState (savedState.txt) at its first spread equilibrium: citizens and activities
 // with their saved locations and preferences, and every link's impedance and flow.
 // Returns true if loaded; false if there is no usable file, in which case nothing has been created and the
 // caller places agents as normal (funPlaceAgents).
@@ -5753,7 +5768,7 @@ funRuntimePrint("Turn " + varTurnCount + " V/C over " + count + " used links (of
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// Function in Main. Just action (returns nothing). No arguments.
-// Puts the model into a standard "resume" state at the first density equilibrium, so a run that loads the saved state and
+// Puts the model into a standard "resume" state at the first spread equilibrium, so a run that loads the saved state and
 // a run that went straight through continue identically from here. Called from two places:
 //   - Main on startup, on the loaded path (after funLoadState and the land setup), before the first checkpoint.
 //   - funRunCheckpoint, in the straight-through run, right after funSaveState at its first equilibrium.
@@ -5762,7 +5777,7 @@ funRuntimePrint("Turn " + varTurnCount + " V/C over " + count + " used links (of
 //   2. Rebuild the density surface from scratch: the straight-through run's surface was built up move by move, and its
 //      rounding differs slightly from a fresh build, which could flip a later choice.
 //   3. Reshuffle the relocation queue (draws from the new seed).
-//   4. Reset the turn and round counters, the moves-since-assignment counter and the density history, so checkpoints,
+//   4. Reset the turn and round counters, the moves-since-assignment counter and the spread history, so checkpoints,
 //      re-assignments and rounds fall on the same turns in both runs.
 //   Traffic reassignment is necessary so that loaded runs and through-runs resume from same flow data (so the through-run doesn't use flow data that may be a few relocations old). That assignment takes place in the checkpoint function that calls the present function. 
 // Step 2 draws no random numbers, so the reseed only has to come before the shuffle.
@@ -5773,7 +5788,7 @@ varTurnCount = 0;
 varRounds = 0;
 varRelocationsSinceAssignment = 0;
 varAssignmentCount = 0;
-colAverageDensity.clear();
+colAverageSpread.clear();
 funRuntimePrint("Resumed from equilibrium: reseeded with parSeed + 2, density and queue rebuilt, counters reset");
 ]]></Body>
 				</Function>
@@ -5808,11 +5823,11 @@ remove_links(l);
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint at each density equilibrium.
+					<Body><![CDATA[// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint at each spread equilibrium.
 // Returns true once citizen welfare has passed its peak, i.e. further investment is making citizens worse off.
 //
 // Measure: mean over all citizens of varExpectedWelfare (logsum stored on each citizen's last turn, rand per month).
-// After an investment, the next check only comes once density has settled again (at least parDensityEquilibriumWindow
+// After an investment, the next check only comes once the spread has settled again (at least parSpreadEquilibriumWindow
 // half-round checkpoints later), so every citizen has had a turn since the investment. On the loaded path the values come
 // from savedState.txt (funLoadState), so the first check matches the straight-through run.
 //
@@ -8455,10 +8470,10 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<ParameterName><![CDATA[parCapacityRef]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[parDensityEquilibriumTolerance]]></ParameterName>
+					<ParameterName><![CDATA[parSpreadEquilibriumTolerance]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[parDensityEquilibriumWindow]]></ParameterName>
+					<ParameterName><![CDATA[parSpreadEquilibriumWindow]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[parNumberOfCandidates]]></ParameterName>
