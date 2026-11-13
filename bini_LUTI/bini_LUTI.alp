@@ -767,7 +767,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[true]]></Code>
+							<Code><![CDATA[false]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793585115537</Id>
@@ -1204,7 +1204,7 @@ Higher value means more similar preferences amongst citizens]]></Description>
 				<Variable Class="Parameter">
 					<Id>1793669599978</Id>
 					<Name><![CDATA[parVOPMean]]></Name>
-					<Description><![CDATA[Value Of Privacy distibution mean. This represents how importatn privacy in Rands, scaled by the relative density of a location. 
+					<Description><![CDATA[Value Of Privacy distibution mean. This represents how importatn privacy in Rands, scaled by the relative density of a location. Set to zero to disable privacy consideration.
 
 Some people have negative VOP, meaning they like crowding]]></Description>
 					<X>120</X><Y>1715</Y>
@@ -1256,7 +1256,7 @@ Some people have negative VOP, meaning they like crowding]]></Description>
 				<Variable Class="Parameter">
 					<Id>1793669671259</Id>
 					<Name><![CDATA[parTravelCostPerMetre]]></Name>
-					<Description><![CDATA[Needed so that distance weighting in utility is appropriately scaled.
+					<Description><![CDATA[Needed so that distance weighting in corresponding utility is appropriately scaled. Set to zero to disable travel cost.
 
 It needn't be multiplied by parPeoplePerHousehold, because the travel cost sub-utility aleady factors in the trips per month, which itself is already per household]]></Description>
 					<X>250</X><Y>1645</Y>
@@ -1362,7 +1362,7 @@ This is the only place where we implement the assumption that each household is 
 				<Variable Class="Parameter">
 					<Id>1793674537154</Id>
 					<Name><![CDATA[parActivityVOMMean]]></Name>
-					<Description><![CDATA[Activities' Value Of Money distibution mean]]></Description>
+					<Description><![CDATA[Activities' Value Of Money distibution mean. Set to zero to disable]]></Description>
 					<X>120</X><Y>1775</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -1373,7 +1373,7 @@ This is the only place where we implement the assumption that each household is 
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.1]]></Code>
+							<Code><![CDATA[0//0.1]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793674537152</Id>
@@ -2338,7 +2338,7 @@ Should be tuned in reference to population size]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
+							<Code><![CDATA[4]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794286819096</Id>
@@ -2352,6 +2352,7 @@ Should be tuned in reference to population size]]></Description>
 				<Variable Class="Parameter">
 					<Id>1794287843616</Id>
 					<Name><![CDATA[parRadialRoadDispersion]]></Name>
+					<Description><![CDATA[Higher means roads will thin out more closer to centre. Lower means that network density will remain higher further away from centre]]></Description>
 					<X>120</X><Y>1030</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2362,7 +2363,7 @@ Should be tuned in reference to population size]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.08]]></Code>
+							<Code><![CDATA[0.05]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794287843614</Id>
@@ -2482,7 +2483,7 @@ Should be tuned in reference to population size]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[100]]></Code>
+							<Code><![CDATA[10]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794501608135</Id>
@@ -2559,6 +2560,31 @@ Should be tuned in reference to population size]]></Description>
 						<ParameterEditor>
 							<Id>1794588684077</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1794603561582</Id>
+					<Name><![CDATA[parActivityRentToggle]]></Name>
+					<Description><![CDATA[Set to true if activities consider same rent as citizens. False if they don't consider rent at all. Either way, they will stil use VOM to consider relocation amortized cost. ]]></Description>
+					<X>260</X><Y>1780</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[false]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794603561580</Id>
+							<EditorContolType>CHECK_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
@@ -4761,6 +4787,8 @@ traceln("funComputeDensity: full-density largest difference " + String.format("%
 //
 // Utility of candidate k (all terms in rand per month, negative = bad):
 //   U_rent = -VOM * R_k                          R_k = rent excluding act itself: funComputeRent(funComputeDensity(k, here, parActivityCrowdingWeight))
+//                                                Switched off (U_rent = 0) when parActivityRentToggle is false; VOM still scales U_move.
+//                                                R_k is still computed and stored (varRent) either way, for outputs.
 //   U_loc  = -VOL * D_k                          D_k = weighted average straight-line distance (metres) from k to all citizens' homes,
 //                                                weighted by each citizen's weight for this activity: sum_c( w_c * d_kc ) / sum_c( w_c ). Effectively average distance per trip, since each citizen's w_c is their number of trips per direction per day to this activity
 //   U_move = -VOM * parRelocationAmortizedCost   only if k is not the current location
@@ -4862,7 +4890,7 @@ for (int i = 0; i < nCand; i++) {
     // Sub-utilities
     double density = funComputeDensity(k, here, /* ownWeight = */ parActivityCrowdingWeight);   // excluding act itself
     double rent = funComputeRent(density);   // rand per month
-    double uRent = -act.parVOM * rent;
+    double uRent = parActivityRentToggle ? -act.parVOM * rent : 0;   // rent sub-utility can be switched off globally
     double uLoc = -act.parVOL * avgDist;
     double uMove = isHere ? 0 : -act.parVOM * parRelocationAmortizedCost;
 
@@ -4892,7 +4920,7 @@ while (pick < nCand - 1 && r >= e[pick]) {   // walk along the stacked weights u
 // Store the chosen node's values and the expected welfare (logsum) on the activity
 act.varRent = candRent[pick];
 act.varLoc = candDist[pick];
-act.varURent = -act.parVOM * act.varRent;   // same formulas as the sub-utilities in the candidate loop
+act.varURent = parActivityRentToggle ? -act.parVOM * act.varRent : 0;   // same formulas as the sub-utilities in the candidate loop
 act.varULoc = -act.parVOL * act.varLoc;
 act.varExpectedWelfare = maxV + log(total) / parLogitScale;   // total already has maxV factored out (see the MNL loop above)
 
@@ -5285,29 +5313,25 @@ ag.setXY(g.getX() + radius * cos(angle), g.getY() + radius * sin(angle));
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1794008472587</Id>
-					<Name><![CDATA[testPrintDensity]]></Name>
+					<Name><![CDATA[testPrintSpread]]></Name>
 					<X>720</X><Y>1380</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[// TEMPORARY TEST. Function in Main. Just action (returns nothing). No arguments.
-// Prints the current average density over occupied nodes (nodes with at least one citizen or activity),
-// next to parDensityRef for comparison.
-// Also prints the smallest and largest occupied-node density. Called by a cyclic test report event in Main (no longer by funSimulateNextTurn).
-double sum = 0, minD = Double.MAX_VALUE, maxD = 0;
-int count = 0;
-for (GridPoint g : gridPoints) {
-    if (g.colResidents.isEmpty() && g.colActivities.isEmpty()) continue;   // unoccupied node
-    double d = funComputeDensity(g, g, 0);   // ownWeight 0: everyone included
-    sum += d;
-    minD = min(minD, d);
-    maxD = max(maxD, d);
-    count++;
+					<Body><![CDATA[// TEMPORARY TEST. Function in Main. Just action (returns nothing). No arguments. Called by funPrintFinalReports.
+// Prints the citizens' current spread (funComputeSpread: standard distance of their homes from their centroid, metres),
+// and, if the equilibrium history has values, the mean of the last parSpreadEquilibriumWindow of them for comparison.
+double spread = funComputeSpread();
+String s = "Turn " + varTurnCount + " citizens' spread from their centroid: " + roundToDecimal(spread, 0) + " m";
+int n = colAverageSpread.size();
+if (n > 0) {
+    int window = min(parSpreadEquilibriumWindow, n);
+    double sum = 0;
+    for (int i = n - window; i < n; i++) sum += colAverageSpread.get(i);
+    s += " (mean of last " + window + " equilibrium reports " + roundToDecimal(sum / window, 0) + " m)";
 }
-funRuntimePrint("Turn " + varTurnCount + " density over " + count + " occupied nodes: avg " + String.format("%.3e", sum / count)
-        + ", min " + String.format("%.3e", minD) + ", max " + String.format("%.3e", maxD)
-        + " agents/m^2 (parDensityRef " + String.format("%.3e", parDensityRef) + ")");   // TEST
+funRuntimePrint(s);   // TEST
 ]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -5407,8 +5431,7 @@ if (nA > 0) {
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint.
 // Equilibrium check on the citizens' spread: the standard distance of their homes from the citizens' mean position (centroid),
-//   spread = sqrt( (1/N) * sum over citizens of ((x - x_mean)^2 + (y - y_mean)^2) )   (metres; the 2D standard deviation of positions)
-// A compact city has a small spread; expansion raises it and contraction lowers it.
+// calculated by funComputeSpread (metres; the 2D standard deviation of positions).
 // Every report's spread is appended to colAverageSpread (Collection in Main: ArrayList of Double), a growing history.
 // The mean of the last N = parSpreadEquilibriumWindow reports (this one included) is compared with the mean of the N reports before them:
 //   relative change = |recent mean - previous mean| / previous mean
@@ -5419,22 +5442,7 @@ if (nA > 0) {
 // Until there are 2N reports in the history, it only stores the spread.
 // The caller clears colAverageSpread after an investment, so the next equilibrium is judged only on post-investment reports.
 
-// Centroid of the citizens' homes (grid steps), then the mean squared distance from it
-double sumX = 0, sumY = 0;
-for (Citizen c : citizens) {
-    sumX += c.varHome.parXIndex;
-    sumY += c.varHome.parYIndex;
-}
-int nCit = citizens.size();
-double meanX = sumX / nCit;
-double meanY = sumY / nCit;
-double sumSq = 0;
-for (Citizen c : citizens){
-   double dx = c.varHome.parXIndex - meanX;
-   double dy = c.varHome.parYIndex - meanY;
-   sumSq += dx * dx + dy * dy;
-} 
-double current = sqrt(sumSq / nCit) * parStepLength;   // spread in metres
+double current = funComputeSpread();   // spread in metres
 
 colAverageSpread.add(current);             // stored for this and later reports' comparisons
 int window = parSpreadEquilibriumWindow;
@@ -5478,7 +5486,7 @@ return true;
 funRuntimePrint("Run ended at turn " + varTurnCount + " (round " + varRounds + "): " + reason);
 testPrintUtilityShares();
 testPrintVCRatio();
-testPrintDensity();
+testPrintSpread();
 varReportPrinted = true;   // Main boolean: stops On destroy printing the reports again
 ]]></Body>
 				</Function>
@@ -5940,6 +5948,40 @@ funRuntimePrint("Mean citizen welfare " + roundToDecimal(meanW, 1) + " at check 
         + window + " checks " + roundToDecimal(slope, 2) + " per investment (threshold -" + parWelfareSlopeThreshold + ")"
         + (declining ? ": sustained decline" : "") + ", best " + roundToDecimal(varBestMeanWelfare, 1) + " at check " + varBestWelfareCheck);
 return declining;
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1794593428083</Id>
+					<Name><![CDATA[funComputeSpread]]></Name>
+					<X>720</X><Y>1360</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[// Function in Main. Returns value, type: double. No arguments.
+// The citizens' spread: the standard distance of their homes from the citizens' mean position (centroid), in metres,
+//   spread = sqrt( (1/N) * sum over citizens of ((x - x_mean)^2 + (y - y_mean)^2) )   (the 2D standard deviation of positions)
+// A compact city has a small spread; expansion raises it and contraction lowers it.
+// Used by funCheckSpreadEquilibrium (equilibrium check) and testPrintSpread (final report), so both measure it the same way.
+
+// Centroid of the citizens' homes (grid steps), then the mean squared distance from it
+double sumX = 0, sumY = 0;
+for (Citizen c : citizens) {
+    sumX += c.varHome.parXIndex;
+    sumY += c.varHome.parYIndex;
+}
+int nCit = citizens.size();
+double meanX = sumX / nCit;
+double meanY = sumY / nCit;
+double sumSq = 0;
+for (Citizen c : citizens) {
+    double dx = c.varHome.parXIndex - meanX;
+    double dy = c.varHome.parYIndex - meanY;
+    sumSq += dx * dx + dy * dy;
+}
+return sqrt(sumSq / nCit) * parStepLength;   // spread in metres
 ]]></Body>
 				</Function>
 			</Functions>
@@ -8610,6 +8652,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[parWelfareSlopeWindow]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[parActivityRentToggle]]></ParameterName>
 				</Parameter>
 			</Parameters>
 			<PresentationProperties>

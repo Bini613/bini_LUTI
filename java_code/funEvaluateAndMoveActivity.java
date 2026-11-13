@@ -12,6 +12,8 @@
 //
 // Utility of candidate k (all terms in rand per month, negative = bad):
 //   U_rent = -VOM * R_k                          R_k = rent excluding act itself: funComputeRent(funComputeDensity(k, here, parActivityCrowdingWeight))
+//                                                Switched off (U_rent = 0) when parActivityRentToggle is false; VOM still scales U_move.
+//                                                R_k is still computed and stored (varRent) either way, for outputs.
 //   U_loc  = -VOL * D_k                          D_k = weighted average straight-line distance (metres) from k to all citizens' homes,
 //                                                weighted by each citizen's weight for this activity: sum_c( w_c * d_kc ) / sum_c( w_c ). Effectively average distance per trip, since each citizen's w_c is their number of trips per direction per day to this activity
 //   U_move = -VOM * parRelocationAmortizedCost   only if k is not the current location
@@ -113,7 +115,7 @@ for (int i = 0; i < nCand; i++) {
     // Sub-utilities
     double density = funComputeDensity(k, here, /* ownWeight = */ parActivityCrowdingWeight);   // excluding act itself
     double rent = funComputeRent(density);   // rand per month
-    double uRent = -act.parVOM * rent;
+    double uRent = parActivityRentToggle ? -act.parVOM * rent : 0;   // rent sub-utility can be switched off globally
     double uLoc = -act.parVOL * avgDist;
     double uMove = isHere ? 0 : -act.parVOM * parRelocationAmortizedCost;
 
@@ -143,7 +145,7 @@ while (pick < nCand - 1 && r >= e[pick]) {   // walk along the stacked weights u
 // Store the chosen node's values and the expected welfare (logsum) on the activity
 act.varRent = candRent[pick];
 act.varLoc = candDist[pick];
-act.varURent = -act.parVOM * act.varRent;   // same formulas as the sub-utilities in the candidate loop
+act.varURent = parActivityRentToggle ? -act.parVOM * act.varRent : 0;   // same formulas as the sub-utilities in the candidate loop
 act.varULoc = -act.parVOL * act.varLoc;
 act.varExpectedWelfare = maxV + log(total) / parLogitScale;   // total already has maxV factored out (see the MNL loop above)
 
