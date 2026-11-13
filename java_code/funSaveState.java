@@ -1,4 +1,4 @@
-// Function in Main. Just action (returns nothing). No arguments. Called by funRunCheckpoint at the first density equilibrium.
+// Function in Main. Just action (returns nothing). No arguments. Called by funRunCheckpoint at the first spread equilibrium.
 // Saves the settled city to savedState.txt in the model folder (overwritten each time), so later runs can start from it
 // with funLoadState instead of waiting for the first equilibrium again. The state belongs to the network in savedNetwork.txt,
 // which is always this run's network: either loaded from it, or built and saved to it by funBuildNetwork.

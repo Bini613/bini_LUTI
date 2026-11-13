@@ -1,6 +1,6 @@
 // Function in Main. Returns value, type: boolean. No arguments. Called by Main on startup, in place of funInitImpedance and
 // funPlaceAgents, only when the road network was loaded from savedNetwork.txt and parLoadSavedState is true.
-// Recreates the city saved by funSaveState (savedState.txt) at its first density equilibrium: citizens and activities
+// Recreates the city saved by funSaveState (savedState.txt) at its first spread equilibrium: citizens and activities
 // with their saved locations and preferences, and every link's impedance and flow.
 // Returns true if loaded; false if there is no usable file, in which case nothing has been created and the
 // caller places agents as normal (funPlaceAgents).

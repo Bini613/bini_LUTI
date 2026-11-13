@@ -10,7 +10,7 @@
 //   - Checkpoints (funRunCheckpoint: equilibrium check, then invest or end the run) are called from here, by turn count
 //     (see MAIN ROUNDS below), replacing the old timed event evCheckpoint.
 
-// INITIALISATION PHASE (runs before the main rounds; varTurnCount, varRounds and the density checks are not touched during it)
+// INITIALISATION PHASE (runs before the main rounds; varTurnCount, varRounds and the spread checks are not touched during it)
 // Real cities don't start with activities and citizens placed arbitrarily far apart. So first every activity takes one turn
 // (shuffled order) to move towards where the citizens are, then citizens take parInitialisationRounds full rounds
 // (reshuffled each round) to respond to the activities and to each other. This settles the arbitrary starting layout

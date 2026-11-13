@@ -1,8 +1,8 @@
-// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint at each density equilibrium.
+// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint at each spread equilibrium.
 // Returns true once citizen welfare has passed its peak, i.e. further investment is making citizens worse off.
 //
 // Measure: mean over all citizens of varExpectedWelfare (logsum stored on each citizen's last turn, rand per month).
-// After an investment, the next check only comes once density has settled again (at least parDensityEquilibriumWindow
+// After an investment, the next check only comes once the spread has settled again (at least parSpreadEquilibriumWindow
 // half-round checkpoints later), so every citizen has had a turn since the investment. On the loaded path the values come
 // from savedState.txt (funLoadState), so the first check matches the straight-through run.
 //

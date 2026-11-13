@@ -1,4 +1,4 @@
-// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint at each density equilibrium
+// Function in Main. Returns value, type: boolean. No arguments. Called by funRunCheckpoint at each spread equilibrium
 // when welfare hasn't peaked yet (funCheckWelfarePeak), straight after funAssignTraffic, so flows are fresh.
 // Upgrades parNumUpgrades links. Link costs are not considered.
 // Returns true if any link's impedance changed, false if no link could be upgraded at all (funRunCheckpoint then ends the run).
