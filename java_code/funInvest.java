@@ -89,4 +89,7 @@ while (upgrades < parNumUpgrades) {
 
 funRuntimePrint("Investment: " + upgrades + " of " + parNumUpgrades + " links upgraded, " + partialUpgrades + " land-limited upgrades, "
         + blacklisted + " newly blacklisted" + (upgrades < parNumUpgrades ? " (no more upgradable links)" : ""));
+funRuntimePrint("Investment at turn " + varTurnCount + " (round " + varRounds + "): "
+				+ upgrades + " of " + parNumUpgrades + " links upgraded, " + partialUpgrades + " land-limited upgrades, "
+      			+ blacklisted + " newly blacklisted" + (upgrades < parNumUpgrades ? " (no more upgradable links)" : ""));
 return upgrades + partialUpgrades > 0;

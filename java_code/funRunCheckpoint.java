@@ -51,5 +51,4 @@ else {
     varAssignmentCount++;
     varRelocationsSinceAssignment = 0;
     colAverageDensity.clear();
-    funRuntimePrint("Investment made at turn " + varTurnCount + " (round " + varRounds + "); waiting for the next density equilibrium");
 }
