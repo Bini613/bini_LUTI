@@ -3,12 +3,13 @@
 //   spread = sqrt( (1/N) * sum over citizens of ((x - x_mean)^2 + (y - y_mean)^2) )   (metres; the 2D standard deviation of positions)
 // A compact city has a small spread; expansion raises it and contraction lowers it.
 // Every report's spread is appended to colAverageSpread (Collection in Main: ArrayList of Double), a growing history.
-// The current spread is compared with the mean of the previous parSpreadEquilibriumWindow reports:
-//   relative change = |current - mean of last N| / mean of last N
-// Comparing with several past reports, rather than just the last one, catches slow steady trends that look flat from one report to the next.
+// The mean of the last N = parSpreadEquilibriumWindow reports (this one included) is compared with the mean of the N reports before them:
+//   relative change = |recent mean - previous mean| / previous mean
+// Averaging both sides smooths out report-to-report noise, while comparing two consecutive windows still catches
+// a slow steady trend (the recent window's mean sits above or below the previous one's until the spread plateaus).
 // If the change is within parSpreadEquilibriumTolerance (e.g. 0.05 = 5%), prints the spread and returns true; otherwise returns false.
 // What happens at equilibrium (invest or end the run) is decided by the caller, funRunCheckpoint.
-// Until there are parSpreadEquilibriumWindow earlier reports to compare with, it only stores the spread.
+// Until there are 2N reports in the history, it only stores the spread.
 // The caller clears colAverageSpread after an investment, so the next equilibrium is judged only on post-investment reports.
 
 // Centroid of the citizens' homes (grid steps), then the mean squared distance from it
@@ -28,18 +29,20 @@ for (Citizen c : citizens){
 } 
 double current = sqrt(sumSq / nCit) * parStepLength;   // spread in metres
 
-int n = colAverageSpread.size();          // earlier reports stored so far
+colAverageSpread.add(current);             // stored for this and later reports' comparisons
 int window = parSpreadEquilibriumWindow;
-colAverageSpread.add(current);            // stored for later reports' comparisons
-if (n < window) return false;              // not enough history yet
+int n = colAverageSpread.size();
+if (n < 2 * window) return false;          // not enough history yet for two full windows
 
-double sumPast = 0;
-for (int i = n - window; i < n; i++) sumPast += colAverageSpread.get(i);   // the last 'window' reports before this one
-double pastMean = sumPast / window;
-double change = abs(current - pastMean) / pastMean;
+double sumRecent = 0, sumPrevious = 0;
+for (int i = n - window; i < n; i++) sumRecent += colAverageSpread.get(i);                    // last 'window' reports, this one included
+for (int i = n - 2 * window; i < n - window; i++) sumPrevious += colAverageSpread.get(i);     // the 'window' reports before those
+double recentMean = sumRecent / window;
+double previousMean = sumPrevious / window;
+double change = abs(recentMean - previousMean) / previousMean;
 if (change > parSpreadEquilibriumTolerance) return false;   // still changing: keep running
 
 funRuntimePrint("Spread equilibrium reached at turn " + varTurnCount + " (round " + varRounds + "): citizens' spread from their centroid "
-        + roundToDecimal(current, 0) + " m, change vs mean of last " + window + " reports " + roundToDecimal(100 * change, 5) + "% (tolerance "
+        + roundToDecimal(recentMean, 0) + " m (mean of last " + window + " reports), change vs the " + window + " reports before: " + roundToDecimal(100 * change, 5) + "% (tolerance "
         + roundToDecimal(100 * parSpreadEquilibriumTolerance, 5) + "%)");
 return true;
