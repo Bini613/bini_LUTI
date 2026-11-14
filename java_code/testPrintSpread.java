@@ -17,7 +17,7 @@ if (n > 0) {
 String s = "Turn " + varTurnCount + " citizens' spread from their centroid: " + roundToDecimal(finalSpread, 0) + " m (source: " + source + ")";
 if (varFirstEquilibriumSpread > 0) {
     double change = 100 * (finalSpread - varFirstEquilibriumSpread) / varFirstEquilibriumSpread;
-    s += ", first equilibrium " + roundToDecimal(varFirstEquilibriumSpread, 0) + " m, change " + (change >= 0 ? "+" : "-") + roundToDecimal(change, 1) + "%";
+    s += ", first equilibrium " + roundToDecimal(varFirstEquilibriumSpread, 0) + " m, change " + (change >= 0 ? "+" : "") + roundToDecimal(change, 1) + "%";
 }
 else s += " (no equilibrium reached, so no baseline to compare with)";
 funRuntimePrint(s);   // TEST

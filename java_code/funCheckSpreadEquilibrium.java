@@ -26,7 +26,13 @@ double previousMean = sumPrevious / window;
 double change = abs(recentMean - previousMean) / previousMean;
 if (change > parSpreadEquilibriumTolerance) return false;   // still changing: keep running
 
-funRuntimePrint("Spread equilibrium reached at turn " + varTurnCount + " (round " + varRounds + "): citizens' spread from their centroid "
+String s = "Spread equilibrium reached at turn " + varTurnCount + " (round " + varRounds + "): citizens' spread from their centroid "
         + roundToDecimal(recentMean, 0) + " m (mean of last " + window + " reports), change vs the " + window + " reports before: " + roundToDecimal(100 * change, 5) + "% (tolerance "
-        + roundToDecimal(100 * parSpreadEquilibriumTolerance, 5) + "%)");
+        + roundToDecimal(100 * parSpreadEquilibriumTolerance, 5) + "%)";
+// % change vs the first equilibrium (varFirstEquilibriumSpread, set by funResumeFromEquilibrium; still 0 at the first equilibrium itself)
+if (varFirstEquilibriumSpread > 0) {
+    double changeFromFirst = 100 * (recentMean - varFirstEquilibriumSpread) / varFirstEquilibriumSpread;
+    s += ", change vs first equilibrium (" + roundToDecimal(varFirstEquilibriumSpread, 0) + " m): " + (changeFromFirst >= 0 ? "+" : "") + roundToDecimal(changeFromFirst, 1) + "%";
+}
+funRuntimePrint(s);
 return true;
