@@ -37,9 +37,13 @@ if (varAccessDistances == null || varAccessDistances.length != nAct || varAccess
 // Read everything the passes need from AnyLogic collections here, on the main thread
 GridPoint[] origins = new GridPoint[nAct];
 for (int a = 0; a < nAct; a++) origins[a] = activities.get(a).varLocation;
+// Each link's position in 'links', looked up once here. AnyLogic's getIndex() is not thread-safe (it uses an internal
+// cache), so calling it inside the parallel passes can crash with IndexOutOfBoundsException. Reading a finished map is safe.
+java.util.IdentityHashMap<Link, Integer> linkIndex = new java.util.IdentityHashMap<>(nLinks);
+for (int i = 0; i < nLinks; i++) linkIndex.put(links.get(i), i);
 
 // Per-activity results, each written only by its own activity's pass
-double[][] actFlow = new double[nAct][nLinks];   // target flow each activity puts on each link, indexed by link getIndex()
+double[][] actFlow = new double[nAct][nLinks];   // target flow each activity puts on each link, indexed by the link's position in 'links' (linkIndex)
 double[] actFastestTime = new double[nAct];     // that activity's share of totalFastestTime
 double[] actUnreachable = new double[nAct];     // that activity's unreachable demand (should stay 0)
 
@@ -81,7 +85,7 @@ acts.forEach(thisAct -> {
         int k = order[s]; //get the grid index k of the first node to look at, which is the last one settled
         if (k == -1 || thisActDemand[k] == 0) continue;   // unsettled (unreachable) slot, or nothing to pass on
         Link l = prev[k];
-        flow[l.getIndex()] += thisActDemand[k];   // this activity's own flow array, not the shared link variable (other threads may be loading the same link)
+        flow[linkIndex.get(l)] += thisActDemand[k];   // this activity's own flow array, not the shared link variable (other threads may be loading the same link)
         GridPoint up = (l.parNodeA.parIndex == k) ? l.parNodeB : l.parNodeA;   // up is defined as the next node along the route to activity thisAct. The conditional makes sure to pick the correct end of link l which is the next node, not the current one (node k).
         thisActDemand[up.parIndex] += thisActDemand[k];//Next node up the chain receives the previous one's demand on top of what it already had from other routes already tracked.
     }
