@@ -41,7 +41,7 @@ getDefaultRandomGenerator().setSeed(parSeed + 1);   // makes sure all steps goin
 
 // Loaded path: start from the saved equilibrium, then go straight to the first checkpoint
 if (varNetworkLoaded && parLoadSavedState && funLoadState()) {
-    funCalibrateRoadWidth();      // sets varRoadWidthRef so that starting widths take up parStartingRoadLandShare of city area
+    //funCalibrateRoadWidth();    // Now obsolete since we use parRoadWidthRef. Sets varRoadWidthRef so that starting widths take up parStartingRoadLandShare of city area
     funSetAvailableLands();       // sets available land value for every grid point, depending on the roads around it
     funResumeFromEquilibrium();   // reseed, rebuild density, assign traffic, reshuffle queue, reset counters (same as the straight-through run at its first equilibrium)
     funRunCheckpoint();           // loaded city is already settled: invest (or end) before any turn
@@ -51,14 +51,14 @@ if (varNetworkLoaded && parLoadSavedState && funLoadState()) {
 // Virgin path
 funInitImpedance();                 // needed before rent calculations below because it affects road width -> available land area
 funPlaceAgents();                   // citizens and activities, with their preferences
-funCalibrateRoadWidth();            // sets varRoadWidthRef so that starting widths take up parStartingRoadLandShare of city area
+//funCalibrateRoadWidth();          // Now obsolete since we use parRoadWidthRef. Sets varRoadWidthRef so that starting widths take up parStartingRoadLandShare of city area
 funSetAvailableLands();             // sets available land value for every grid point, depending on the roads around it
 funBuildDensitySurface();           // sets varCrowding and varNearbyLand for each node
 funAssignTraffic();                 // first equilibrium traffic flows and volumes
 funShuffleResetRelocationQueue();   // new shuffled relocation queue
 
 
-//testAvailableLands();
+testAvailableLands();
 //testApplyImpedanceChange();
 ]]></StartupCode>
 			<DestroyCode><![CDATA[if (!varReportPrinted) funPrintFinalReports("stopped manually");
@@ -204,7 +204,8 @@ funStopRunLog();]]></DestroyCode>
 				<Variable Class="PlainVariable">
 					<Id>1793743732521</Id>
 					<Name><![CDATA[varRoadWidthRef]]></Name>
-					<X>290</X><Y>2045</Y>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>420</X><Y>2065</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -234,7 +235,7 @@ funStopRunLog();]]></DestroyCode>
 					<Description><![CDATA[An array of last calculated travel times to each activity from any given node. indices are: varAccessTimes[activity][node]
 
 Populated every time funTrafficAssign runs (actually created in funComputeTargetFlows, but that is run repeatedly until equilibrium in funTrafficAssign).]]></Description>
-					<X>130</X><Y>1965</Y>
+					<X>130</X><Y>1960</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -246,7 +247,7 @@ Populated every time funTrafficAssign runs (actually created in funComputeTarget
 				<Variable Class="PlainVariable">
 					<Id>1793850201020</Id>
 					<Name><![CDATA[varAccessDistances]]></Name>
-					<X>130</X><Y>1985</Y>
+					<X>130</X><Y>1980</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -767,7 +768,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[false]]></Code>
+							<Code><![CDATA[true]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793585115537</Id>
@@ -913,7 +914,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[2]]></Code>
+							<Code><![CDATA[1]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793639041161</Id>
@@ -963,7 +964,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[parImpedanceLocal]]></Code>
+							<Code><![CDATA[0.5//parImpedanceLocal]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793639282179</Id>
@@ -1140,7 +1141,7 @@ Higher value means more similar preferences amongst citizens]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.5]]></Code>
+							<Code><![CDATA[0.3]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793669555576</Id>
@@ -1254,6 +1255,55 @@ Some people have negative VOP, meaning they like crowding]]></Description>
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1794175943005</Id>
+					<Name><![CDATA[parPeoplePerCitizen]]></Name>
+					<Description><![CDATA[This parameter must be ordered before parTripsPerMonth in Main, since the latter depends on it]]></Description>
+					<X>540</X><Y>1660</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[72]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794175943003</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1794651563562</Id>
+					<Name><![CDATA[parCitizensPerHousehold]]></Name>
+					<X>370</X><Y>1660</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[3]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794651563560</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1793669671259</Id>
 					<Name><![CDATA[parTravelCostPerMetre]]></Name>
 					<Description><![CDATA[Needed so that distance weighting in corresponding utility is appropriately scaled. Set to zero to disable travel cost.
@@ -1281,38 +1331,11 @@ It needn't be multiplied by parPeoplePerHousehold, because the travel cost sub-u
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
-					<Id>1794175943005</Id>
-					<Name><![CDATA[parPeoplePerHousehold]]></Name>
-					<Description><![CDATA[This parameter must be ordered before parTripsPerMonth in Main, since the latter depends on it]]></Description>
-					<X>370</X><Y>1670</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[3]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1794175943003</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
 					<Id>1793670172057</Id>
 					<Name><![CDATA[parTripsPerMonth]]></Name>
 					<Description><![CDATA[Needed so that travel cost is scaled by predicted number of trips.
 
-Value assumes 2 trips a day for a 30 day month, but multiplied by parPeoplePerHousehold for a parPeoplePerHousehold person household.
-
-This is the only place where we implement the assumption that each household is multiple people, but should be reinterpretable everywhere (e.g density is households per m^2, the preferences represent the combined preferences of that household, and flow is the combined flow from that household).]]></Description>
+Value assumes 2 trips a day for a 30 day month, but multiplied by parPeoplePerHousehold for a parPeoplePerHousehold person household.]]></Description>
 					<X>250</X><Y>1665</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -1323,7 +1346,7 @@ This is the only place where we implement the assumption that each household is 
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[60*parPeoplePerHousehold]]></Code>
+							<Code><![CDATA[60*parCitizensPerHousehold]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793670172055</Id>
@@ -1373,7 +1396,7 @@ This is the only place where we implement the assumption that each household is 
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0//0.1]]></Code>
+							<Code><![CDATA[0.1]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793674537152</Id>
@@ -1615,7 +1638,8 @@ On a traffic assignment pass that occurs when there already is existing traffic 
 					<Description><![CDATA[(Land area consumed by roads)/(Total land area accessible by roads)
 
 Roads is taken to a fill in for general transportatoin land area, so set backs and driveways and parking lots are all generalised into an average.]]></Description>
-					<X>120</X><Y>2045</Y>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>260</X><Y>2045</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -1765,7 +1789,7 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 					<Id>1793750269959</Id>
 					<Name><![CDATA[parMinAvailableLand]]></Name>
 					<Description><![CDATA[Minimum land which is not roadway that a cell is permitted to have. Used as floor in available land usage calculation. Set at least bigger than zero, to avoid divide by zero errors in future]]></Description>
-					<X>120</X><Y>2010</Y>
+					<X>120</X><Y>2000</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -1788,8 +1812,8 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1793753136715</Id>
-					<Name><![CDATA[parRoadLandUsageExponent]]></Name>
-					<X>120</X><Y>2030</Y>
+					<Name><![CDATA[parCarLandUsage]]></Name>
+					<X>120</X><Y>2020</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -1799,7 +1823,7 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
+							<Code><![CDATA[3.5]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793753136713</Id>
@@ -2473,6 +2497,7 @@ Should be tuned in reference to population size]]></Description>
 				<Variable Class="Parameter">
 					<Id>1794501608137</Id>
 					<Name><![CDATA[parWelfareSlopeThreshold]]></Name>
+					<Description><![CDATA[When least squares slope of welfare over parWelfareSlopeWindow of checks hits this value, simulation will end.]]></Description>
 					<X>970</X><Y>1280</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2483,7 +2508,7 @@ Should be tuned in reference to population size]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[10]]></Code>
+							<Code><![CDATA[1]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794501608135</Id>
@@ -2531,7 +2556,7 @@ Should be tuned in reference to population size]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.1]]></Code>
+							<Code><![CDATA[0.2]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794505773133</Id>
@@ -2591,6 +2616,54 @@ Should be tuned in reference to population size]]></Description>
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1794646867061</Id>
+					<Name><![CDATA[parRoadWidthRef]]></Name>
+					<X>120</X><Y>2040</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[30]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794646867059</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1794649718106</Id>
+					<Name><![CDATA[parPeakHourConcentration]]></Name>
+					<X>250</X><Y>2020</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[0.5]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794649718104</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1794037714993</Id>
 					<Name><![CDATA[colAverageSpread]]></Name>
@@ -2626,6 +2699,7 @@ Should be tuned in reference to population size]]></Description>
 				<Event>
 					<Id>1793943737250</Id>
 					<Name><![CDATA[evSimulateNextTurn]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>580</X><Y>1160</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -3240,7 +3314,7 @@ return true;
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// Function in Main. Just action (returns nothing). No arguments.
-// Sets every link's starting impedance, capacity (from parCapacityRef, via Link funUpdateCapacity) and free-flow travel time.
+// Sets every link's starting impedance, lanes and capacity (via Link funUpdateCapacity) and free-flow travel time.
 // Arterials are recognised from geometry (both ends on one of the four axes through the centre node),
 // so this works the same whether the network was built or loaded.
 // Links touching the centre node itself are kept local, so the centre doesn't start as an 8-way arterial junction
@@ -3263,7 +3337,7 @@ for (Link l : links) {
     double base = arterial ? parImpedanceArterial : parImpedanceLocal;   // arterial=true if one of the above conditions is met, saying link lies on arterial
     if (arterial) arterialCount++;
     l.varImpedance = base + uniform(-parImpedanceLocalSpread, parImpedanceLocalSpread);   // same spread for both road types
-    l.funUpdateCapacity();   // C = parCapacityRef * I^(-gamma)
+    l.funUpdateCapacity();   // lanes = parImpedanceLocal / I, capacity from lanes
     l.varFlowVol = 0;
     l.varTravelTime = l.funFreeFlowTime();   // no flow yet, so no congestion until the first assignment
 }
@@ -3647,14 +3721,14 @@ traceln("Capacity calibrated. varCapacityRef: " + roundToDecimal(varCapacityRef,
 					<Id>1793680753812</Id>
 					<Name><![CDATA[funAssignTraffic]]></Name>
 					<Description><![CDATA[Creates the travel times and flows per link when traffic congestion is at or near equilibrium]]></Description>
-					<X>130</X><Y>1940</Y>
+					<X>130</X><Y>1935</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// Function in Main. Returns value, type: double (the final relative gap). No arguments.
 // Equilibrium traffic assignment by the Frank-Wolfe algorithm.
-// Needs link capacities set first (funInitImpedance, from parCapacityRef).
+// Needs link capacities set first (funInitImpedance, via Link funUpdateCapacity).
 // During each pass:
 //   1. Load all demand onto the current fastest routes (funComputeTargetFlows) -> each link's varTargetFlowVol
 //   2. Convergence check (from pass 2 on cold starts): relative gap = (T_actual - T_fastest) / T_actual,
@@ -3868,7 +3942,8 @@ traceln("Density calibrated over " + occupied.size() + " occupied nodes. varDens
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1793750215828</Id>
 					<Name><![CDATA[funCalibrateRoadWidth]]></Name>
-					<X>120</X><Y>2065</Y>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>260</X><Y>2065</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -3908,11 +3983,11 @@ varRoadWidthRef = parStartingRoadLandShare * linkedNodes * parCellLand / sumLeng
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// Function in Main. Just action (returns nothing). No arguments.
 // Sets every node's varAvailableLand (via each GridPoint's funUpdateAvailableLand).
-// Needs varRoadWidthRef calibrated first (funCalibrateRoadWidth). Can be re-run after investments change impedances.
+// Road land per link comes from Link funNodeRoadLand (lane width parRoadWidthRef, lanes, parCarLandUsage). Can be re-run after investments change impedances.
 for (GridPoint g : gridPoints) g.funUpdateAvailableLand();
 
 // TEST: actual road share (slightly below target if any node hit the floor), smallest node land, nodes floored.
-// Only nodes with links count, matching funCalibrateRoadWidth (unlinked nodes have no road land anyway).
+// Only nodes with links count (unlinked nodes have no road land anyway).
 double totalAvailable = 0;
 double minAvailable = Double.MAX_VALUE;
 int floored = 0;
@@ -3925,8 +4000,8 @@ for (GridPoint g : gridPoints) {
     if (g.varAvailableLand <= parMinAvailableLand) floored++;
 }
 double roadShare = 1 - totalAvailable / (linkedNodes * parCellLand); //proportion left over once you subtract the available land's portion of the total
-traceln("Available land set. varRoadWidthRef: " + roundToDecimal(varRoadWidthRef, 1) + " m, road share: " + roundToDecimal(roadShare, 3)
-        + " (starting target " + parStartingRoadLandShare + "), smallest node land: " + roundToDecimal(minAvailable, 0) + " m^2, nodes at floor: " + floored);   // TEST
+traceln("Available land set. Local road width " + roundToDecimal(parRoadWidthRef, 1) + " m;  land usage multiplier " + roundToDecimal(parCarLandUsage, 2) + "--> starting road share: " + roundToDecimal(roadShare, 3)
+        + ", smallest node land: " + roundToDecimal(minAvailable, 0) + " m^2, nodes at floor: " + floored);   // TEST
 ]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -4222,15 +4297,15 @@ traceln("After moving back: largest crowding difference " + String.format("%.2e"
 					</Parameter>
 					<Body><![CDATA[// Function in Main. Just action (returns nothing). Arguments: l (Link), newImpedance (double)
 // Applies a road investment (or any impedance change) to one link and everything that depends on it:
-//   1. Link: new impedance, then capacity and travel time from it.
+//   1. Link: new impedance, then lanes, capacity and travel time from it.
 //      Travel time must be refreshed here: funAssignTraffic warm-starts from current link times and checks convergence
 //      on its first pass, so a stale time could make it stop before the upgraded link is ever re-timed.
-//   2. Land: both end nodes lose (or regain) land, since road land scales with impedance^(-parRoadLandUsageExponent).
+//   2. Land: both end nodes lose (or regain) land, since road land grows with the link's lanes (Link funNodeRoadLand).
 //      Each end node's change in land is spread to its neighbourhood's varNearbyLand, which also updates rent there.
 // The investment strategy decides which link and what newImpedance (e.g. never below parImpedanceMin); this function just applies it.
 
 l.varImpedance = newImpedance;
-l.funUpdateCapacity();
+l.funUpdateCapacity();   // lanes and capacity
 l.funUpdateTravelTime(); //this function inherently will use the updated free flow time, because its freeflow time is not a variable, but the return of funFreeFlowTime function which itself depends on the latest impedance
 
 GridPoint[] ends = {l.parNodeA, l.parNodeB};
@@ -4325,7 +4400,7 @@ double landBefore = centre.varAvailableLand;
 for (Link l : centre.colLinks) funApplyImpedanceChange(l, parImpedanceMin);
 
 double roadLand = 0;   // same formula as GridPoint's funUpdateAvailableLand, but without the floor
-for (Link l : centre.colLinks) roadLand += 0.5 * varRoadWidthRef * l.parLength * pow(l.varImpedance, -parRoadLandUsageExponent);
+for (Link l : centre.colLinks) roadLand += l.funNodeRoadLand();
 traceln("Worst case at centre (" + centre.colLinks.size() + " links, all at impedance " + parImpedanceMin + "): land before " + roundToDecimal(landBefore, 0)
         + " m^2, now, road land: " + roundToDecimal(roadLand, 0) + " m^2 of " + roundToDecimal(parCellLand, 0) + " (" + roundToDecimal(100 * roadLand / parCellLand, 0)
         + "% of the cell), land after floor " + roundToDecimal(centre.varAvailableLand, 0) + " m^2");   // TEST: above 100% means roads alone would need more than the whole cell
@@ -4353,7 +4428,7 @@ traceln("Worst case at centre (" + centre.colLinks.size() + " links, all at impe
 // Road land at a node / cell land, same formula as GridPoint's funUpdateAvailableLand but without the floor
 java.util.function.ToDoubleFunction<GridPoint> roadLandRatio = g -> {
     double roadLand = 0;
-    for (Link l : g.colLinks) roadLand += 0.5 * varRoadWidthRef * l.parLength * pow(l.varImpedance, -parRoadLandUsageExponent);
+    for (Link l : g.colLinks) roadLand += l.funNodeRoadLand();
     return roadLand / parCellLand;
 };
 
@@ -5204,9 +5279,10 @@ if (parShowTestOutput) traceln(msg);
 // Blacklisted links (Link variable varUpgradeBlocked) are never drawn again. Blacklisting is permanent: impedance only
 // goes down and roads only take more land. Stops early if no link is left to draw.
 //
-// Land-limited impedance: with slack S = the smaller of the two end nodes' (parCellLand - road land - parMinAvailableLand),
-// the road may grow by at most S:  0.5 * w_ref * L * (I_new^-delta - I^-delta) <= S
-//   =>  I_new = (I^-delta + S / (0.5 * w_ref * L))^(-1/delta)
+// Land-limited impedance: road land at each end node is A * lanes, with A = 0.5 * parRoadWidthRef * L * parCarLandUsage
+// (land per lane) and lanes = parImpedanceLocal / I. With slack S = the smaller of the two end nodes'
+// (parCellLand - road land - parMinAvailableLand), the road may grow by at most S:  A * (lanes_new - lanes) <= S
+//   =>  lanes_new = lanes + S / A,   I_new = parImpedanceLocal / lanes_new
 //
 // Random draws use the investment's own generator varInvestRandom, so investing doesn't shift the random sequence of
 // the relocations (which would mix the investment's effect with random-number noise when comparing runs).
@@ -5215,7 +5291,6 @@ if (parShowTestOutput) traceln(msg);
 //   Main variable    varInvestRandom (java.util.Random, initial value: new java.util.Random(parSeed + 3))
 //   Link variable    varUpgradeBlocked (boolean, initial value false)
 
-double delta = parRoadLandUsageExponent;
 Set<Link> drawn = new HashSet<>();   // links already drawn in this investment (upgraded or blacklisted)
 int upgrades = 0;          // full steps (count towards parNumUpgrades)
 int partialUpgrades = 0;   // land-limited upgrades just before blacklisting (don't count)
@@ -5247,17 +5322,18 @@ while (upgrades < parNumUpgrades) {
     double newImpedance = max(parImpedanceMin, pick.varImpedance - parUpgradeAggresiveness);
 
     // 3. Land check at both end nodes (unfloored land, same formula as GridPoint.funUpdateAvailableLand)
-    double halfArea = 0.5 * varRoadWidthRef * pick.parLength;   // road land per unit of I^-delta, at each end node
-    double slack = Double.POSITIVE_INFINITY;                     // land each end node can still give up (smaller of the two)
+    double landPerLane = 0.5 * parRoadWidthRef * pick.parLength * parCarLandUsage;   // road land per lane pair, at each end node
+    double slack = Double.POSITIVE_INFINITY;                                          // land each end node can still give up (smaller of the two)
     for (GridPoint g : new GridPoint[] {pick.parNodeA, pick.parNodeB}) {
         double roadLand = 0;
-        for (Link l : g.colLinks) roadLand += 0.5 * varRoadWidthRef * l.parLength * pow(l.varImpedance, -delta);
+        for (Link l : g.colLinks) roadLand += l.funNodeRoadLand();
         slack = min(slack, parCellLand - roadLand - parMinAvailableLand);
     }
-    double extraRoadLand = halfArea * (pow(newImpedance, -delta) - pow(pick.varImpedance, -delta));
+    double updatedLanes = parImpedanceLocal / newImpedance;
+    double extraRoadLand = landPerLane * (updatedLanes - pick.varLanes);
     if (extraRoadLand > slack) {   // full step needs too much land: upgrade as far as the land allows, then blacklist
         if (slack > 0) {
-            double landLimitedImpedance = pow(pow(pick.varImpedance, -delta) + slack / halfArea, -1 / delta);
+            double landLimitedImpedance = parImpedanceLocal / (pick.varLanes + slack / landPerLane);
             funApplyImpedanceChange(pick, landLimitedImpedance);
             partialUpgrades++;
         }
@@ -6605,11 +6681,10 @@ Used in the code where all the nodes need to be processed on at a time.]]></Desc
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// Function in GridPoint. Just action (returns nothing). No arguments.
 // Sets varAvailableLand: the cell's land minus half the land of every link touching this node.
-// Call it on a node whenever one of its links changes impedance (investment), after varRoadWidthRef is calibrated.
-//   L_k = L0 - sum over links at k of: 0.5 * w_ref * length[l] * I[l]^(-delta),  floored at parMinAvailableLand
-//   (delta = parRoadLandUsageExponent: bigger roads take disproportionately more land when considering land use they induce)
+// Call it on a node whenever one of its links changes impedance (investment).
+//   L_k = L0 - sum over links at k of: their land at each end node (Link funNodeRoadLand), floored at parMinAvailableLand
 double roadLand = 0;
-for (Link l : colLinks) roadLand += 0.5 * main.varRoadWidthRef * l.parLength * pow(l.varImpedance, -main.parRoadLandUsageExponent);
+for (Link l : colLinks) roadLand += l.funNodeRoadLand();
 varAvailableLand = max(main.parMinAvailableLand, main.parCellLand - roadLand);
 ]]></Body>
 				</Function>
@@ -6829,7 +6904,7 @@ traceln("Node (" + parXIndex + "," + parYIndex + ") rent " + roundToDecimal(varR
 				<Variable Class="PlainVariable">
 					<Id>1793466614931</Id>
 					<Name><![CDATA[varImpedance]]></Name>
-					<X>160</X><Y>220</Y>
+					<X>160</X><Y>210</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6912,6 +6987,18 @@ traceln("Node (" + parXIndex + "," + parYIndex + ") rent " + roundToDecimal(varR
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[false]]></Code>
 						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1794649668649</Id>
+					<Name><![CDATA[varLanes]]></Name>
+					<X>160</X><Y>230</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -7004,9 +7091,22 @@ return parLength / v; //time = distance / speed [minutes]]]></Body>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[// Function in Link. Just action (returns nothing). No arguments.
-// Sets this link's capacity from its impedance: C = parCapacityRef * I^(-parCapacityGamma). Call whenever the impedance changes.
-varCapacity = main.parCapacityRef * pow(varImpedance, -main.parCapacityGamma);]]></Body>
+					<Body><![CDATA[// Function in Link. Just action (returns nothing). No arguments. Call whenever the impedance changes.
+// Sets this link's number of lanes and its capacity from its impedance:
+//   varLanes    = parImpedanceLocal / I   (a local road has 1 lane; lower impedance = more lanes. Fractions stand for
+//                                          wider, faster lanes, so lanes need not be whole numbers)
+//   varCapacity = varLanes * (3600 / 2) / (parPeakHourConcentration * parPeoplePerCitizen)
+// 3600 / 2: one vehicle per lane every 2 seconds (minimum peak headway) = 1800 vehicles per lane per hour.
+// Link flows are counted in citizens (each citizen's activity weights sum to 1, one one-way trip) when they should be multiplied by parPeoplePerCitizen to reflect that each citizen represents a cerain number of real people (too many to simulate one-one). 
+// The sub-utilities themselves don't need to be multiplied by parPeoplePerCitizen, since they represent sub-utilities per person evaluating, and if we multiplied them, then each term (rent, time, cost) would change by the same proportion; we would just adjust the logit scale to compensate, and the net result would be identical.
+//   parPeakHourConcentration share of the computed trips that fall in the peak hour (0 to 1, default 0.5), which is where we are evaluating in the in the traffic assignments for utility calculations:
+//                            higher = traffic more concentrated in the peak = more congestion
+// Rather than scaling every flow by parPeoplePerCitizen and parPeakHourConcentration, capacity is divided by both instead (same V/C), so V/C in BPR (funUpdateTravelTime)
+// is the real peak-hour V/C.
+// Free-flow speed stays parVRef / I (funFreeFlowTime). Road land per node uses varLanes (funNodeRoadLand).
+varLanes = main.parImpedanceLocal / varImpedance;
+varCapacity = varLanes * (3600.0 / 2) / (main.parPeakHourConcentration * main.parPeoplePerCitizen);
+]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -7023,6 +7123,25 @@ varCapacity = main.parCapacityRef * pow(varImpedance, -main.parCapacityGamma);]]
 // Bureau of Public Roads (BPR) congestion function: sets varTravelTime from the free-flow time and the volume/capacity ratio.
 //   t = t0 * (1 + parCongestionAlpha * (V / C)^parCongestionBeta)
 varTravelTime = funFreeFlowTime() * (1 + main.parCongestionAlpha * pow(varFlowVol / varCapacity, main.parCongestionBeta));]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1794650354624</Id>
+					<Name><![CDATA[funNodeRoadLand]]></Name>
+					<X>160</X><Y>400</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[// Function in Link. Returns value, type: double. No arguments.
+// Land this road takes from EACH of its two end nodes (the road's land is split equally between them), in m^2:
+//   0.5 * length * width * parCarLandUsage,   width = parRoadWidthRef * varLanes
+// parRoadWidthRef: width of one lane (m). parCarLandUsage: multiplier for the land the road takes beyond its
+// carriageway (verges, pavements, parking, junctions...). Road land grows linearly with lanes.
+// Uses varLanes, so funUpdateCapacity must have run since the last impedance change (funApplyImpedanceChange,
+// funInitImpedance and funLoadState all call it before any land is computed).
+return 0.5 * parLength * main.parRoadWidthRef * varLanes * main.parCarLandUsage;]]></Body>
 				</Function>
 			</Functions>
 
@@ -8495,10 +8614,13 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<ParameterName><![CDATA[parVOPStandardDeviation]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[parTravelCostPerMetre]]></ParameterName>
+					<ParameterName><![CDATA[parPeoplePerCitizen]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[parPeoplePerHousehold]]></ParameterName>
+					<ParameterName><![CDATA[parCitizensPerHousehold]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[parTravelCostPerMetre]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[parTripsPerMonth]]></ParameterName>
@@ -8555,7 +8677,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<ParameterName><![CDATA[parMinAvailableLand]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[parRoadLandUsageExponent]]></ParameterName>
+					<ParameterName><![CDATA[parCarLandUsage]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[parRentInfluenceDecayLength_CutOffMultiple]]></ParameterName>
@@ -8655,6 +8777,12 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[parActivityRentToggle]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[parRoadWidthRef]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[parPeakHourConcentration]]></ParameterName>
 				</Parameter>
 			</Parameters>
 			<PresentationProperties>

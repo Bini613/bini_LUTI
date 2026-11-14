@@ -1,14 +1,14 @@
 // Function in Main. Just action (returns nothing). Arguments: l (Link), newImpedance (double)
 // Applies a road investment (or any impedance change) to one link and everything that depends on it:
-//   1. Link: new impedance, then capacity and travel time from it.
+//   1. Link: new impedance, then lanes, capacity and travel time from it.
 //      Travel time must be refreshed here: funAssignTraffic warm-starts from current link times and checks convergence
 //      on its first pass, so a stale time could make it stop before the upgraded link is ever re-timed.
-//   2. Land: both end nodes lose (or regain) land, since road land scales with impedance^(-parRoadLandUsageExponent).
+//   2. Land: both end nodes lose (or regain) land, since road land grows with the link's lanes (Link funNodeRoadLand).
 //      Each end node's change in land is spread to its neighbourhood's varNearbyLand, which also updates rent there.
 // The investment strategy decides which link and what newImpedance (e.g. never below parImpedanceMin); this function just applies it.
 
 l.varImpedance = newImpedance;
-l.funUpdateCapacity();
+l.funUpdateCapacity();   // lanes and capacity
 l.funUpdateTravelTime(); //this function inherently will use the updated free flow time, because its freeflow time is not a variable, but the return of funFreeFlowTime function which itself depends on the latest impedance
 
 GridPoint[] ends = {l.parNodeA, l.parNodeB};

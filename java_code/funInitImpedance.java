@@ -1,5 +1,5 @@
 // Function in Main. Just action (returns nothing). No arguments.
-// Sets every link's starting impedance, capacity (from parCapacityRef, via Link funUpdateCapacity) and free-flow travel time.
+// Sets every link's starting impedance, lanes and capacity (via Link funUpdateCapacity) and free-flow travel time.
 // Arterials are recognised from geometry (both ends on one of the four axes through the centre node),
 // so this works the same whether the network was built or loaded.
 // Links touching the centre node itself are kept local, so the centre doesn't start as an 8-way arterial junction
@@ -22,7 +22,7 @@ for (Link l : links) {
     double base = arterial ? parImpedanceArterial : parImpedanceLocal;   // arterial=true if one of the above conditions is met, saying link lies on arterial
     if (arterial) arterialCount++;
     l.varImpedance = base + uniform(-parImpedanceLocalSpread, parImpedanceLocalSpread);   // same spread for both road types
-    l.funUpdateCapacity();   // C = parCapacityRef * I^(-gamma)
+    l.funUpdateCapacity();   // lanes = parImpedanceLocal / I, capacity from lanes
     l.varFlowVol = 0;
     l.varTravelTime = l.funFreeFlowTime();   // no flow yet, so no congestion until the first assignment
 }

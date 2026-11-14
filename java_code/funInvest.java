@@ -16,9 +16,10 @@
 // Blacklisted links (Link variable varUpgradeBlocked) are never drawn again. Blacklisting is permanent: impedance only
 // goes down and roads only take more land. Stops early if no link is left to draw.
 //
-// Land-limited impedance: with slack S = the smaller of the two end nodes' (parCellLand - road land - parMinAvailableLand),
-// the road may grow by at most S:  0.5 * w_ref * L * (I_new^-delta - I^-delta) <= S
-//   =>  I_new = (I^-delta + S / (0.5 * w_ref * L))^(-1/delta)
+// Land-limited impedance: road land at each end node is A * lanes, with A = 0.5 * parRoadWidthRef * L * parCarLandUsage
+// (land per lane) and lanes = parImpedanceLocal / I. With slack S = the smaller of the two end nodes'
+// (parCellLand - road land - parMinAvailableLand), the road may grow by at most S:  A * (lanes_new - lanes) <= S
+//   =>  lanes_new = lanes + S / A,   I_new = parImpedanceLocal / lanes_new
 //
 // Random draws use the investment's own generator varInvestRandom, so investing doesn't shift the random sequence of
 // the relocations (which would mix the investment's effect with random-number noise when comparing runs).
@@ -27,7 +28,6 @@
 //   Main variable    varInvestRandom (java.util.Random, initial value: new java.util.Random(parSeed + 3))
 //   Link variable    varUpgradeBlocked (boolean, initial value false)
 
-double delta = parRoadLandUsageExponent;
 Set<Link> drawn = new HashSet<>();   // links already drawn in this investment (upgraded or blacklisted)
 int upgrades = 0;          // full steps (count towards parNumUpgrades)
 int partialUpgrades = 0;   // land-limited upgrades just before blacklisting (don't count)
@@ -59,17 +59,18 @@ while (upgrades < parNumUpgrades) {
     double newImpedance = max(parImpedanceMin, pick.varImpedance - parUpgradeAggresiveness);
 
     // 3. Land check at both end nodes (unfloored land, same formula as GridPoint.funUpdateAvailableLand)
-    double halfArea = 0.5 * parRoadWidthRef * pick.parLength;   // road land per unit of I^-delta, at each end node
-    double slack = Double.POSITIVE_INFINITY;                     // land each end node can still give up (smaller of the two)
+    double landPerLane = 0.5 * parRoadWidthRef * pick.parLength * parCarLandUsage;   // road land per lane pair, at each end node
+    double slack = Double.POSITIVE_INFINITY;                                          // land each end node can still give up (smaller of the two)
     for (GridPoint g : new GridPoint[] {pick.parNodeA, pick.parNodeB}) {
         double roadLand = 0;
-        for (Link l : g.colLinks) roadLand += 0.5 * parRoadWidthRef * l.parLength * pow(l.varImpedance, -delta);
+        for (Link l : g.colLinks) roadLand += l.funNodeRoadLand();
         slack = min(slack, parCellLand - roadLand - parMinAvailableLand);
     }
-    double extraRoadLand = halfArea * (pow(newImpedance, -delta) - pow(pick.varImpedance, -delta));
+    double updatedLanes = parImpedanceLocal / newImpedance;
+    double extraRoadLand = landPerLane * (updatedLanes - pick.varLanes);
     if (extraRoadLand > slack) {   // full step needs too much land: upgrade as far as the land allows, then blacklist
         if (slack > 0) {
-            double landLimitedImpedance = pow(pow(pick.varImpedance, -delta) + slack / halfArea, -1 / delta);
+            double landLimitedImpedance = parImpedanceLocal / (pick.varLanes + slack / landPerLane);
             funApplyImpedanceChange(pick, landLimitedImpedance);
             partialUpgrades++;
         }

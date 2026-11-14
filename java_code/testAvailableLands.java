@@ -9,7 +9,7 @@
 // Road land at a node / cell land, same formula as GridPoint's funUpdateAvailableLand but without the floor
 java.util.function.ToDoubleFunction<GridPoint> roadLandRatio = g -> {
     double roadLand = 0;
-    for (Link l : g.colLinks) roadLand += 0.5 * parRoadWidthRef * l.parLength * pow(l.varImpedance, -parRoadLandUsageExponent);
+    for (Link l : g.colLinks) roadLand += l.funNodeRoadLand();
     return roadLand / parCellLand;
 };
 

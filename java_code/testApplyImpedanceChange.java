@@ -72,7 +72,7 @@ double landBefore = centre.varAvailableLand;
 for (Link l : centre.colLinks) funApplyImpedanceChange(l, parImpedanceMin);
 
 double roadLand = 0;   // same formula as GridPoint's funUpdateAvailableLand, but without the floor
-for (Link l : centre.colLinks) roadLand += 0.5 * parRoadWidthRef * l.parLength * pow(l.varImpedance, -parRoadLandUsageExponent);
+for (Link l : centre.colLinks) roadLand += l.funNodeRoadLand();
 traceln("Worst case at centre (" + centre.colLinks.size() + " links, all at impedance " + parImpedanceMin + "): land before " + roundToDecimal(landBefore, 0)
         + " m^2, now, road land: " + roundToDecimal(roadLand, 0) + " m^2 of " + roundToDecimal(parCellLand, 0) + " (" + roundToDecimal(100 * roadLand / parCellLand, 0)
         + "% of the cell), land after floor " + roundToDecimal(centre.varAvailableLand, 0) + " m^2");   // TEST: above 100% means roads alone would need more than the whole cell

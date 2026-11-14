@@ -1,6 +1,6 @@
 // Function in Main. Just action (returns nothing). No arguments.
 // Sets every node's varAvailableLand (via each GridPoint's funUpdateAvailableLand).
-// Uses Main parameter parRoadWidthRef (effective width of a road with I = 1). Can be re-run after investments change impedances.
+// Road land per link comes from Link funNodeRoadLand (lane width parRoadWidthRef, lanes, parCarLandUsage). Can be re-run after investments change impedances.
 for (GridPoint g : gridPoints) g.funUpdateAvailableLand();
 
 // TEST: actual road share (slightly below target if any node hit the floor), smallest node land, nodes floored.
@@ -17,5 +17,5 @@ for (GridPoint g : gridPoints) {
     if (g.varAvailableLand <= parMinAvailableLand) floored++;
 }
 double roadShare = 1 - totalAvailable / (linkedNodes * parCellLand); //proportion left over once you subtract the available land's portion of the total
-traceln("Available land set. parRoadWidthRef: " + roundToDecimal(parRoadWidthRef, 1) + " m, road share: " + roundToDecimal(roadShare, 3)
+traceln("Available land set. Local road width " + roundToDecimal(parRoadWidthRef, 1) + " m;  land usage multiplier " + roundToDecimal(parCarLandUsage, 2) + "--> starting road share: " + roundToDecimal(roadShare, 3)
         + ", smallest node land: " + roundToDecimal(minAvailable, 0) + " m^2, nodes at floor: " + floored);   // TEST
