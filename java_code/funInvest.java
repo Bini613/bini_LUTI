@@ -4,7 +4,8 @@
 // Returns true if any link's impedance changed, false if no link could be upgraded at all (funRunCheckpoint then ends the run).
 //
 // Each upgrade:
-//   1. Draw a link at random, weighted by score V^2 / C  (= V * V/C: busy AND congested links are favoured).
+//   1. Draw a link at random, weighted by score V/C: congested links are favoured, regardless of how much traffic they carry
+//      (so busy central links don't win just for their volume).
 //      Links with no flow score 0 and are never drawn. Each link can be drawn at most once per investment
 //      (scores aren't recomputed between draws, since flows only change at the next assignment).
 //   2. New impedance = current - parUpgradeAggresiveness, but never below parImpedanceMin.
@@ -37,7 +38,7 @@ while (upgrades < parNumUpgrades) {
     double total = 0;
     for (Link l : links) {
         if (l.varUpgradeBlocked || drawn.contains(l) || l.varFlowVol <= 0) continue;
-        total += l.varFlowVol * l.varFlowVol / l.varCapacity;
+        total += l.varFlowVol / l.varCapacity;
     }
     if (total <= 0) break;   // nothing left to upgrade
     double r = varInvestRandom.nextDouble() * total;   // random point along the stacked scores
@@ -45,7 +46,7 @@ while (upgrades < parNumUpgrades) {
     for (Link l : links) {
         if (l.varUpgradeBlocked || drawn.contains(l) || l.varFlowVol <= 0) continue;
         pick = l;   // keeps the last eligible link in case rounding leaves r just past the end
-        r -= l.varFlowVol * l.varFlowVol / l.varCapacity;
+        r -= l.varFlowVol / l.varCapacity;
         if (r < 0) break;
     }
     drawn.add(pick);
