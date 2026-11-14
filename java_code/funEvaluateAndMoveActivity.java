@@ -16,7 +16,8 @@
 //                                                R_k is still computed and stored (varRent) either way, for outputs.
 //   U_loc  = -VOL * D_k                          D_k = weighted average straight-line distance (metres) from k to all citizens' homes,
 //                                                weighted by each citizen's weight for this activity: sum_c( w_c * d_kc ) / sum_c( w_c ). Effectively average distance per trip, since each citizen's w_c is their number of trips per direction per day to this activity
-//   U_move = -VOM * parRelocationAmortizedCost   only if k is not the current location
+//   U_move = -VOM * parActivityRelocationAmortizedCost   only if k is not the current location
+//                                                (activities' own moving cost, separate from citizens' parRelocationAmortizedCost)
 //   V_k = U_rent + U_loc + U_move
 // Choice probability: P_k = exp(mu * V_k) / sum_j(exp(mu * V_j)), mu = parLogitScale (shared with citizens' choice).
 // The largest V is subtracted from each V before exp to avoid overflow and underflow (doesn't change the probabilities).
@@ -117,7 +118,7 @@ for (int i = 0; i < nCand; i++) {
     double rent = funComputeRent(density);   // rand per month
     double uRent = parActivityRentToggle ? -act.parVOM * rent : 0;   // rent sub-utility can be switched off globally
     double uLoc = -act.parVOL * avgDist;
-    double uMove = isHere ? 0 : -act.parVOM * parRelocationAmortizedCost;
+    double uMove = isHere ? 0 : -act.parVOM * parActivityRelocationAmortizedCost;
 
     V[i] = uRent + uLoc + uMove;
     candRent[i] = rent;
