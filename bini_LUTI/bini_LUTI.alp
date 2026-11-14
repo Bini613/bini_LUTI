@@ -954,7 +954,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.2]]></Code>
+							<Code><![CDATA[0.1]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793639220220</Id>
@@ -1350,7 +1350,7 @@ Value assumes 2 trips a day for a 30 day month, but multiplied by parPeoplePerHo
 				<Variable Class="Parameter">
 					<Id>1793670220724</Id>
 					<Name><![CDATA[parLogitScale]]></Name>
-					<Description><![CDATA[Needed so that Logit probability doesn't favour cheaper rent way too much]]></Description>
+					<Description><![CDATA[Higher number means more deterministic decisions towards largest utility, but less ability for citizens to explore space. Lower number means more jumpy and slower settling behaviour]]></Description>
 					<X>250</X><Y>1685</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -1386,7 +1386,7 @@ Value assumes 2 trips a day for a 30 day month, but multiplied by parPeoplePerHo
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.1]]></Code>
+							<Code><![CDATA[0.2]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793674537152</Id>
@@ -1411,7 +1411,7 @@ Value assumes 2 trips a day for a 30 day month, but multiplied by parPeoplePerHo
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.1]]></Code>
+							<Code><![CDATA[0.2]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793674549454</Id>
@@ -1740,7 +1740,7 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[500*parStepLength/500]]></Code>
+							<Code><![CDATA[1000*parStepLength/500]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793748836186</Id>
@@ -2644,6 +2644,31 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794666465503</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1794671963791</Id>
+					<Name><![CDATA[parActivityLogitScale]]></Name>
+					<Description><![CDATA[Needed so that Logit probability doesn't favour cheaper rent way too much]]></Description>
+					<X>270</X><Y>1810</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[0.002]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794671963789</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -4859,7 +4884,7 @@ traceln("funComputeDensity: full-density largest difference " + String.format("%
 //   U_move = -VOM * parActivityRelocationAmortizedCost   only if k is not the current location
 //                                                (activities' own moving cost, separate from citizens' parRelocationAmortizedCost)
 //   V_k = U_rent + U_loc + U_move
-// Choice probability: P_k = exp(mu * V_k) / sum_j(exp(mu * V_j)), mu = parLogitScale (shared with citizens' choice).
+// Choice probability: P_k = exp(mu * V_k) / sum_j(exp(mu * V_j)), mu = parActivityLogitScale (activities' own, separate from citizens' parLogitScale).
 // The largest V is subtracted from each V before exp to avoid overflow and underflow (doesn't change the probabilities).
 //
 // Stored on act every turn (stay or move), for the node it ends up on (values as seen excluding act itself):
@@ -4973,7 +4998,7 @@ for (int i = 0; i < nCand; i++) {
 double[] e = new double[nCand];
 double total = 0;
 for (int i = 0; i < nCand; i++) {
-    e[i] = exp(parLogitScale * (V[i] - maxV));
+    e[i] = exp(parActivityLogitScale * (V[i] - maxV));
     total += e[i];
 }
 double r = uniform(0, total);
@@ -4988,7 +5013,7 @@ act.varRent = candRent[pick];
 act.varLoc = candDist[pick];
 act.varURent = parActivityRentToggle ? -act.parVOM * act.varRent : 0;   // same formulas as the sub-utilities in the candidate loop
 act.varULoc = -act.parVOL * act.varLoc;
-act.varExpectedWelfare = maxV + log(total) / parLogitScale;   // total already has maxV factored out (see the MNL loop above)
+act.varExpectedWelfare = maxV + log(total) / parActivityLogitScale;   // total already has maxV factored out (see the MNL loop above)
 
 if (act == activities.get(0)) funTestPrint("Activity 0: " + nCand + " candidates, chose (" + cand[pick].parXIndex + "," + cand[pick].parYIndex + ")"
         + (cand[pick] == here ? " (stay)" : "") + " with probability " + roundToDecimal(e[pick] / total, 3) + ", utility " + roundToDecimal(V[pick], 0));   // TEST
@@ -8786,6 +8811,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[parActivityRelocationAmortizedCost]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[parActivityLogitScale]]></ParameterName>
 				</Parameter>
 			</Parameters>
 			<PresentationProperties>

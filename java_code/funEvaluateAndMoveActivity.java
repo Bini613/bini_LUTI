@@ -19,7 +19,7 @@
 //   U_move = -VOM * parActivityRelocationAmortizedCost   only if k is not the current location
 //                                                (activities' own moving cost, separate from citizens' parRelocationAmortizedCost)
 //   V_k = U_rent + U_loc + U_move
-// Choice probability: P_k = exp(mu * V_k) / sum_j(exp(mu * V_j)), mu = parLogitScale (shared with citizens' choice).
+// Choice probability: P_k = exp(mu * V_k) / sum_j(exp(mu * V_j)), mu = parActivityLogitScale (activities' own, separate from citizens' parLogitScale).
 // The largest V is subtracted from each V before exp to avoid overflow and underflow (doesn't change the probabilities).
 //
 // Stored on act every turn (stay or move), for the node it ends up on (values as seen excluding act itself):
@@ -133,7 +133,7 @@ for (int i = 0; i < nCand; i++) {
 double[] e = new double[nCand];
 double total = 0;
 for (int i = 0; i < nCand; i++) {
-    e[i] = exp(parLogitScale * (V[i] - maxV));
+    e[i] = exp(parActivityLogitScale * (V[i] - maxV));
     total += e[i];
 }
 double r = uniform(0, total);
@@ -148,7 +148,7 @@ act.varRent = candRent[pick];
 act.varLoc = candDist[pick];
 act.varURent = parActivityRentToggle ? -act.parVOM * act.varRent : 0;   // same formulas as the sub-utilities in the candidate loop
 act.varULoc = -act.parVOL * act.varLoc;
-act.varExpectedWelfare = maxV + log(total) / parLogitScale;   // total already has maxV factored out (see the MNL loop above)
+act.varExpectedWelfare = maxV + log(total) / parActivityLogitScale;   // total already has maxV factored out (see the MNL loop above)
 
 if (act == activities.get(0)) funTestPrint("Activity 0: " + nCand + " candidates, chose (" + cand[pick].parXIndex + "," + cand[pick].parYIndex + ")"
         + (cand[pick] == here ? " (stay)" : "") + " with probability " + roundToDecimal(e[pick] / total, 3) + ", utility " + roundToDecimal(V[pick], 0));   // TEST
