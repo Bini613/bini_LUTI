@@ -2,7 +2,8 @@
 // Builds every node's varCrowding and varNearbyLand from scratch, by resetting them to 0 and then letting each node j
 // contribute its own crowding n[j] and available land L[j] through funUpdateNeighbourhoodDensity (the same function later updates use).
 //   n[j] = citizens living at j + parActivityCrowdingWeight * activities at j
-// Then sets every node's rent once, from the finished surface.
+// Inaccessible nodes (no links) contribute their crowding (always 0: no agent can be there) but no land, and get no rent (left at 0).
+// Then sets every accessible node's rent once, from the finished surface.
 // Needs agents placed and varAvailableLand set (funSetAvailableLands) first.
 // Rent updates inside funUpdateNeighbourhoodDensity are paused during the build (varPauseRentUpdates), because each node's
 // nearby land is incomplete until every node has contributed: rents computed mid-build would be wasted work, and a node
@@ -34,17 +35,22 @@ for (GridPoint g : gridPoints) { //reset crowding and nearbyland globally
 
 varPauseRentUpdates = true;   // Main variable (boolean): rent updates off until the surface is complete
 for (GridPoint g : gridPoints) {
-    funUpdateNeighbourhoodDensity(g, n[g.parIndex], g.varAvailableLand);// Both arguments are normally changes (dCrowding, dLand). Since this function first resets varCrowding and varNearbyLand to 0,
-// the change at each node is from zero to its full value: its crowding n[k] and its available land varAvailableLand.
+    double land = g.colLinks.isEmpty() ? 0 : g.varAvailableLand;   // inaccessible nodes (no links) contribute no land: nobody can use it, and it would make their neighbours look roomier (cheaper) than they are
+    funUpdateNeighbourhoodDensity(g, n[g.parIndex], land);// Both arguments are normally changes (dCrowding, dLand). Since this function first resets varCrowding and varNearbyLand to 0,
+// the change at each node is from zero to its full value: its crowding n[k] and its available land (0 if inaccessible).
 }
 varPauseRentUpdates = false;
 
-for (GridPoint g : gridPoints) g.varRent = funComputeRent(funComputeDensity(g, g, /* ownWeight = */ 0));   // every node's rent (everyone included), now that the surface is complete
+for (GridPoint g : gridPoints) {   // every accessible node's rent (everyone included), now that the surface is complete
+    if (g.colLinks.isEmpty()) { g.varRent = 0; continue; }   // inaccessible: nobody can locate there, and its nearby land may be 0 (surrounded by other inaccessible nodes). Rent left at 0.
+    g.varRent = funComputeRent(funComputeDensity(g, g, /* ownWeight = */ 0));
+}
 
 // TEST: average density over occupied nodes (compare with parDensityRef), rent range over all nodes, and average rent over occupied nodes
 double sumD = 0, sumOccupiedR = 0, minR = Double.MAX_VALUE, maxR = 0;
 int occupied = 0;
 for (GridPoint g : gridPoints) {
+    if (g.colLinks.isEmpty()) continue;   // inaccessible: no rent
     minR = min(minR, g.varRent); //Climbs down to minimum rent
     maxR = max(maxR, g.varRent); //Climbs up to maximum rent
     if (g.colResidents.isEmpty() && g.colActivities.isEmpty()) continue;   // unoccupied node

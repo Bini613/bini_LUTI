@@ -16,8 +16,9 @@ for (int x = max(0, j.parXIndex - reach); x <= min(parCols - 1, j.parXIndex + re
         GridPoint k = varGrid[x][y];
         k.varCrowding += dCrowding * weight;
         k.varNearbyLand += dLand * weight;
-        // Update k's stored rent (everyone included). Skipped while funBuildDensitySurface is building the surface, which sets all rents once at the end
-        if (!varPauseRentUpdates) {
+        // Update k's stored rent (everyone included). Skipped for inaccessible nodes (no rent, see funBuildDensitySurface),
+        // and while funBuildDensitySurface is building the surface, which sets all rents once at the end
+        if (!varPauseRentUpdates && !k.colLinks.isEmpty()) {
             k.varRent = funComputeRent(funComputeDensity(k, k, /* ownWeight = */ 0));
         }
     }
