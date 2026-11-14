@@ -21,7 +21,6 @@ getDefaultRandomGenerator().setSeed(parSeed + 1);   // makes sure all steps goin
 
 // Loaded path: start from the saved equilibrium, then go straight to the first checkpoint
 if (varNetworkLoaded && parLoadSavedState && funLoadState()) {
-    funCalibrateRoadWidth();      // sets varRoadWidthRef so that starting widths take up parStartingRoadLandShare of city area
     funSetAvailableLands();       // sets available land value for every grid point, depending on the roads around it
     funResumeFromEquilibrium();   // reseed, rebuild density, assign traffic, reshuffle queue, reset counters (same as the straight-through run at its first equilibrium)
     funRunCheckpoint();           // loaded city is already settled: invest (or end) before any turn
@@ -31,7 +30,6 @@ if (varNetworkLoaded && parLoadSavedState && funLoadState()) {
 // Virgin path
 funInitImpedance();                 // needed before rent calculations below because it affects road width -> available land area
 funPlaceAgents();                   // citizens and activities, with their preferences
-funCalibrateRoadWidth();            // sets varRoadWidthRef so that starting widths take up parStartingRoadLandShare of city area
 funSetAvailableLands();             // sets available land value for every grid point, depending on the roads around it
 funBuildDensitySurface();           // sets varCrowding and varNearbyLand for each node
 funAssignTraffic();                 // first equilibrium traffic flows and volumes

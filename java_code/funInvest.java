@@ -59,11 +59,11 @@ while (upgrades < parNumUpgrades) {
     double newImpedance = max(parImpedanceMin, pick.varImpedance - parUpgradeAggresiveness);
 
     // 3. Land check at both end nodes (unfloored land, same formula as GridPoint.funUpdateAvailableLand)
-    double halfArea = 0.5 * varRoadWidthRef * pick.parLength;   // road land per unit of I^-delta, at each end node
+    double halfArea = 0.5 * parRoadWidthRef * pick.parLength;   // road land per unit of I^-delta, at each end node
     double slack = Double.POSITIVE_INFINITY;                     // land each end node can still give up (smaller of the two)
     for (GridPoint g : new GridPoint[] {pick.parNodeA, pick.parNodeB}) {
         double roadLand = 0;
-        for (Link l : g.colLinks) roadLand += 0.5 * varRoadWidthRef * l.parLength * pow(l.varImpedance, -delta);
+        for (Link l : g.colLinks) roadLand += 0.5 * parRoadWidthRef * l.parLength * pow(l.varImpedance, -delta);
         slack = min(slack, parCellLand - roadLand - parMinAvailableLand);
     }
     double extraRoadLand = halfArea * (pow(newImpedance, -delta) - pow(pick.varImpedance, -delta));
