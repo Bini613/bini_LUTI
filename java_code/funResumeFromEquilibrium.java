@@ -10,6 +10,8 @@
 //   3. Reshuffle the relocation queue (draws from the new seed).
 //   4. Reset the turn and round counters, the moves-since-assignment counter and the spread history, so checkpoints,
 //      re-assignments and rounds fall on the same turns in both runs.
+//   5. Record the first-equilibrium spread (varFirstEquilibriumSpread), the baseline for the final spread report.
+//      This function runs exactly once per run, at the first equilibrium on both paths, with identical agents.
 //   Traffic reassignment is necessary so that loaded runs and through-runs resume from same flow data (so the through-run doesn't use flow data that may be a few relocations old). That assignment takes place in the checkpoint function that calls the present function. 
 // Step 2 draws no random numbers, so the reseed only has to come before the shuffle.
 getDefaultRandomGenerator().setSeed(parSeed + 2);
@@ -20,4 +22,5 @@ varRounds = 0;
 varRelocationsSinceAssignment = 0;
 varAssignmentCount = 0;
 colAverageSpread.clear();
+varFirstEquilibriumSpread = funComputeSpread();
 funRuntimePrint("Resumed from equilibrium: reseeded with parSeed + 2, density and queue rebuilt, counters reset");

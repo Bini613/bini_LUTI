@@ -58,7 +58,7 @@ funAssignTraffic();                 // first equilibrium traffic flows and volum
 funShuffleResetRelocationQueue();   // new shuffled relocation queue
 
 
-testAvailableLands();
+//testAvailableLands();
 //testApplyImpedanceChange();
 ]]></StartupCode>
 			<DestroyCode><![CDATA[if (!varReportPrinted) funPrintFinalReports("stopped manually");
@@ -563,6 +563,21 @@ This kernel is used for each position when adding up land area and population co
 						</InitialValue>
 					</Properties>
 				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1794669550967</Id>
+					<Name><![CDATA[varFirstEquilibriumSpread]]></Name>
+					<X>580</X><Y>1240</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[0]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
 				<Variable Class="Parameter">
 					<Id>1793468131891</Id>
 					<Name><![CDATA[parCols]]></Name>
@@ -964,7 +979,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.5//parImpedanceLocal]]></Code>
+							<Code><![CDATA[parImpedanceLocal]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793639282179</Id>
@@ -993,31 +1008,6 @@ This kernel is used for each position when adding up land area and population co
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793639319732</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1793639479944</Id>
-					<Name><![CDATA[parCapacityGamma]]></Name>
-					<Description><![CDATA[γ in C = C_ref · I^(-γ)]]></Description>
-					<X>120</X><Y>1335</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1.5]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1793639479942</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -1091,7 +1081,7 @@ Higher value means more similar preferences amongst citizens]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[100]]></Code>
+							<Code><![CDATA[1]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793667179004</Id>
@@ -1257,7 +1247,7 @@ Some people have negative VOP, meaning they like crowding]]></Description>
 				<Variable Class="Parameter">
 					<Id>1794175943005</Id>
 					<Name><![CDATA[parPeoplePerCitizen]]></Name>
-					<Description><![CDATA[This parameter must be ordered before parTripsPerMonth in Main, since the latter depends on it]]></Description>
+					<Description><![CDATA[This is how many people each citizen represents. Effectively scales all traffic flows to be bigger, increasing congestion.]]></Description>
 					<X>540</X><Y>1660</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -1268,7 +1258,7 @@ Some people have negative VOP, meaning they like crowding]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[72]]></Code>
+							<Code><![CDATA[100]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794175943003</Id>
@@ -1371,7 +1361,7 @@ Value assumes 2 trips a day for a 30 day month, but multiplied by parPeoplePerHo
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.001/2]]></Code>
+							<Code><![CDATA[0.005]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793670220722</Id>
@@ -1446,7 +1436,7 @@ Value assumes 2 trips a day for a 30 day month, but multiplied by parPeoplePerHo
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[2.5]]></Code>
+							<Code><![CDATA[1]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793674587660</Id>
@@ -1723,7 +1713,7 @@ Roads is taken to a fill in for general transportatoin land area, so set backs a
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1.5]]></Code>
+							<Code><![CDATA[2]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793748808512</Id>
@@ -1750,7 +1740,7 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[400*parStepLength/500]]></Code>
+							<Code><![CDATA[500*parStepLength/500]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793748836186</Id>
@@ -1848,7 +1838,7 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[4]]></Code>
+							<Code><![CDATA[10]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793756898930</Id>
@@ -1948,7 +1938,7 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[5 * parStepLength]]></Code>
+							<Code><![CDATA[10 * parStepLength]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793917425177</Id>
@@ -2154,33 +2144,6 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
-					<Id>1794012650077</Id>
-					<Name><![CDATA[parCapacityRef]]></Name>
-					<Description><![CDATA[Scales capacity of road across the board; lower will encourage more congestion. Congestion sensitivity to impedance is fine tuned separately with parCapacityGamma
-
-Should be tuned in reference to population size]]></Description>
-					<X>120</X><Y>1400</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[50]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1794012650075</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
 					<Id>1794034711658</Id>
 					<Name><![CDATA[parSpreadEquilibriumTolerance]]></Name>
 					<X>580</X><Y>1280</Y>
@@ -2193,7 +2156,7 @@ Should be tuned in reference to population size]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.01]]></Code>
+							<Code><![CDATA[0.001]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794034711656</Id>
@@ -2508,7 +2471,7 @@ Should be tuned in reference to population size]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
+							<Code><![CDATA[0]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794501608135</Id>
@@ -2580,7 +2543,7 @@ Should be tuned in reference to population size]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[10]]></Code>
+							<Code><![CDATA[8]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794588684077</Id>
@@ -2605,7 +2568,7 @@ Should be tuned in reference to population size]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[false]]></Code>
+							<Code><![CDATA[true]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794603561580</Id>
@@ -2664,6 +2627,30 @@ Should be tuned in reference to population size]]></Description>
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1794666465505</Id>
+					<Name><![CDATA[parActivityRelocationAmortizedCost]]></Name>
+					<X>400</X><Y>2330</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[10000]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794666465503</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1794037714993</Id>
 					<Name><![CDATA[colAverageSpread]]></Name>
@@ -2699,7 +2686,6 @@ Should be tuned in reference to population size]]></Description>
 				<Event>
 					<Id>1793943737250</Id>
 					<Name><![CDATA[evSimulateNextTurn]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>580</X><Y>1160</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2719,11 +2705,11 @@ Should be tuned in reference to population size]]></Description>
 						<OccurrenceDate>1793952000000</OccurrenceDate>
 						<OccurrenceTime Class="CodeUnitValue">
 							<Code><![CDATA[0]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[DAY]]></Unit>
+							<Unit Class="TimeUnits"><![CDATA[HOUR]]></Unit>
 						</OccurrenceTime>
 						<RecurrenceCode Class="CodeUnitValue">
 							<Code><![CDATA[parRelocationInterval]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[DAY]]></Unit>
+							<Unit Class="TimeUnits"><![CDATA[HOUR]]></Unit>
 						</RecurrenceCode>
 						<Condition><![CDATA[false]]></Condition>
 					</Properties>
@@ -3607,9 +3593,13 @@ if (varAccessDistances == null || varAccessDistances.length != nAct || varAccess
 // Read everything the passes need from AnyLogic collections here, on the main thread
 GridPoint[] origins = new GridPoint[nAct];
 for (int a = 0; a < nAct; a++) origins[a] = activities.get(a).varLocation;
+// Each link's position in 'links', looked up once here. AnyLogic's getIndex() is not thread-safe (it uses an internal
+// cache), so calling it inside the parallel passes can crash with IndexOutOfBoundsException. Reading a finished map is safe.
+java.util.IdentityHashMap<Link, Integer> linkIndex = new java.util.IdentityHashMap<>(nLinks);
+for (int i = 0; i < nLinks; i++) linkIndex.put(links.get(i), i);
 
 // Per-activity results, each written only by its own activity's pass
-double[][] actFlow = new double[nAct][nLinks];   // target flow each activity puts on each link, indexed by link getIndex()
+double[][] actFlow = new double[nAct][nLinks];   // target flow each activity puts on each link, indexed by the link's position in 'links' (linkIndex)
 double[] actFastestTime = new double[nAct];     // that activity's share of totalFastestTime
 double[] actUnreachable = new double[nAct];     // that activity's unreachable demand (should stay 0)
 
@@ -3651,7 +3641,7 @@ acts.forEach(thisAct -> {
         int k = order[s]; //get the grid index k of the first node to look at, which is the last one settled
         if (k == -1 || thisActDemand[k] == 0) continue;   // unsettled (unreachable) slot, or nothing to pass on
         Link l = prev[k];
-        flow[l.getIndex()] += thisActDemand[k];   // this activity's own flow array, not the shared link variable (other threads may be loading the same link)
+        flow[linkIndex.get(l)] += thisActDemand[k];   // this activity's own flow array, not the shared link variable (other threads may be loading the same link)
         GridPoint up = (l.parNodeA.parIndex == k) ? l.parNodeB : l.parNodeA;   // up is defined as the next node along the route to activity thisAct. The conditional makes sure to pick the correct end of link l which is the next node, not the current one (node k).
         thisActDemand[up.parIndex] += thisActDemand[k];//Next node up the chain receives the previous one's demand on top of what it already had from other routes already tracked.
     }
@@ -4866,7 +4856,8 @@ traceln("funComputeDensity: full-density largest difference " + String.format("%
 //                                                R_k is still computed and stored (varRent) either way, for outputs.
 //   U_loc  = -VOL * D_k                          D_k = weighted average straight-line distance (metres) from k to all citizens' homes,
 //                                                weighted by each citizen's weight for this activity: sum_c( w_c * d_kc ) / sum_c( w_c ). Effectively average distance per trip, since each citizen's w_c is their number of trips per direction per day to this activity
-//   U_move = -VOM * parRelocationAmortizedCost   only if k is not the current location
+//   U_move = -VOM * parActivityRelocationAmortizedCost   only if k is not the current location
+//                                                (activities' own moving cost, separate from citizens' parRelocationAmortizedCost)
 //   V_k = U_rent + U_loc + U_move
 // Choice probability: P_k = exp(mu * V_k) / sum_j(exp(mu * V_j)), mu = parLogitScale (shared with citizens' choice).
 // The largest V is subtracted from each V before exp to avoid overflow and underflow (doesn't change the probabilities).
@@ -4967,7 +4958,7 @@ for (int i = 0; i < nCand; i++) {
     double rent = funComputeRent(density);   // rand per month
     double uRent = parActivityRentToggle ? -act.parVOM * rent : 0;   // rent sub-utility can be switched off globally
     double uLoc = -act.parVOL * avgDist;
-    double uMove = isHere ? 0 : -act.parVOM * parRelocationAmortizedCost;
+    double uMove = isHere ? 0 : -act.parVOM * parActivityRelocationAmortizedCost;
 
     V[i] = uRent + uLoc + uMove;
     candRent[i] = rent;
@@ -5267,7 +5258,8 @@ if (parShowTestOutput) traceln(msg);
 // Returns true if any link's impedance changed, false if no link could be upgraded at all (funRunCheckpoint then ends the run).
 //
 // Each upgrade:
-//   1. Draw a link at random, weighted by score V^2 / C  (= V * V/C: busy AND congested links are favoured).
+//   1. Draw a link at random, weighted by score V/C: congested links are favoured, regardless of how much traffic they carry
+//      (so busy central links don't win just for their volume).
 //      Links with no flow score 0 and are never drawn. Each link can be drawn at most once per investment
 //      (scores aren't recomputed between draws, since flows only change at the next assignment).
 //   2. New impedance = current - parUpgradeAggresiveness, but never below parImpedanceMin.
@@ -5300,7 +5292,7 @@ while (upgrades < parNumUpgrades) {
     double total = 0;
     for (Link l : links) {
         if (l.varUpgradeBlocked || drawn.contains(l) || l.varFlowVol <= 0) continue;
-        total += l.varFlowVol * l.varFlowVol / l.varCapacity;
+        total += l.varFlowVol / l.varCapacity;
     }
     if (total <= 0) break;   // nothing left to upgrade
     double r = varInvestRandom.nextDouble() * total;   // random point along the stacked scores
@@ -5308,7 +5300,7 @@ while (upgrades < parNumUpgrades) {
     for (Link l : links) {
         if (l.varUpgradeBlocked || drawn.contains(l) || l.varFlowVol <= 0) continue;
         pick = l;   // keeps the last eligible link in case rounding leaves r just past the end
-        r -= l.varFlowVol * l.varFlowVol / l.varCapacity;
+        r -= l.varFlowVol / l.varCapacity;
         if (r < 0) break;
     }
     drawn.add(pick);
@@ -5396,17 +5388,27 @@ ag.setXY(g.getX() + radius * cos(angle), g.getY() + radius * sin(angle));
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// TEMPORARY TEST. Function in Main. Just action (returns nothing). No arguments. Called by funPrintFinalReports.
-// Prints the citizens' current spread (funComputeSpread: standard distance of their homes from their centroid, metres),
-// and, if the equilibrium history has values, the mean of the last parSpreadEquilibriumWindow of them for comparison.
-double spread = funComputeSpread();
-String s = "Turn " + varTurnCount + " citizens' spread from their centroid: " + roundToDecimal(spread, 0) + " m";
+// Prints the citizens' final spread (funComputeSpread: standard distance of their homes from their centroid, metres)
+// and its % change from the first equilibrium (varFirstEquilibriumSpread, recorded once by funResumeFromEquilibrium).
+// Final spread = mean of the last parSpreadEquilibriumWindow values in colAverageSpread (the reports since the last
+// investment), which smooths out turn-to-turn noise; if that history is empty, the current spread is used instead.
+double current = funComputeSpread();
+double finalSpread = current;
+String source = "most recent reading";
 int n = colAverageSpread.size();
 if (n > 0) {
     int window = min(parSpreadEquilibriumWindow, n);
     double sum = 0;
     for (int i = n - window; i < n; i++) sum += colAverageSpread.get(i);
-    s += " (mean of last " + window + " equilibrium reports " + roundToDecimal(sum / window, 0) + " m)";
+    finalSpread = sum / window;
+    source = "mean reading of last " + window + " reports";
 }
+String s = "Turn " + varTurnCount + " citizens' spread from their centroid: " + roundToDecimal(finalSpread, 0) + " m (source: " + source + ")";
+if (varFirstEquilibriumSpread > 0) {
+    double change = 100 * (finalSpread - varFirstEquilibriumSpread) / varFirstEquilibriumSpread;
+    s += ", first equilibrium " + roundToDecimal(varFirstEquilibriumSpread, 0) + " m, change " + (change >= 0 ? "+" : "-") + roundToDecimal(change, 1) + "%";
+}
+else s += " (no equilibrium reached, so no baseline to compare with)";
 funRuntimePrint(s);   // TEST
 ]]></Body>
 				</Function>
@@ -5921,6 +5923,8 @@ funRuntimePrint("Turn " + varTurnCount + " V/C over " + count + " used links (of
 //   3. Reshuffle the relocation queue (draws from the new seed).
 //   4. Reset the turn and round counters, the moves-since-assignment counter and the spread history, so checkpoints,
 //      re-assignments and rounds fall on the same turns in both runs.
+//   5. Record the first-equilibrium spread (varFirstEquilibriumSpread), the baseline for the final spread report.
+//      This function runs exactly once per run, at the first equilibrium on both paths, with identical agents.
 //   Traffic reassignment is necessary so that loaded runs and through-runs resume from same flow data (so the through-run doesn't use flow data that may be a few relocations old). That assignment takes place in the checkpoint function that calls the present function. 
 // Step 2 draws no random numbers, so the reseed only has to come before the shuffle.
 getDefaultRandomGenerator().setSeed(parSeed + 2);
@@ -5931,6 +5935,7 @@ varRounds = 0;
 varRelocationsSinceAssignment = 0;
 varAssignmentCount = 0;
 colAverageSpread.clear();
+varFirstEquilibriumSpread = funComputeSpread();
 funRuntimePrint("Resumed from equilibrium: reseeded with parSeed + 2, density and queue rebuilt, counters reset");
 ]]></Body>
 				</Function>
@@ -7137,11 +7142,12 @@ varTravelTime = funFreeFlowTime() * (1 + main.parCongestionAlpha * pow(varFlowVo
 					<Body><![CDATA[// Function in Link. Returns value, type: double. No arguments.
 // Land this road takes from EACH of its two end nodes (the road's land is split equally between them), in m^2:
 //   0.5 * length * width * parCarLandUsage,   width = parRoadWidthRef * varLanes
-// parRoadWidthRef: width of one lane (m). parCarLandUsage: multiplier for the land the road takes beyond its
+// parRoadWidthRef: width of road with one lane each way(m). parCarLandUsage: multiplier for the land the road takes beyond its
 // carriageway (verges, pavements, parking, junctions...). Road land grows linearly with lanes.
 // Uses varLanes, so funUpdateCapacity must have run since the last impedance change (funApplyImpedanceChange,
 // funInitImpedance and funLoadState all call it before any land is computed).
-return 0.5 * parLength * main.parRoadWidthRef * varLanes * main.parCarLandUsage;]]></Body>
+return 0.5 * parLength * main.parRoadWidthRef * varLanes * main.parCarLandUsage;
+]]></Body>
 				</Function>
 			</Functions>
 
@@ -8584,9 +8590,6 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<ParameterName><![CDATA[parImpedanceMin]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[parCapacityGamma]]></ParameterName>
-				</Parameter>
-				<Parameter>
 					<ParameterName><![CDATA[parCongestionAlpha]]></ParameterName>
 				</Parameter>
 				<Parameter>
@@ -8719,9 +8722,6 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<ParameterName><![CDATA[parDensityRef]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[parCapacityRef]]></ParameterName>
-				</Parameter>
-				<Parameter>
 					<ParameterName><![CDATA[parSpreadEquilibriumTolerance]]></ParameterName>
 				</Parameter>
 				<Parameter>
@@ -8783,6 +8783,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[parPeakHourConcentration]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[parActivityRelocationAmortizedCost]]></ParameterName>
 				</Parameter>
 			</Parameters>
 			<PresentationProperties>
