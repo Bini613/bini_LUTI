@@ -663,7 +663,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[30]]></Code>
+							<Code><![CDATA[100]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793493784749</Id>
@@ -807,7 +807,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[2]]></Code>
+							<Code><![CDATA[1]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793588894429</Id>
@@ -831,7 +831,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[5]]></Code>
+							<Code><![CDATA[10]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793588984642</Id>
@@ -893,7 +893,9 @@ This kernel is used for each position when adding up land area and population co
 				<Variable Class="Parameter">
 					<Id>1793638777428</Id>
 					<Name><![CDATA[parVRef]]></Name>
-					<Description><![CDATA[base speed for local road, m/min]]></Description>
+					<Description><![CDATA[base speed for local road, m/min
+
+E.g. 30km/h * 1000 m/km / 60 min/h = 500 m/min]]></Description>
 					<X>120</X><Y>1235</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -904,7 +906,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[500]]></Code>
+							<Code><![CDATA[30*1000/60]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793638777426</Id>
@@ -954,7 +956,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.1]]></Code>
+							<Code><![CDATA[0.05]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793639220220</Id>
@@ -1081,7 +1083,7 @@ Higher value means more similar preferences amongst citizens]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
+							<Code><![CDATA[0.1]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793667179004</Id>
@@ -1106,7 +1108,7 @@ Higher value means more similar preferences amongst citizens]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
+							<Code><![CDATA[2]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793669447702</Id>
@@ -1131,7 +1133,7 @@ Higher value means more similar preferences amongst citizens]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.3]]></Code>
+							<Code><![CDATA[0.5]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793669555576</Id>
@@ -1181,7 +1183,7 @@ Higher value means more similar preferences amongst citizens]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.3]]></Code>
+							<Code><![CDATA[0.5]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793669593218</Id>
@@ -1411,7 +1413,7 @@ Value assumes 2 trips a day for a 30 day month, but multiplied by parPeoplePerHo
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.2]]></Code>
+							<Code><![CDATA[0.5]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793674549454</Id>
@@ -1559,7 +1561,7 @@ Value assumes 2 trips a day for a 30 day month, but multiplied by parPeoplePerHo
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[3]]></Code>
+							<Code><![CDATA[4]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793739086761</Id>
@@ -1583,7 +1585,7 @@ Value assumes 2 trips a day for a 30 day month, but multiplied by parPeoplePerHo
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.5]]></Code>
+							<Code><![CDATA[0.25]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793739086765</Id>
@@ -1681,7 +1683,7 @@ Roads is taken to a fill in for general transportatoin land area, so set backs a
 					<X>120</X><Y>2250</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
 						<Type><![CDATA[double]]></Type>
@@ -1813,7 +1815,7 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[3.5]]></Code>
+							<Code><![CDATA[4]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793753136713</Id>
@@ -1831,14 +1833,14 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 					<X>120</X><Y>2310</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
 						<Type><![CDATA[double]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[10]]></Code>
+							<Code><![CDATA[5]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793756898930</Id>
@@ -1862,7 +1864,7 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1000]]></Code>
+							<Code><![CDATA[100]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793797716992</Id>
@@ -1886,7 +1888,7 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[2]]></Code>
+							<Code><![CDATA[1]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793806464221</Id>
@@ -1901,7 +1903,7 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 					<Id>1793915350701</Id>
 					<Name><![CDATA[parRelocationAmortizedCost]]></Name>
 					<Description><![CDATA[Moving cost for relocating, to create dampening effect on jumpy relocating. Since citizens look at monthly cost of candidate locations, this relocation cost must be considered an amortised cost over the expected duration of moving to new location.]]></Description>
-					<X>400</X><Y>2310</Y>
+					<X>280</X><Y>1730</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -2121,7 +2123,9 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 				<Variable Class="Parameter">
 					<Id>1794009528943</Id>
 					<Name><![CDATA[parDensityRef]]></Name>
-					<Description><![CDATA[Reference density, which rent calculation divides by to compute rent]]></Description>
+					<Description><![CDATA[Reference density, which rent calculation divides by to compute rent.
+
+Has a strong influence on how repelled citizens are from each other. Higher means less repulsion. Lower means more.]]></Description>
 					<X>120</X><Y>2160</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2132,7 +2136,7 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[10e-6]]></Code>
+							<Code><![CDATA[40e-6]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794009528934</Id>
@@ -2180,7 +2184,7 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[5]]></Code>
+							<Code><![CDATA[10]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794037682009</Id>
@@ -2277,7 +2281,7 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[10]]></Code>
+							<Code><![CDATA[20]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794199898095</Id>
@@ -2446,7 +2450,7 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.8]]></Code>
+							<Code><![CDATA[0.01]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794475177964</Id>
@@ -2630,7 +2634,7 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 				<Variable Class="Parameter">
 					<Id>1794666465505</Id>
 					<Name><![CDATA[parActivityRelocationAmortizedCost]]></Name>
-					<X>400</X><Y>2330</Y>
+					<X>270</X><Y>1830</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -2640,7 +2644,7 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[10000]]></Code>
+							<Code><![CDATA[5000]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794666465503</Id>
@@ -2654,7 +2658,7 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 				<Variable Class="Parameter">
 					<Id>1794671963791</Id>
 					<Name><![CDATA[parActivityLogitScale]]></Name>
-					<Description><![CDATA[Needed so that Logit probability doesn't favour cheaper rent way too much]]></Description>
+					<Description><![CDATA[Higher number means more deterministic decisions towards largest utility, but less ability for citizens to explore space. Lower number means more jumpy and slower settling behaviour]]></Description>
 					<X>270</X><Y>1810</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2665,7 +2669,7 @@ Given in reference to step lengths of 500m, so that will be updated if the scale
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.002]]></Code>
+							<Code><![CDATA[0.004]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794671963789</Id>
@@ -4059,8 +4063,9 @@ for (int x = max(0, j.parXIndex - reach); x <= min(parCols - 1, j.parXIndex + re
         GridPoint k = varGrid[x][y];
         k.varCrowding += dCrowding * weight;
         k.varNearbyLand += dLand * weight;
-        // Update k's stored rent (everyone included). Skipped while funBuildDensitySurface is building the surface, which sets all rents once at the end
-        if (!varPauseRentUpdates) {
+        // Update k's stored rent (everyone included). Skipped for inaccessible nodes (no rent, see funBuildDensitySurface),
+        // and while funBuildDensitySurface is building the surface, which sets all rents once at the end
+        if (!varPauseRentUpdates && !k.colLinks.isEmpty()) {
             k.varRent = funComputeRent(funComputeDensity(k, k, /* ownWeight = */ 0));
         }
     }
@@ -4111,7 +4116,8 @@ traceln("After removing it again, largest leftover crowding: " + worst);   // TE
 // Builds every node's varCrowding and varNearbyLand from scratch, by resetting them to 0 and then letting each node j
 // contribute its own crowding n[j] and available land L[j] through funUpdateNeighbourhoodDensity (the same function later updates use).
 //   n[j] = citizens living at j + parActivityCrowdingWeight * activities at j
-// Then sets every node's rent once, from the finished surface.
+// Inaccessible nodes (no links) contribute their crowding (always 0: no agent can be there) but no land, and get no rent (left at 0).
+// Then sets every accessible node's rent once, from the finished surface.
 // Needs agents placed and varAvailableLand set (funSetAvailableLands) first.
 // Rent updates inside funUpdateNeighbourhoodDensity are paused during the build (varPauseRentUpdates), because each node's
 // nearby land is incomplete until every node has contributed: rents computed mid-build would be wasted work, and a node
@@ -4143,17 +4149,22 @@ for (GridPoint g : gridPoints) { //reset crowding and nearbyland globally
 
 varPauseRentUpdates = true;   // Main variable (boolean): rent updates off until the surface is complete
 for (GridPoint g : gridPoints) {
-    funUpdateNeighbourhoodDensity(g, n[g.parIndex], g.varAvailableLand);// Both arguments are normally changes (dCrowding, dLand). Since this function first resets varCrowding and varNearbyLand to 0,
-// the change at each node is from zero to its full value: its crowding n[k] and its available land varAvailableLand.
+    double land = g.colLinks.isEmpty() ? 0 : g.varAvailableLand;   // inaccessible nodes (no links) contribute no land: nobody can use it, and it would make their neighbours look roomier (cheaper) than they are
+    funUpdateNeighbourhoodDensity(g, n[g.parIndex], land);// Both arguments are normally changes (dCrowding, dLand). Since this function first resets varCrowding and varNearbyLand to 0,
+// the change at each node is from zero to its full value: its crowding n[k] and its available land (0 if inaccessible).
 }
 varPauseRentUpdates = false;
 
-for (GridPoint g : gridPoints) g.varRent = funComputeRent(funComputeDensity(g, g, /* ownWeight = */ 0));   // every node's rent (everyone included), now that the surface is complete
+for (GridPoint g : gridPoints) {   // every accessible node's rent (everyone included), now that the surface is complete
+    if (g.colLinks.isEmpty()) { g.varRent = 0; continue; }   // inaccessible: nobody can locate there, and its nearby land may be 0 (surrounded by other inaccessible nodes). Rent left at 0.
+    g.varRent = funComputeRent(funComputeDensity(g, g, /* ownWeight = */ 0));
+}
 
 // TEST: average density over occupied nodes (compare with parDensityRef), rent range over all nodes, and average rent over occupied nodes
 double sumD = 0, sumOccupiedR = 0, minR = Double.MAX_VALUE, maxR = 0;
 int occupied = 0;
 for (GridPoint g : gridPoints) {
+    if (g.colLinks.isEmpty()) continue;   // inaccessible: no rent
     minR = min(minR, g.varRent); //Climbs down to minimum rent
     maxR = max(maxR, g.varRent); //Climbs up to maximum rent
     if (g.colResidents.isEmpty() && g.colActivities.isEmpty()) continue;   // unoccupied node
@@ -5431,7 +5442,7 @@ if (n > 0) {
 String s = "Turn " + varTurnCount + " citizens' spread from their centroid: " + roundToDecimal(finalSpread, 0) + " m (source: " + source + ")";
 if (varFirstEquilibriumSpread > 0) {
     double change = 100 * (finalSpread - varFirstEquilibriumSpread) / varFirstEquilibriumSpread;
-    s += ", first equilibrium " + roundToDecimal(varFirstEquilibriumSpread, 0) + " m, change " + (change >= 0 ? "+" : "-") + roundToDecimal(change, 1) + "%";
+    s += ", first equilibrium " + roundToDecimal(varFirstEquilibriumSpread, 0) + " m, change " + (change >= 0 ? "+" : "") + roundToDecimal(change, 1) + "%";
 }
 else s += " (no equilibrium reached, so no baseline to compare with)";
 funRuntimePrint(s);   // TEST
@@ -5560,9 +5571,15 @@ double previousMean = sumPrevious / window;
 double change = abs(recentMean - previousMean) / previousMean;
 if (change > parSpreadEquilibriumTolerance) return false;   // still changing: keep running
 
-funRuntimePrint("Spread equilibrium reached at turn " + varTurnCount + " (round " + varRounds + "): citizens' spread from their centroid "
+String s = "Spread equilibrium reached at turn " + varTurnCount + " (round " + varRounds + "): citizens' spread from their centroid "
         + roundToDecimal(recentMean, 0) + " m (mean of last " + window + " reports), change vs the " + window + " reports before: " + roundToDecimal(100 * change, 5) + "% (tolerance "
-        + roundToDecimal(100 * parSpreadEquilibriumTolerance, 5) + "%)");
+        + roundToDecimal(100 * parSpreadEquilibriumTolerance, 5) + "%)";
+// % change vs the first equilibrium (varFirstEquilibriumSpread, set by funResumeFromEquilibrium; still 0 at the first equilibrium itself)
+if (varFirstEquilibriumSpread > 0) {
+    double changeFromFirst = 100 * (recentMean - varFirstEquilibriumSpread) / varFirstEquilibriumSpread;
+    s += ", change vs first equilibrium (" + roundToDecimal(varFirstEquilibriumSpread, 0) + " m): " + (changeFromFirst >= 0 ? "+" : "") + roundToDecimal(changeFromFirst, 1) + "%";
+}
+funRuntimePrint(s);
 return true;
 ]]></Body>
 				</Function>
