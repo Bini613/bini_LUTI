@@ -29,7 +29,8 @@ String[] ignored = {"parRoadUpgradeCost", "parInvestmentRate", "parShowTestOutpu
                     "parNumUpgrades", "parUpgradeAggresiveness",
                     "parRentRef", "parRentMin", "parDensityRef", "parCarLandUsage", "parRentInfluenceDecayLength", "parRentInfluenceDecayLength_CutOffMultiple",
                     "parNumCitizens", "parNumActivities", "parPeoplePerCitizen", "parVOTMean", "parVOTSpread", "parVOMMean", "parVOMSpread", 
-                    "parActivityVOMMean", "parActivityVOMSpread", "parActivityVOLMean", "parActivityVOLSpread"};
+                    "parActivityVOMMean", "parActivityVOMSpread", "parActivityVOAMean", "parActivityVOASpread",
+                    "parActivityVOLMean", "parActivityVOLSpread"};
 
 // 1. Read and check the whole file before creating anything, so a bad or outdated file leaves the model untouched
 List<String[]> savedCitizens = new ArrayList<>();
@@ -80,7 +81,8 @@ for (String[] v : savedActivities) {
     GridPoint g = varGrid[k / parCols][k % parCols];
     Activity a = add_activities();   // preferences set from the file below
     a.parVOM = Double.parseDouble(v[2]);
-    a.parVOL = Double.parseDouble(v[3]);
+    a.parVOA = Double.parseDouble(v[3]);
+    a.parVOL = v.length > 4 ? Double.parseDouble(v[4]) : 0;   // files saved before VOL was added have no 5th value: VOL = 0 (distance term off)
     a.varLocation = g;
     g.colActivities.add(a);
     funPlaceIcon(a, g);

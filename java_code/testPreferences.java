@@ -51,14 +51,14 @@ double vopSd = sqrt(max(0, vopSumSq / citizens.size() - vopMean * vopMean));
 traceln("VOP: mean " + roundToDecimal(vopMean, 3) + " (target " + parVOPMean + "), standard deviation " + roundToDecimal(vopSd, 3) + " (target " + parVOPStandardDeviation
         + "), negative (enjoy crowding): " + roundToDecimal(100.0 * vopNegative / citizens.size(), 1) + "%");   // TEST
 
-// Same check for activities' VOM and VOL (few activities, so expect a looser match to the targets)
-String[] aNames = {"Activity VOM", "Activity VOL"};
-double[] aTargetMeans = {parActivityVOMMean, parActivityVOLMean};
-double[] aTargetSpreads = {parActivityVOMSpread, parActivityVOLSpread};
-for (int p = 0; p < 2; p++) {   // p = 0, 1 for VOM, VOL
+// Same check for activities' VOM, VOA and VOL (few activities, so expect a looser match to the targets)
+String[] aNames = {"Activity VOM", "Activity VOA", "Activity VOL"};
+double[] aTargetMeans = {parActivityVOMMean, parActivityVOAMean, parActivityVOLMean};
+double[] aTargetSpreads = {parActivityVOMSpread, parActivityVOASpread, parActivityVOLSpread};
+for (int p = 0; p < 3; p++) {   // p = 0, 1, 2 for VOM, VOA, VOL
     double sum = 0, sumSq = 0;
     for (Activity a : activities) {
-        double v = (p == 0) ? a.parVOM : a.parVOL;
+        double v = (p == 0) ? a.parVOM : (p == 1) ? a.parVOA : a.parVOL;
         sum += v;
         sumSq += v * v;
     }

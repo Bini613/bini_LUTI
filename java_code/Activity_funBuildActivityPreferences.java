@@ -1,7 +1,8 @@
 // Function in Activity. Just action (returns nothing). No arguments. Called by funPlaceAgents right after each activity is created (not when a saved state is loaded).
 // Draws this activity's preferences, each from its own lognormal distribution:
 //   parVOM: value of money (sensitivity to rent)
-//   parVOL: value of location (rand per metre of weighted average distance to citizens)
+//   parVOA: value of accessibility (rand per minute of weighted average travel time to citizens)
+//   parVOL: value of location (rand per metre of weighted average straight-line distance to citizens)
 
 // Lognormal draw from a mean and a relative spread, as in Citizen's funBuildCitizenPreferences:
 //   sigma^2 = ln(1 + spread^2),  mu = ln(mean) - sigma^2 / 2
@@ -12,4 +13,5 @@ java.util.function.DoubleBinaryOperator drawLognormal = (mean, spread) -> {
     return exp(mu + sigma * normal());   // normal() with no arguments = standard normal (mean 0, sd 1)
 };
 parVOM = drawLognormal.applyAsDouble(main.parActivityVOMMean, main.parActivityVOMSpread);
+parVOA = drawLognormal.applyAsDouble(main.parActivityVOAMean, main.parActivityVOASpread);
 parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVOLSpread);

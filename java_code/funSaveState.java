@@ -5,7 +5,7 @@
 // Saved: every Main parameter (to check the state still matches the settings when loading), then
 //   CITIZEN  home node index, VOT, VOM, VOP, expected welfare (logsum from its last turn, used by funCheckWelfarePeak),
 //            then one weight per activity
-//   ACTIVITY location node index, VOM, VOL          (in population order, so weight positions still match activities)
+//   ACTIVITY location node index, VOM, VOA, VOL     (in population order, so weight positions still match activities)
 //   LINK     node A index, node B index, impedance, flow
 // Land, density, rent and travel times are not saved: they are rebuilt from these after loading.
 // Numbers are written with Java's own formatting (always '.' as decimal point), so they read back exactly.
@@ -23,7 +23,7 @@ try (java.io.PrintWriter out = new java.io.PrintWriter("savedState.txt")) {
         for (double w : c.varActivityWeights) s.append("\t").append(w);
         out.println(s);
     }
-    for (Activity a : activities) out.println("ACTIVITY\t" + a.varLocation.parIndex + "\t" + a.parVOM + "\t" + a.parVOL);
+    for (Activity a : activities) out.println("ACTIVITY\t" + a.varLocation.parIndex + "\t" + a.parVOM + "\t" + a.parVOA + "\t" + a.parVOL);
     for (Link l : links) out.println("LINK\t" + l.parNodeA.parIndex + "\t" + l.parNodeB.parIndex + "\t" + l.varImpedance + "\t" + l.varFlowVol);
     funRuntimePrint("State saved to savedState.txt at turn " + varTurnCount + " (round " + varRounds + ")");
 } catch (Exception e) {
