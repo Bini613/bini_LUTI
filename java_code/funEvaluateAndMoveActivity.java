@@ -14,8 +14,13 @@
 //   U_rent = -VOM * R_k                          R_k = rent excluding act itself: funComputeRent(funComputeDensity(k, here, parActivityCrowdingWeight))
 //                                                Switched off (U_rent = 0) when parActivityRentToggle is false; VOM still scales U_move.
 //                                                R_k is still computed and stored (varRent) either way, for outputs.
-//   U_loc  = -VOL * D_k                          D_k = weighted average straight-line distance (metres) from k to all citizens' homes,
-//                                                weighted by each citizen's weight for this activity: sum_c( w_c * d_kc ) / sum_c( w_c ). Effectively average distance per trip, since each citizen's w_c is their number of trips per direction per day to this activity
+//   U_loc  = -VOL * T_k                          T_k = weighted average network travel time (minutes) between k and all citizens' homes,
+//                                                weighted by each citizen's weight for this activity: sum_c( w_c * t_kc ) / sum_c( w_c ). Effectively average travel time per trip,
+//                                                since each citizen's w_c is their number of trips per direction per day to this activity.
+//                                                t_kc uses the current link times (varTravelTime), the same congested times citizens see:
+//                                                one Dijkstra run (funBuildFastestPathTree) from each candidate k, since links are two-way.
+//                                                VOL is therefore rand per minute of average trip time.
+//                                                (The earlier straight-line distance version is kept on git branch activity-distance-utility.)
 //   U_move = -VOM * parActivityRelocationAmortizedCost   only if k is not the current location
 //                                                (activities' own moving cost, separate from citizens' parRelocationAmortizedCost)
 //   V_k = U_rent + U_loc + U_move
@@ -24,14 +29,14 @@
 //
 // Stored on act every turn (stay or move), for the node it ends up on (values as seen excluding act itself):
 //   varRent   rent (rand per month)                                    varURent = -VOM * varRent
-//   varLoc    weighted average distance to citizens' homes (metres)    varULoc  = -VOL * varLoc
+//   varLoc    weighted average travel time to citizens' homes (minutes) varULoc = -VOL * varLoc
 //   varExpectedWelfare  logsum over all candidates: maxV + ln(sum_k exp(mu * (V_k - maxV))) / mu  (rand per month; only differences are meaningful)
 
 GridPoint here = act.varLocation;
 int ai = act.getIndex();   // this activity's index: matches the position of its weight in each citizen's varActivityWeights, so long as no agents are added or removed during simulation. Otherwise, different coding solution would be needed.
 
 // Citizens' weights for this activity, summed per home node, gathered once (reused for every candidate).
-// Citizens sharing a node are the same distance from any candidate, so each candidate loops over occupied nodes instead of every citizen.
+// Citizens sharing a node have the same travel time from any candidate, so each candidate loops over occupied nodes instead of every citizen.
 double[] nodeW = new double[parCols * parCols];   // total weight per node, index parIndex
 double sumW = 0;
 for (Citizen c : citizens) {
@@ -41,14 +46,12 @@ for (Citizen c : citizens) {
 // Compress to just the nodes with weight
 int nOcc = 0;
 for (double nodeWeight : nodeW) if (nodeWeight > 0) nOcc++;
-int[] hx = new int[nOcc];
-int[] hy = new int[nOcc];
+int[] occIdx = new int[nOcc];   // node index (parIndex) of each occupied node
 double[] w = new double[nOcc];
 int i0 = 0;
 for (GridPoint g : gridPoints) {
     if (nodeW[g.parIndex] <= 0) continue;
-    hx[i0] = g.parXIndex;
-    hy[i0] = g.parYIndex;
+    occIdx[i0] = g.parIndex;
     w[i0] = nodeW[g.parIndex];
     i0++;
 }
@@ -99,34 +102,42 @@ double[] V = new double[nCand];
 // Per candidate values, kept to store the chosen one's on the activity.
 // The sub-utilities are not kept: each is just the value times -VOM / -VOL, so they are recomputed for the chosen one only.
 double[] candRent = new double[nCand];
-double[] candDist = new double[nCand];   // weighted average distance to citizens' homes (metres)
+double[] candTime = new double[nCand];   // weighted average travel time to citizens' homes (minutes)
+// Dijkstra work arrays, created once and reused for every candidate (funBuildFastestPathTree resets them on each call)
+int nNodes = parCols * parCols;
+double[] tTime = new double[nNodes];
+Link[] tPrev = new Link[nNodes];
+int[] tOrder = new int[nNodes];
+double[] tDist = new double[nNodes];
 double maxV = Double.NEGATIVE_INFINITY;
 for (int i = 0; i < nCand; i++) {
     GridPoint k = cand[i];
     boolean isHere = (i == 0);
 
-    // Weighted average straight-line distance from k to citizens' homes (metres)
-    double sumWD = 0;
+    // Weighted average travel time between k and citizens' homes (minutes), on the current congested link times
+    funBuildFastestPathTree(k, tTime, tPrev, tOrder, tDist);   // times from k to every node (= from every node to k, links are two-way)
+    double sumWT = 0;
     for (int j = 0; j < nOcc; j++) {
-        int cx = k.parXIndex - hx[j], cy = k.parYIndex - hy[j];
-        sumWD += w[j] * sqrt(cx * cx + cy * cy);
+        double t = tTime[occIdx[j]];
+        if (t == Double.POSITIVE_INFINITY) error("funEvaluateAndMoveActivity: a citizen's home is unreachable from candidate (" + k.parXIndex + "," + k.parYIndex + "), grid repair must have failed.");
+        sumWT += w[j] * t;
     }
-    double avgDist = sumWD / sumW * parStepLength;
+    double avgTime = sumWT / sumW;
 
     // Sub-utilities
     double density = funComputeDensity(k, here, /* ownWeight = */ parActivityCrowdingWeight);   // excluding act itself
     double rent = funComputeRent(density);   // rand per month
     double uRent = parActivityRentToggle ? -act.parVOM * rent : 0;   // rent sub-utility can be switched off globally
-    double uLoc = -act.parVOL * avgDist;
+    double uLoc = -act.parVOL * avgTime;
     double uMove = isHere ? 0 : -act.parVOM * parActivityRelocationAmortizedCost;
 
     V[i] = uRent + uLoc + uMove;
     candRent[i] = rent;
-    candDist[i] = avgDist;
+    candTime[i] = avgTime;
     maxV = max(maxV, V[i]);
 
     if (act == activities.get(0) && isHere) funTestPrint("Activity 0 location (" + k.parXIndex + "," + k.parYIndex + ") utility terms: rent " + roundToDecimal(uRent, 0)
-            + ", location " + roundToDecimal(uLoc, 0) + " (avg distance " + roundToDecimal(avgDist, 0) + " m), total " + roundToDecimal(V[i], 0));   // TEST
+            + ", location " + roundToDecimal(uLoc, 0) + " (avg travel time " + roundToDecimal(avgTime, 1) + " minutes), total " + roundToDecimal(V[i], 0));   // TEST
 }
 
 // MNL: weights exp(mu * (V - maxV)), then a weighted random pick
@@ -145,7 +156,7 @@ while (pick < nCand - 1 && r >= e[pick]) {   // walk along the stacked weights u
 
 // Store the chosen node's values and the expected welfare (logsum) on the activity
 act.varRent = candRent[pick];
-act.varLoc = candDist[pick];
+act.varLoc = candTime[pick];
 act.varURent = parActivityRentToggle ? -act.parVOM * act.varRent : 0;   // same formulas as the sub-utilities in the candidate loop
 act.varULoc = -act.parVOL * act.varLoc;
 act.varExpectedWelfare = maxV + log(total) / parActivityLogitScale;   // total already has maxV factored out (see the MNL loop above)
