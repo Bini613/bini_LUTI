@@ -9,6 +9,12 @@
 //   LINK     node A index, node B index, impedance, flow
 // Land, density, rent and travel times are not saved: they are rebuilt from these after loading.
 // Numbers are written with Java's own formatting (always '.' as decimal point), so they read back exactly.
+// Switched off by parSaveState (Main parameter, boolean): set it false in experiments, so runs don't overwrite each other's
+// saved state (or clash writing the same file when running in parallel). The run itself continues identically either way.
+if (!parSaveState) {
+    funRuntimePrint("State not saved (parSaveState is false)");
+    return;
+}
 try (java.io.PrintWriter out = new java.io.PrintWriter("savedState.txt")) {
     out.println("SAVED_STATE turn " + varTurnCount + " round " + varRounds);
     for (String name : getParameterNames()) out.println("PARAM\t" + name + "\t" + getParameter(name));
