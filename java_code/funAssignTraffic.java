@@ -78,6 +78,9 @@ for (pass = 1; pass <= parAssignMaxIterations; pass++) {
         l.varFlowVol += lambda * (l.varTargetFlowVol - l.varFlowVol);   // move lambda of the way to the target
         l.funUpdateTravelTime();                                        // 4. Congestion adjusted time (BPR) from the new flow
     }
+    funClearTreeCache();   // 5. link times just changed, so every cached fastest-path tree is out of date: the next pass builds fresh ones.
+                           //    A converged assignment stops at the gap check above, before this point, so its final pass's trees stay cached
+                           //    (they match the final link times). A capped assignment ends here, with the cache empty.
 }// Effectively, the first pass creates the initial target flows, and updates the times based on that. Every subsequent pass updates the target based on the last one's times, then reblends the flows, and then updates the times accordingly, ready for the next pass. Repeated until convergence condition is met. 
 
 // Largest V/C in the network (Main variable), used to scale link colours from gray (least) to red (most congested)

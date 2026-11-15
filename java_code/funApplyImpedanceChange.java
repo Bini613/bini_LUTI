@@ -10,6 +10,7 @@
 l.varImpedance = newImpedance;
 l.funUpdateCapacity();   // lanes and capacity
 l.funUpdateTravelTime(); //this function inherently will use the updated free flow time, because its freeflow time is not a variable, but the return of funFreeFlowTime function which itself depends on the latest impedance
+funClearTreeCache();     // the link's time changed, so cached fastest-path trees may be out of date (investment targets busy links, which most trees use)
 
 GridPoint[] ends = {l.parNodeA, l.parNodeB};
 for (GridPoint g : ends) {

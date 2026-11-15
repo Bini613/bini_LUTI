@@ -19,6 +19,7 @@
 //                                                since each citizen's w_c is their number of trips per direction per day to this activity.
 //                                                t_kc uses the current link times (varTravelTime), the same congested times citizens see:
 //                                                one Dijkstra run (funBuildFastestPathTree) from each candidate k, since links are two-way.
+//                                                Trees come from the tree cache when available (see funClearTreeCache), so each is built at most once while link times are unchanged.
 //                                                VOL is therefore rand per minute of average trip time.
 //                                                (The earlier straight-line distance version is kept on git branch activity-distance-utility.)
 //   U_move = -VOM * parActivityRelocationAmortizedCost   only if k is not the current location
@@ -103,19 +104,25 @@ double[] V = new double[nCand];
 // The sub-utilities are not kept: each is just the value times -VOM / -VOL, so they are recomputed for the chosen one only.
 double[] candRent = new double[nCand];
 double[] candTime = new double[nCand];   // weighted average travel time to citizens' homes (minutes)
-// Dijkstra work arrays, created once and reused for every candidate (funBuildFastestPathTree resets them on each call)
+// Each candidate's fastest-path tree comes from the tree cache (funClearTreeCache) if there is one; otherwise it is built and cached,
+// so later choices (and the next assignment's first pass) can reuse it while link times stay the same.
 int nNodes = parCols * parCols;
-double[] tTime = new double[nNodes];
-Link[] tPrev = new Link[nNodes];
-int[] tOrder = new int[nNodes];
-double[] tDist = new double[nNodes];
+if (varTreeTime == null || varTreeTime.length != nNodes) funClearTreeCache();   // This is for first run, where tree cache doesn't exist yet. This line checks if it doesn't exist, and if not, clears and builds one in the correct shape.
 double maxV = Double.NEGATIVE_INFINITY;
 for (int i = 0; i < nCand; i++) {
-    GridPoint k = cand[i];
+    GridPoint k = cand[i]; // GridPoint location of candidate
     boolean isHere = (i == 0);
 
     // Weighted average travel time between k and citizens' homes (minutes), on the current congested link times
-    funBuildFastestPathTree(k, tTime, tPrev, tOrder, tDist);   // times from k to every node (= from every node to k, links are two-way)
+    double[] tTime = varTreeTime[k.parIndex];   // array of times from k to every node (= from every node to k, links are two-way)
+    if (tTime == null) {   // not cached: build the tree (new arrays, since the cache keeps them) and cache it
+        tTime = new double[nNodes];
+        double[] tDist = new double[nNodes];
+        Link[] tPrev = new Link[nNodes];
+        int[] tOrder = new int[nNodes];
+        funBuildFastestPathTree(k, tTime, tPrev, tOrder, tDist);
+        funStoreTree(k.parIndex, tTime, tDist, tPrev, tOrder);
+    }
     double sumWT = 0;
     for (int j = 0; j < nOcc; j++) {
         double t = tTime[occIdx[j]];

@@ -590,6 +590,69 @@ This kernel is used for each position when adding up land area and population co
 						<Type><![CDATA[double]]></Type>        
 					</Properties>
 				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1794762379070</Id>
+					<Name><![CDATA[varTreeCount]]></Name>
+					<X>-110</X><Y>1550</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[0]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1794763176299</Id>
+					<Name><![CDATA[varTreeTime]]></Name>
+					<X>-110</X><Y>1470</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double[][]]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1794763212110</Id>
+					<Name><![CDATA[varTreeDist]]></Name>
+					<X>-110</X><Y>1490</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double[][]]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1794763240462</Id>
+					<Name><![CDATA[varTreePrev]]></Name>
+					<X>-110</X><Y>1510</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[Link[][]]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1794763290983</Id>
+					<Name><![CDATA[varTreeOrder]]></Name>
+					<X>-110</X><Y>1530</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int[][]]]></Type>        
+					</Properties>
+				</Variable>
 				<Variable Class="Parameter">
 					<Id>1793468131891</Id>
 					<Name><![CDATA[parCols]]></Name>
@@ -1400,7 +1463,7 @@ Value assumes 2 trips a day for a 30 day month, but multiplied by parPeoplePerHo
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
+							<Code><![CDATA[.1]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793674537152</Id>
@@ -2740,6 +2803,30 @@ Has a strong influence on how repelled citizens are from each other. Higher mean
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1794762536260</Id>
+					<Name><![CDATA[parTreeCacheMax]]></Name>
+					<X>-110</X><Y>1570</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[1000]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794762536258</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1794037714993</Id>
 					<Name><![CDATA[colAverageSpread]]></Name>
@@ -3664,24 +3751,45 @@ for (int p = 0; p < 2; p++) {   // p = 0, 1 for VOM, VOL
 // spread over the computer's cores (parParallelAssignment = true; false runs them one after another, for comparison).
 // Java's parallel stream decides the number of threads itself (from the cores available) and hands out activities as threads come free.
 // Rules that make this safe:
-//   - each activity gets its own scratch arrays (time, prev, order, dist, thisActDemand), created inside its pass
-//   - shared data is only read during the passes (grid, links, travel times, nodeDemand); each pass writes only its own
-//     row of varAccessTimes / varAccessDistances and its own slots of the per-activity result arrays below
+//   - each activity gets its own arrays (tree: time, prev, order, dist, either from the cache or created inside its pass; and thisActDemand)
+//   - shared data is only read during the passes (grid, links, travel times, nodeDemand, cached trees looked up beforehand);
+//     each pass writes only its own slots of the per-activity arrays below. The tree cache and varAccessTimes / varAccessDistances
+//     are only written afterwards, on the main thread
 //   - no AnyLogic calls (random draws, traceln, agent changes) inside the passes
 //   - link target flows are added up afterwards, on the main thread, in activity order, so results are the same every run
 int nNodes = parCols * parCols;
 int nAct = activities.size();
 int nLinks = links.size();
 
-// Create the access time table on the first call (or if the number of activities or nodes has changed)
-if (varAccessTimes == null || varAccessTimes.length != nAct || varAccessTimes[0].length != nNodes)//varAccessTimes[0] is the array of access times for activity zero, which is the same number of nodes as any other activity, since they all are looking at the same grid.
-    varAccessTimes = new double[nAct][nNodes];
-if (varAccessDistances == null || varAccessDistances.length != nAct || varAccessDistances[0].length != nNodes)
-    varAccessDistances = new double[nAct][nNodes];
+// Create the access time tables on the first call (or if the number of activities has changed).
+// Their rows are filled below with each activity's tree arrays (shared with the tree cache, so they must only be read).
+if (varAccessTimes == null || varAccessTimes.length != nAct) varAccessTimes = new double[nAct][];
+if (varAccessDistances == null || varAccessDistances.length != nAct) varAccessDistances = new double[nAct][];
 
 // Read everything the passes need from AnyLogic collections here, on the main thread
 GridPoint[] origins = new GridPoint[nAct];
 for (int a = 0; a < nAct; a++) origins[a] = activities.get(a).varLocation;
+
+// TREE CACHE (see funClearTreeCache): look up each activity node's cached tree here, on the main thread.
+// A cached tree exists only if the link times haven't changed since it was built (the cache is cleared whenever they change),
+// so it is exactly the tree Dijkstra would build now. In practice: on an assignment's first pass, activities that haven't moved
+// reuse the trees from the previous assignment's final pass, and a moved activity usually reuses the tree its relocation choice built.
+// On later passes the cache has been cleared (after each step), so every tree is built fresh.
+// Inside the parallel passes, each activity only reads and writes its own slots of these per-activity arrays; new trees are put
+// into the shared cache afterwards, on the main thread.
+if (varTreeTime == null || varTreeTime.length != nNodes) funClearTreeCache();   // first use
+double[][] time = new double[nAct][];   // per activity: its tree (null = not cached, build it)
+double[][] dist = new double[nAct][];
+Link[][] prev = new Link[nAct][];
+int[][] order = new int[nAct][];
+boolean[] built = new boolean[nAct];     // true if the tree was built in this call (to be stored in the cache afterwards)
+for (int a = 0; a < nAct; a++) {
+    int k = origins[a].parIndex;
+    time[a] = varTreeTime[k];
+    dist[a] = varTreeDist[k];
+    prev[a] = varTreePrev[k];
+    order[a] = varTreeOrder[k];
+}
 // Each link's position in 'links', looked up once here. AnyLogic's getIndex() is not thread-safe (it uses an internal
 // cache), so calling it inside the parallel passes can crash with IndexOutOfBoundsException. Reading a finished map is safe.
 java.util.IdentityHashMap<Link, Integer> linkIndex = new java.util.IdentityHashMap<>(nLinks);
@@ -3700,25 +3808,26 @@ if (parParallelAssignment) acts = acts.parallel(); // Turns on the "run in paral
 // sequence of numbers into subgroups (sub-ranges, split further as needed), which run at the same time.
 // Java hands each subgroup to the next free thread in its thread pool; the operating system decides which CPU core runs each thread.
 acts.forEach(thisAct -> {
-    //initialise empty time, prev and order arrays to be filled in shortly by funBuildFastestPathTree (one set per activity, so threads never share them):
-    double[] time = varAccessTimes[thisAct];       // this activity's own row: Dijkstra fills it directly
-    Link[] prev = new Link[nNodes];
-    int[] order = new int[nNodes];
-    double[] dist = varAccessDistances[thisAct];
-    double[] thisActDemand = nodeDemand[thisAct].clone();   // demand waiting at each node, to be passed towards this particular activity
-    double[] flow = actFlow[thisAct];
-
-    funBuildFastestPathTree(origins[thisAct], time, prev, order, dist); //first argument selects the gridPoint for the current activity in this loop
+    // This activity's fastest path tree: from the cache if there is one, otherwise built now into new arrays (one set per activity, so threads never share them)
+    if (time [thisAct] == null) {
+        time [thisAct] = new double[nNodes];
+        dist [thisAct] = new double[nNodes];
+        prev [thisAct] = new Link  [nNodes];
+        order[thisAct] = new int   [nNodes];
+        funBuildFastestPathTree(origins[thisAct], time[thisAct], prev[thisAct], order[thisAct], dist[thisAct]);
+        built[thisAct] = true;
+    }
+    double[] thisActDemand = nodeDemand[thisAct].clone();   // demand waiting at each node, to be passed towards this particular activity.
 
     //1. thisActDemand starts with entry for each node, that represents the combined weights for thisAct of all citizens living there (or zero if node is unoccupied or no one there demands thisAct). In step 2, thisActDemand is changed iteratively, accumulating the demand of every node further out whose route to thisAct passes through it. We get starting demands from nodeDemand passed down as an argument from funAssignTraffic, rather than recalculating it in the present function, so that it needn't be repeatedly generated on the many times funAssignTraffic calls the present function. 
     //nodeDemand therefore must only be read, not changed by the present function, and this is why thisActDemand is created as a separate variable from nodeDemand, because it is changed progressively as overlapping routes accumulate demand (for the purpose of accumulating the target flows on the connecting links). 
     double fastest = 0, unreachable = 0;
     for (int k = 0; k < nNodes; k++) { //This activity's total travel time (added to the other activities' after all passes finish)
-        if (time[k] == Double.POSITIVE_INFINITY) {   // Track unreachable demand and don't add it to the total travel time. Instead add it to a total of unreachable demand. There should be no unreachable demand.
+        if (time[thisAct][k] == Double.POSITIVE_INFINITY) {   // Track unreachable demand and don't add it to the total travel time. Instead add it to a total of unreachable demand. There should be no unreachable demand.
             unreachable += thisActDemand[k];
             continue;
         }
-        fastest += thisActDemand[k] * time[k];
+        fastest += thisActDemand[k] * time[thisAct][k];
     }
     actFastestTime[thisAct] = fastest;
     actUnreachable[thisAct] = unreachable;
@@ -3727,16 +3836,24 @@ acts.forEach(thisAct -> {
     //    and on to the node at the other end of that link, one step closer to the activity.
     //    Every node is processed after all nodes further out on its branch, so its demand is already complete.
     for (int s = nNodes - 1; s >= 1; s--) {   // s = 0 is the activity's own node: nothing to pass on
-        int k = order[s]; //get the grid index k of the first node to look at, which is the last one settled
+        int k = order[thisAct][s]; //get the grid index k of the first node to look at, which is the last one settled
         if (k == -1 || thisActDemand[k] == 0) continue;   // unsettled (unreachable) slot, or nothing to pass on
-        Link l = prev[k];
-        flow[linkIndex.get(l)] += thisActDemand[k];   // this activity's own flow array, not the shared link variable (other threads may be loading the same link)
+        Link l = prev[thisAct][k];
+        actFlow[thisAct][linkIndex.get(l)] += thisActDemand[k];   // this activity's own flow array, not the shared link variable (other threads may be loading the same link)
         GridPoint up = (l.parNodeA.parIndex == k) ? l.parNodeB : l.parNodeA;   // up is defined as the next node along the route to activity thisAct. The conditional makes sure to pick the correct end of link l which is the next node, not the current one (node k).
         thisActDemand[up.parIndex] += thisActDemand[k];//Next node up the chain receives the previous one's demand on top of what it already had from other routes already tracked.
     }
 });
 
-// All passes done: back on the main thread, add up the activities' results in activity order
+// All passes done: back on the main thread.
+// Access times and distances for the citizens' choices: each activity's row is its tree's arrays (read only, shared with the cache)
+for (int a = 0; a < nAct; a++) {
+    varAccessTimes[a] = time[a];
+    varAccessDistances[a] = dist[a];
+    if (built[a]) funStoreTree(origins[a].parIndex, time[a], dist[a], prev[a], order[a]);   // new trees go into the cache (skipped if a co-located activity's tree is already there)
+}
+
+// Add up the activities' results in activity order
 double totalFastestTime = 0;
 double unreachableDemand = 0; //For testing: Should remain zero
 for (int a = 0; a < nAct; a++) {
@@ -3885,6 +4002,9 @@ for (pass = 1; pass <= parAssignMaxIterations; pass++) {
         l.varFlowVol += lambda * (l.varTargetFlowVol - l.varFlowVol);   // move lambda of the way to the target
         l.funUpdateTravelTime();                                        // 4. Congestion adjusted time (BPR) from the new flow
     }
+    funClearTreeCache();   // 5. link times just changed, so every cached fastest-path tree is out of date: the next pass builds fresh ones.
+                           //    A converged assignment stops at the gap check above, before this point, so its final pass's trees stay cached
+                           //    (they match the final link times). A capped assignment ends here, with the cache empty.
 }// Effectively, the first pass creates the initial target flows, and updates the times based on that. Every subsequent pass updates the target based on the last one's times, then reblends the flows, and then updates the times accordingly, ready for the next pass. Repeated until convergence condition is met. 
 
 // Largest V/C in the network (Main variable), used to scale link colours from gray (least) to red (most congested)
@@ -4393,6 +4513,7 @@ traceln("After moving back: largest crowding difference " + String.format("%.2e"
 l.varImpedance = newImpedance;
 l.funUpdateCapacity();   // lanes and capacity
 l.funUpdateTravelTime(); //this function inherently will use the updated free flow time, because its freeflow time is not a variable, but the return of funFreeFlowTime function which itself depends on the latest impedance
+funClearTreeCache();     // the link's time changed, so cached fastest-path trees may be out of date (investment targets busy links, which most trees use)
 
 GridPoint[] ends = {l.parNodeA, l.parNodeB};
 for (GridPoint g : ends) {
@@ -4955,6 +5076,7 @@ traceln("funComputeDensity: full-density largest difference " + String.format("%
 //                                                since each citizen's w_c is their number of trips per direction per day to this activity.
 //                                                t_kc uses the current link times (varTravelTime), the same congested times citizens see:
 //                                                one Dijkstra run (funBuildFastestPathTree) from each candidate k, since links are two-way.
+//                                                Trees come from the tree cache when available (see funClearTreeCache), so each is built at most once while link times are unchanged.
 //                                                VOL is therefore rand per minute of average trip time.
 //                                                (The earlier straight-line distance version is kept on git branch activity-distance-utility.)
 //   U_move = -VOM * parActivityRelocationAmortizedCost   only if k is not the current location
@@ -5039,19 +5161,25 @@ double[] V = new double[nCand];
 // The sub-utilities are not kept: each is just the value times -VOM / -VOL, so they are recomputed for the chosen one only.
 double[] candRent = new double[nCand];
 double[] candTime = new double[nCand];   // weighted average travel time to citizens' homes (minutes)
-// Dijkstra work arrays, created once and reused for every candidate (funBuildFastestPathTree resets them on each call)
+// Each candidate's fastest-path tree comes from the tree cache (funClearTreeCache) if there is one; otherwise it is built and cached,
+// so later choices (and the next assignment's first pass) can reuse it while link times stay the same.
 int nNodes = parCols * parCols;
-double[] tTime = new double[nNodes];
-Link[] tPrev = new Link[nNodes];
-int[] tOrder = new int[nNodes];
-double[] tDist = new double[nNodes];
+if (varTreeTime == null || varTreeTime.length != nNodes) funClearTreeCache();   // This is for first run, where tree cache doesn't exist yet. This line checks if it doesn't exist, and if not, clears and builds one in the correct shape.
 double maxV = Double.NEGATIVE_INFINITY;
 for (int i = 0; i < nCand; i++) {
-    GridPoint k = cand[i];
+    GridPoint k = cand[i]; // GridPoint location of candidate
     boolean isHere = (i == 0);
 
     // Weighted average travel time between k and citizens' homes (minutes), on the current congested link times
-    funBuildFastestPathTree(k, tTime, tPrev, tOrder, tDist);   // times from k to every node (= from every node to k, links are two-way)
+    double[] tTime = varTreeTime[k.parIndex];   // array of times from k to every node (= from every node to k, links are two-way)
+    if (tTime == null) {   // not cached: build the tree (new arrays, since the cache keeps them) and cache it
+        tTime = new double[nNodes];
+        double[] tDist = new double[nNodes];
+        Link[] tPrev = new Link[nNodes];
+        int[] tOrder = new int[nNodes];
+        funBuildFastestPathTree(k, tTime, tPrev, tOrder, tDist);
+        funStoreTree(k.parIndex, tTime, tDist, tPrev, tOrder);
+    }
     double sumWT = 0;
     for (int j = 0; j < nOcc; j++) {
         double t = tTime[occIdx[j]];
@@ -6187,6 +6315,83 @@ for (Citizen c : citizens) {
     sumSq += dx * dx + dy * dy;
 }
 return sqrt(sumSq / nCit) * parStepLength;   // spread in metres
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1794762330501</Id>
+					<Name><![CDATA[funClearTreeCache]]></Name>
+					<X>-10</X><Y>1510</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[// Function in Main. Just action (returns nothing). No arguments.
+// Empties the fastest-path tree cache (also creates it the first time).
+// The cache holds, per grid node (index parIndex), the Dijkstra tree from that node to every node: varTreeTime, varTreeDist,
+// varTreePrev, varTreeOrder (Main variables: double[][], double[][], Link[][], int[][], each indexed [node][...]; null = no tree).
+// A tree is only valid for the link travel times it was built on, so the cache must be cleared whenever link times change:
+//   - funAssignTraffic, after every step (the step updates all link times)
+//   - funApplyImpedanceChange (investment changes a link's time)
+//   - funStoreTree, when the cache holds parTreeCacheMax trees (memory limit)
+// Users: funComputeTargetFlows (activity nodes, during assignment) and funEvaluateAndMoveActivity (candidate nodes).
+// Between assignments link times don't change, so trees built by relocation choices are reused by later choices and by the
+// next assignment's first pass, and the trees from an assignment's final pass are reused by the choices after it.
+if (varTreeTime != null && varTreeTime.length == parCols * parCols && varTreeCount == 0) return;   // already empty. First two conditions check if cache already exists in correct shape, otherwise the present function is still needed to build a new empty cache with the correct shape.
+int nNodes = parCols * parCols;
+varTreeTime = new double[nNodes][];
+varTreeDist = new double[nNodes][];
+varTreePrev = new Link[nNodes][];
+varTreeOrder = new int[nNodes][];
+varTreeCount = 0;   // Main variable (int): number of trees currently cached
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1794762391757</Id>
+					<Name><![CDATA[funStoreTree]]></Name>
+					<X>-10</X><Y>1530</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[k]]></Name>
+						<Type><![CDATA[int]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[time]]></Name>
+						<Type><![CDATA[double[]]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[dist]]></Name>
+						<Type><![CDATA[double[]]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[prev]]></Name>
+						<Type><![CDATA[Link[]]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[order]]></Name>
+						<Type><![CDATA[int[]]]></Type>
+					</Parameter>
+					<Body><![CDATA[// Function in Main. Just action (returns nothing). Arguments: k (int), time (double[]), dist (double[]), prev (Link[]), order (int[])
+// Stores a freshly built fastest-path tree (from funBuildFastestPathTree) in the cache slot of grid node k (its parIndex).
+// Does nothing if node k already has a tree (e.g. two activities on the same node both built one).
+// Memory limit: each tree is roughly 0.25 MB on a 100 x 100 grid, so when the cache already holds parTreeCacheMax trees
+// (Main parameter, int) it is cleared first. Trees are then simply rebuilt as needed.
+// Call only from the main thread (not from inside the parallel passes).
+// The arrays are stored as they are (not copied), so they must never be changed afterwards.
+if (varTreeTime == null || varTreeTime.length != parCols * parCols) funClearTreeCache();   // This checks if cache doesn't exist, or has wrong shape, and if so, clears and builds new one correctly.
+if (varTreeTime[k] != null) return;   // already cached (important for parrallel threads in funComputeTargetFlows, where two activities can build the same tree simultaneously: this condition prevents the second one from pointlessly overwriting the first)
+if (varTreeCount >= parTreeCacheMax) funClearTreeCache();   // memory limit reached: start again
+varTreeTime[k] = time;
+varTreeDist[k] = dist;
+varTreePrev[k] = prev;
+varTreeOrder[k] = order;
+varTreeCount++;
 ]]></Body>
 				</Function>
 			</Functions>
@@ -8922,6 +9127,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 				<Parameter>
 					<ParameterName><![CDATA[parLanesGammaExponent]]></ParameterName>
 				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[parTreeCacheMax]]></ParameterName>
+				</Parameter>
 			</Parameters>
 			<PresentationProperties>
 				<EnableZoomAndPanning>true</EnableZoomAndPanning>
@@ -9318,6 +9526,10 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			</Parameter>
 			<Parameter>	
 				<Id>1794749649224</Id>
+				<Type>FIXED</Type>
+			</Parameter>
+			<Parameter>	
+				<Id>1794762536260</Id>
 				<Type>FIXED</Type>
 			</Parameter>
 			<ObjectiveFunctionCode><![CDATA[root.varSpreadChangePercent]]></ObjectiveFunctionCode>
@@ -14360,6 +14572,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			<FreeformParamValue>	
 				<Id>1794749649224</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794762536260</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1793468131891</Id>
 				<Type>FIXED</Type>
@@ -14706,6 +14921,10 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
 				<Id>1794749649224</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794762536260</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<ModelTimeProperties>
@@ -15284,6 +15503,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			<FreeformParamValue>	
 				<Id>1794749649224</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794762536260</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1793468131891</Id>
 				<Type>FIXED</Type>
@@ -15660,6 +15882,10 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
 				<Id>1794749649224</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794762536260</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<ModelTimeProperties>
@@ -16256,6 +16482,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			<FreeformParamValue>	
 				<Id>1794749649224</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794762536260</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1793468131891</Id>
 				<Type>FIXED</Type>
@@ -16626,6 +16855,10 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
 				<Id>1794749649224</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794762536260</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<ModelTimeProperties>
@@ -17225,6 +17458,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			<FreeformParamValue>	
 				<Id>1794749649224</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794762536260</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1793468131891</Id>
 				<Type>FIXED</Type>
@@ -17598,6 +17834,10 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
 				<Id>1794749649224</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794762536260</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<ModelTimeProperties>
