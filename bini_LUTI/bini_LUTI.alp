@@ -2716,6 +2716,30 @@ Has a strong influence on how repelled citizens are from each other. Higher mean
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1794749649224</Id>
+					<Name><![CDATA[parLanesGammaExponent]]></Name>
+					<X>120</X><Y>1340</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[0.7]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794749649217</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1794037714993</Id>
 					<Name><![CDATA[colAverageSpread]]></Name>
@@ -5344,9 +5368,9 @@ if (parShowTestOutput) traceln(msg);
 // goes down and roads only take more land. Stops early if no link is left to draw.
 //
 // Land-limited impedance: road land at each end node is A * lanes, with A = 0.5 * parRoadWidthRef * L * parCarLandUsage
-// (land per lane) and lanes = parImpedanceLocal / I. With slack S = the smaller of the two end nodes'
-// (parCellLand - road land - parMinAvailableLand), the road may grow by at most S:  A * (lanes_new - lanes) <= S
-//   =>  lanes_new = lanes + S / A,   I_new = parImpedanceLocal / lanes_new
+// (land per lane) and lanes = (parImpedanceLocal / I)^gamma, gamma = parLanesGammaExponent. With slack S = the smaller of
+// the two end nodes' (parCellLand - road land - parMinAvailableLand), the road may grow by at most S:  A * (lanes_new - lanes) <= S
+//   =>  lanes_new = lanes + S / A,   I_new = parImpedanceLocal / lanes_new^(1/gamma)
 //
 // Random draws use the investment's own generator varInvestRandom, so investing doesn't shift the random sequence of
 // the relocations (which would mix the investment's effect with random-number noise when comparing runs).
@@ -5393,11 +5417,11 @@ while (upgrades < parNumUpgrades) {
         for (Link l : g.colLinks) roadLand += l.funNodeRoadLand();
         slack = min(slack, parCellLand - roadLand - parMinAvailableLand);
     }
-    double updatedLanes = parImpedanceLocal / newImpedance;
+    double updatedLanes = pow(parImpedanceLocal / newImpedance, parLanesGammaExponent);   // same formula as Link funUpdateCapacity
     double extraRoadLand = landPerLane * (updatedLanes - pick.varLanes);
     if (extraRoadLand > slack) {   // full step needs too much land: upgrade as far as the land allows, then blacklist
         if (slack > 0) {
-            double landLimitedImpedance = parImpedanceLocal / (pick.varLanes + slack / landPerLane);
+            double landLimitedImpedance = parImpedanceLocal / pow(pick.varLanes + slack / landPerLane, 1 / parLanesGammaExponent);
             funApplyImpedanceChange(pick, landLimitedImpedance);
             partialUpgrades++;
         }
@@ -7187,8 +7211,10 @@ return parLength / v; //time = distance / speed [minutes]]]></Body>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// Function in Link. Just action (returns nothing). No arguments. Call whenever the impedance changes.
 // Sets this link's number of lanes and its capacity from its impedance:
-//   varLanes    = parImpedanceLocal / I   (a local road has 1 lane; lower impedance = more lanes. Fractions stand for
-//                                          wider, faster lanes, so lanes need not be whole numbers)
+//   varLanes    = (parImpedanceLocal / I)^parLanesGammaExponent
+//               (a local road has 1 lane each way; lower impedance = more lanes. Fractions stand for wider, faster lanes,
+//                so lanes need not be whole numbers. The exponent lets parImpedanceLocal be raised, e.g. for speed bumps and
+//                stop signs on local roads, while a smaller exponent keeps the lanes of higher-order roads about the same)
 //   varCapacity = varLanes * (3600 / 2) / (parPeakHourConcentration * parPeoplePerCitizen)
 // 3600 / 2: one vehicle per lane every 2 seconds (minimum peak headway) = 1800 vehicles per lane per hour.
 // Link flows are counted in citizens (each citizen's activity weights sum to 1, one one-way trip) when they should be multiplied by parPeoplePerCitizen to reflect that each citizen represents a cerain number of real people (too many to simulate one-one). 
@@ -7198,7 +7224,7 @@ return parLength / v; //time = distance / speed [minutes]]]></Body>
 // Rather than scaling every flow by parPeoplePerCitizen and parPeakHourConcentration, capacity is divided by both instead (same V/C), so V/C in BPR (funUpdateTravelTime)
 // is the real peak-hour V/C.
 // Free-flow speed stays parVRef / I (funFreeFlowTime). Road land per node uses varLanes (funNodeRoadLand).
-varLanes = main.parImpedanceLocal / varImpedance;
+varLanes = pow(main.parImpedanceLocal / varImpedance, main.parLanesGammaExponent);
 varCapacity = varLanes * (3600.0 / 2) / (main.parPeakHourConcentration * main.parPeoplePerCitizen);
 ]]></Body>
 				</Function>
@@ -8882,6 +8908,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 				<Parameter>
 					<ParameterName><![CDATA[parSaveState]]></ParameterName>
 				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[parLanesGammaExponent]]></ParameterName>
+				</Parameter>
 			</Parameters>
 			<PresentationProperties>
 				<EnableZoomAndPanning>true</EnableZoomAndPanning>
@@ -9274,6 +9303,10 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			</Parameter>
 			<Parameter>	
 				<Id>1794703704076</Id>
+				<Type>FIXED</Type>
+			</Parameter>
+			<Parameter>	
+				<Id>1794749649224</Id>
 				<Type>FIXED</Type>
 			</Parameter>
 			<ObjectiveFunctionCode><![CDATA[root.varSpreadChangePercent]]></ObjectiveFunctionCode>
@@ -14313,6 +14346,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			<FreeformParamValue>	
 				<Id>1794703704076</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794749649224</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1793468131891</Id>
 				<Type>FIXED</Type>
@@ -14655,6 +14691,10 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
 				<Id>1794703704076</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794749649224</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<ModelTimeProperties>
@@ -15230,6 +15270,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			<FreeformParamValue>	
 				<Id>1794703704076</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794749649224</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1793468131891</Id>
 				<Type>FIXED</Type>
@@ -15602,6 +15645,10 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
 				<Id>1794703704076</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794749649224</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<ModelTimeProperties>
@@ -16195,6 +16242,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			<FreeformParamValue>	
 				<Id>1794703704076</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794749649224</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1793468131891</Id>
 				<Type>FIXED</Type>
@@ -16561,6 +16611,10 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
 				<Id>1794703704076</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794749649224</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<ModelTimeProperties>
@@ -17157,6 +17211,9 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			<FreeformParamValue>	
 				<Id>1794703704076</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794749649224</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1793468131891</Id>
 				<Type>FIXED</Type>
@@ -17526,6 +17583,10 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
 				<Id>1794703704076</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794749649224</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<ModelTimeProperties>

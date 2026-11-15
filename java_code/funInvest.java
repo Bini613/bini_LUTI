@@ -18,9 +18,9 @@
 // goes down and roads only take more land. Stops early if no link is left to draw.
 //
 // Land-limited impedance: road land at each end node is A * lanes, with A = 0.5 * parRoadWidthRef * L * parCarLandUsage
-// (land per lane) and lanes = parImpedanceLocal / I. With slack S = the smaller of the two end nodes'
-// (parCellLand - road land - parMinAvailableLand), the road may grow by at most S:  A * (lanes_new - lanes) <= S
-//   =>  lanes_new = lanes + S / A,   I_new = parImpedanceLocal / lanes_new
+// (land per lane) and lanes = (parImpedanceLocal / I)^gamma, gamma = parLanesGammaExponent. With slack S = the smaller of
+// the two end nodes' (parCellLand - road land - parMinAvailableLand), the road may grow by at most S:  A * (lanes_new - lanes) <= S
+//   =>  lanes_new = lanes + S / A,   I_new = parImpedanceLocal / lanes_new^(1/gamma)
 //
 // Random draws use the investment's own generator varInvestRandom, so investing doesn't shift the random sequence of
 // the relocations (which would mix the investment's effect with random-number noise when comparing runs).
@@ -67,11 +67,11 @@ while (upgrades < parNumUpgrades) {
         for (Link l : g.colLinks) roadLand += l.funNodeRoadLand();
         slack = min(slack, parCellLand - roadLand - parMinAvailableLand);
     }
-    double updatedLanes = parImpedanceLocal / newImpedance;
+    double updatedLanes = pow(parImpedanceLocal / newImpedance, parLanesGammaExponent);   // same formula as Link funUpdateCapacity
     double extraRoadLand = landPerLane * (updatedLanes - pick.varLanes);
     if (extraRoadLand > slack) {   // full step needs too much land: upgrade as far as the land allows, then blacklist
         if (slack > 0) {
-            double landLimitedImpedance = parImpedanceLocal / (pick.varLanes + slack / landPerLane);
+            double landLimitedImpedance = parImpedanceLocal / pow(pick.varLanes + slack / landPerLane, 1 / parLanesGammaExponent);
             funApplyImpedanceChange(pick, landLimitedImpedance);
             partialUpgrades++;
         }
