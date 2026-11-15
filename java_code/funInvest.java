@@ -4,10 +4,12 @@
 // Returns true if any link's impedance changed, false if no link could be upgraded at all (funRunCheckpoint then ends the run).
 //
 // Each upgrade:
-//   1. Draw a link at random, weighted by score V/C: congested links are favoured, regardless of how much traffic they carry
-//      (so busy central links don't win just for their volume).
-//      Links with no flow score 0 and are never drawn. Each link can be drawn at most once per investment
-//      (scores aren't recomputed between draws, since flows only change at the next assignment).
+//   1. Draw a link at random, weighted by score V/C * (R / parRentRef)^(-parInvestRentSensitivity), R = mean rent of its two
+//      end nodes: congested links are favoured, regardless of how much traffic they carry (so busy central links don't win
+//      just for their volume), and expensive land discourages upgrades, pushing them towards the periphery.
+//      Links with no flow score 0 and are never drawn. Each link can be drawn at most once per investment.
+//      Flows only change at the next assignment, but rents near earlier upgrades in this investment do change (less land),
+//      so scores are recomputed for every draw.
 //   2. New impedance = current - parUpgradeAggresiveness, but never below parImpedanceMin.
 //   3. Land check: the wider road must not push either end node's land below parMinAvailableLand.
 //      If it would, the link is instead upgraded as far as the land allows (if at all), then blacklisted.
@@ -25,9 +27,16 @@
 // Random draws use the investment's own generator varInvestRandom, so investing doesn't shift the random sequence of
 // the relocations (which would mix the investment's effect with random-number noise when comparing runs).
 // Uses:
-//   Main parameters  parNumUpgrades (int), parUpgradeAggresiveness (double, impedance subtracted per upgrade), parImpedanceMin
+//   Main parameters  parNumUpgrades (int), parUpgradeAggresiveness (double, impedance subtracted per upgrade), parImpedanceMin,
+//                    parInvestRentSensitivity (double, >= 0, e.g. 1)
 //   Main variable    varInvestRandom (java.util.Random, initial value: new java.util.Random(parSeed + 3))
 //   Link variable    varUpgradeBlocked (boolean, initial value false)
+
+// Draw weight of a link: congestion (V/C), reduced where land is expensive.
+//   score = V/C * (R / parRentRef)^(-parInvestRentSensitivity),   R = mean rent of the link's two end nodes
+// parInvestRentSensitivity = 0 switches the rent effect off; larger values push upgrades further towards cheap (peripheral) land.
+java.util.function.ToDoubleFunction<Link> score = l ->
+    l.varFlowVol / l.varCapacity * pow(0.5 * (l.parNodeA.varRent + l.parNodeB.varRent) / parRentRef, -parInvestRentSensitivity);
 
 Set<Link> drawn = new HashSet<>();   // links already drawn in this investment (upgraded or blacklisted)
 int upgrades = 0;          // full steps (count towards parNumUpgrades)
@@ -38,7 +47,7 @@ while (upgrades < parNumUpgrades) {
     double total = 0;
     for (Link l : links) {
         if (l.varUpgradeBlocked || drawn.contains(l) || l.varFlowVol <= 0) continue;
-        total += l.varFlowVol / l.varCapacity;
+        total += score.applyAsDouble(l);
     }
     if (total <= 0) break;   // nothing left to upgrade
     double r = varInvestRandom.nextDouble() * total;   // random point along the stacked scores
@@ -46,7 +55,7 @@ while (upgrades < parNumUpgrades) {
     for (Link l : links) {
         if (l.varUpgradeBlocked || drawn.contains(l) || l.varFlowVol <= 0) continue;
         pick = l;   // keeps the last eligible link in case rounding leaves r just past the end
-        r -= l.varFlowVol / l.varCapacity;
+        r -= score.applyAsDouble(l);
         if (r < 0) break;
     }
     drawn.add(pick);

@@ -26,7 +26,7 @@ if (!f.exists()) {
 String[] ignored = {"parRoadUpgradeCost", "parInvestmentRate", "parShowTestOutput", "parShowRuntimeOutput", "parIconJitter",
                     "parMaxRdPx", "parMinRdPx", "parRentColourScaleMultiple", "parMaxRounds", "parMinRounds",
                     "parLoadSavedNetwork", "parLoadSavedState", "parSaveState", "parRelocationInterval", "parParallelAssignment", "parWelfareSlopeWindow", "parWelfareSlopeThreshold",
-                    "parNumUpgrades", "parUpgradeAggresiveness",
+                    "parNumUpgrades", "parUpgradeAggresiveness", "parInvestRentSensitivity",
                     "parRentRef", "parRentMin", "parDensityRef", "parCarLandUsage", "parRentInfluenceDecayLength", "parRentInfluenceDecayLength_CutOffMultiple",
                     "parNumCitizens", "parNumActivities", "parPeoplePerCitizen", "parVOTMean", "parVOTSpread", "parVOMMean", "parVOMSpread", 
                     "parActivityVOMMean", "parActivityVOMSpread", "parActivityVOAMean", "parActivityVOASpread",
