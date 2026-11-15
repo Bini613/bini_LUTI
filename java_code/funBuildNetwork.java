@@ -47,13 +47,10 @@ for (int[] d : axes) {
 }
 traceln("Arterial links added: " + arterialLinksAdded);   // TEST
 
-// 3a. Arterial cut-off: delete every arterial link with an end further from the centre than dCut, the distance at which
-//     the thinning probability below reaches parArterialCutOff:
-//       1 - exp(-0.5 * (sigma * (dCut - d0))^2) = c   =>   dCut = d0 + sqrt(-2 * ln(1 - c)) / sigma
-//     (sigma = parRadialRoadDispersion, d0 = parThinningStartingNode, c = parArterialCutOff).
-//     No cut if thinning is off (sigma = 0) or c >= 1. The nodes left without links are thinned like any other node below.
-if (parRadialRoadDispersion > 0 && parArterialCutOff < 1) {
-    double dCut = parThinningStartingNode + sqrt(-2 * log(1 - parArterialCutOff)) / parRadialRoadDispersion;
+// 3a. Arterial cut-off: delete every arterial link with an end further from the centre than parArterialCutOff (grid steps).
+//     parArterialCutOff = 0 switches the cut off. The nodes left without links are thinned like any other node below.
+if (parArterialCutOff > 0) {
+    double dCut = parArterialCutOff;
     List<Link> toCut = new ArrayList<>();
     for (Link l : links) {
         double dA = sqrt(pow(l.parNodeA.parXIndex - ci, 2) + pow(l.parNodeA.parYIndex - cj, 2));
