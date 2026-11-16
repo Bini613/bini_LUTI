@@ -714,7 +714,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1000]]></Code>
+							<Code><![CDATA[500]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793493677765</Id>
@@ -738,7 +738,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[50]]></Code>
+							<Code><![CDATA[30]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793493784749</Id>
@@ -858,7 +858,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[true]]></Code>
+							<Code><![CDATA[false]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793585115537</Id>
@@ -882,7 +882,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
+							<Code><![CDATA[2]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793588894429</Id>
@@ -906,7 +906,7 @@ This kernel is used for each position when adding up land area and population co
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[10]]></Code>
+							<Code><![CDATA[2]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793588984642</Id>
@@ -1081,7 +1081,7 @@ E.g. 30km/h * 1000 m/km / 60 min/h = 500 m/min]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.3]]></Code>
+							<Code><![CDATA[0.25]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793639319732</Id>
@@ -1183,7 +1183,7 @@ Higher value means more similar preferences amongst citizens]]></Description>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
+							<Code><![CDATA[0.5]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793669447702</Id>
@@ -1247,7 +1247,9 @@ Higher value means more similar preferences amongst citizens]]></Description>
 				<Variable Class="Parameter">
 					<Id>1793669593220</Id>
 					<Name><![CDATA[parVOMSpread]]></Name>
-					<Description><![CDATA[Value Of Money distibution spread parameter]]></Description>
+					<Description><![CDATA[Value Of Money distibution spread parameter.
+
+Can be set to one, as reference baseline.]]></Description>
 					<X>120</X><Y>1680</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -1322,6 +1324,30 @@ Some people have negative VOP, meaning they like crowding]]></Description>
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1794651563562</Id>
+					<Name><![CDATA[parCitizensPerHousehold]]></Name>
+					<X>370</X><Y>1660</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[3]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1794651563560</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1794175943005</Id>
 					<Name><![CDATA[parPeoplePerCitizen]]></Name>
 					<Description><![CDATA[This is how many people each citizen represents. Effectively scales all traffic flows to be bigger, increasing congestion.]]></Description>
@@ -1339,30 +1365,6 @@ Some people have negative VOP, meaning they like crowding]]></Description>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794175943003</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1794651563562</Id>
-					<Name><![CDATA[parCitizensPerHousehold]]></Name>
-					<X>370</X><Y>1660</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[3]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1794651563560</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -1890,7 +1892,7 @@ written like this so the first part is relative to step lengths of 500 m, and wi
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[5]]></Code>
+							<Code><![CDATA[2.5]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1793753136713</Id>
@@ -2515,6 +2517,7 @@ Has a strong influence on how repelled citizens are from each other. Higher mean
 				<Variable Class="Parameter">
 					<Id>1794475177970</Id>
 					<Name><![CDATA[parArterialCutOff]]></Name>
+					<Description><![CDATA[Gridsteps from centre at which arterial links start getting 'cut' = removed from the network. Set to 0, and arterials will stretch across whole grid]]></Description>
 					<X>120</X><Y>1070</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2525,7 +2528,7 @@ Has a strong influence on how repelled citizens are from each other. Higher mean
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[0.01]]></Code>
+							<Code><![CDATA[1]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794475177964</Id>
@@ -2890,7 +2893,7 @@ Has a strong influence on how repelled citizens are from each other. Higher mean
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
+							<Code><![CDATA[0]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1794780894981</Id>
@@ -3026,13 +3029,10 @@ for (int[] d : axes) {
 }
 traceln("Arterial links added: " + arterialLinksAdded);   // TEST
 
-// 3a. Arterial cut-off: delete every arterial link with an end further from the centre than dCut, the distance at which
-//     the thinning probability below reaches parArterialCutOff:
-//       1 - exp(-0.5 * (sigma * (dCut - d0))^2) = c   =>   dCut = d0 + sqrt(-2 * ln(1 - c)) / sigma
-//     (sigma = parRadialRoadDispersion, d0 = parThinningStartingNode, c = parArterialCutOff).
-//     No cut if thinning is off (sigma = 0) or c >= 1. The nodes left without links are thinned like any other node below.
-if (parRadialRoadDispersion > 0 && parArterialCutOff < 1) {
-    double dCut = parThinningStartingNode + sqrt(-2 * log(1 - parArterialCutOff)) / parRadialRoadDispersion;
+// 3a. Arterial cut-off: delete every arterial link with an end further from the centre than parArterialCutOff (grid steps).
+//     parArterialCutOff = 0 switches the cut off. The nodes left without links are thinned like any other node below.
+if (parArterialCutOff > 0) {
+    double dCut = parArterialCutOff;
     List<Link> toCut = new ArrayList<>();
     for (Link l : links) {
         double dA = sqrt(pow(l.parNodeA.parXIndex - ci, 2) + pow(l.parNodeA.parYIndex - cj, 2));
@@ -6824,6 +6824,76 @@ varTreeCount++;
 					<Latitude>0.0</Latitude>
 					<Longitude>0.0</Longitude>
                 </EmbeddedObjectPresentation>
+    			<TimePlot>
+					<Id>1794804848285</Id>
+					<Name><![CDATA[plot]]></Name>
+					<X>120</X><Y>300</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<AutoUpdate>true</AutoUpdate>
+					<RecurrenceProperties>
+						<Id>1794804848282</Id>
+						<OccurrenceAtTime>true</OccurrenceAtTime>
+						<OccurrenceDate>1794816000000</OccurrenceDate>
+						<OccurrenceTime Class="CodeUnitValue">
+							<Code><![CDATA[0]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+						</OccurrenceTime>
+						<RecurrenceCode Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+						</RecurrenceCode>
+					</RecurrenceProperties>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Width>310</Width>
+					<Height>240</Height>
+					<BackgroundColor/>
+					<BorderColor/>
+					<ChartArea>
+						<XOffset>50</XOffset>
+						<YOffset>30</YOffset>
+						<Width>230</Width>
+						<Height>150</Height>
+						<BackgroundColor>-1</BackgroundColor>
+						<BorderColor>-16777216</BorderColor>
+						<GridColor>-12566464</GridColor>
+					</ChartArea>
+					<Legend>
+						<Place>SOUTH</Place>
+						<TextColor>-16777216</TextColor>
+						<Size>30</Size>
+					</Legend>
+					<Labels>
+						<HorLabelsPosition>DEFAULT</HorLabelsPosition>
+						<VerLabelsPosition>DEFAULT</VerLabelsPosition>
+						<TextColor>-12566464</TextColor>
+					</Labels>
+					<ShowLegend>true</ShowLegend>
+					<TimeWindowsMovementType>MOVEMENT_WITH_TIME</TimeWindowsMovementType>		
+					<TimeWindowUnits>MODEL_TIME_UNIT</TimeWindowUnits>
+					<VerScaleFromExpression><![CDATA[0]]></VerScaleFromExpression>
+					<VerScaleToExpression><![CDATA[1]]></VerScaleToExpression>
+					<VerScaleType>AUTO</VerScaleType>
+					<DrawLine>true</DrawLine>
+					<Interpolation>LINEAR</Interpolation>
+					<DatasetExpression>  
+						<Title><![CDATA[Expected Welfare (m)]]></Title>
+					<Id>1794804850822</Id>
+					<Expression><![CDATA[dataset]]></Expression>
+					<Color>-2987746</Color>
+					<Expression2><![CDATA[varBestMeanWelfare]]></Expression2>
+					<Expression2Flag>true</Expression2Flag>
+						<PointStyle>NONE</PointStyle>
+						<LineWidth>1.0</LineWidth>
+					</DatasetExpression>
+					<SamplesToKeep>1000</SamplesToKeep>
+					<TimeWindowExpression><![CDATA[100]]></TimeWindowExpression>
+					<FillAreaUnderLine>false</FillAreaUnderLine>
+					<LabelFormat>MODEL_TIME_UNITS</LabelFormat>
+    			</TimePlot>
 			</Presentation>
 
 				</Level>
@@ -9109,10 +9179,10 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<ParameterName><![CDATA[parVOPStandardDeviation]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[parPeoplePerCitizen]]></ParameterName>
+					<ParameterName><![CDATA[parCitizensPerHousehold]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[parCitizensPerHousehold]]></ParameterName>
+					<ParameterName><![CDATA[parPeoplePerCitizen]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[parTravelCostPerMetre]]></ParameterName>
@@ -9303,7 +9373,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			</Parameters>
 			<PresentationProperties>
 				<EnableZoomAndPanning>true</EnableZoomAndPanning>
-				<ExecutionMode><![CDATA[virtualTime]]></ExecutionMode>
+				<ExecutionMode><![CDATA[realTimeScaled]]></ExecutionMode>
 				<Title><![CDATA[bini_LUTI : Simulation]]></Title>
 				<EnableDeveloperPanel>true</EnableDeveloperPanel>
 				<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
@@ -12296,15 +12366,15 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 		</ParamVariationExperiment>
 		<!--   =========  Parameter Variation Experiment   ========  -->
 		<ParamVariationExperiment ActiveObjectClassId="1793400593371">
-			<Id>1794782352718</Id>
-			<Name><![CDATA[SensitivityAnalysis_parInvestRentSensitivity]]></Name>
+			<Id>1794787848188</Id>
+			<Name><![CDATA[SensitivityAnalysis_parCarLandUsage]]></Name>
 			<CommandLineArguments><![CDATA[]]></CommandLineArguments>
 			<MaximumMemory>4096</MaximumMemory>
 			<RandomNumberGenerationType>fixedSeed</RandomNumberGenerationType>
 			<CustomGeneratorCode>new Random()</CustomGeneratorCode>
 			<BeforeEachExperimentRunCode><![CDATA[chart0_dataSet.reset();
 ]]></BeforeEachExperimentRunCode>
-			<AfterSimulationRunCode><![CDATA[chart0_dataSet.add( root.parInvestRentSensitivity, root.varSpreadChangePercent );
+			<AfterSimulationRunCode><![CDATA[chart0_dataSet.add( root.parCarLandUsage, root.varSpreadChangePercent );
 ]]></AfterSimulationRunCode>
 			<SeedValue>1</SeedValue>
 			<SelectionModeForSimultaneousEvents>LIFO</SelectionModeForSimultaneousEvents>
@@ -12312,7 +12382,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			<LoadRootFromSnapshot>false</LoadRootFromSnapshot>
 			<AnalysisData>
     			<DataSet>
-					<Id>1794782352732</Id>
+					<Id>1794787848207</Id>
 					<Name><![CDATA[chart0_dataSet]]></Name>
 					<X>-350</X><Y>190</Y>
 					<Label><X>15</X><Y>0</Y></Label>
@@ -12321,7 +12391,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<ShowLabel>true</ShowLabel>
 					<AutoUpdate>false</AutoUpdate>
 					<RecurrenceProperties>
-						<Id>1794782352731</Id>
+						<Id>1794787848206</Id>
 						<OccurrenceAtTime>true</OccurrenceAtTime>
 						<OccurrenceDate>1794816000000</OccurrenceDate>
 						<OccurrenceTime Class="CodeUnitValue">
@@ -12334,13 +12404,13 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 						</RecurrenceCode>
 					</RecurrenceProperties>
 					<FreezeXAxis>false</FreezeXAxis>
-					<SamplesToKeep>7</SamplesToKeep>
+					<SamplesToKeep>100</SamplesToKeep>
 				</DataSet>
 			</AnalysisData>
 
 			<Presentation>
 				<Text>
-					<Id>1794782352720</Id>
+					<Id>1794787848195</Id>
 					<Name><![CDATA[text]]></Name>
 					<X>40</X><Y>30</Y>
 					<Label><X>10</X><Y>0</Y></Label>
@@ -12352,7 +12422,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
 					<Color>-12490271</Color>
-					<Text><![CDATA[bini_LUTI : SensitivityAnalysis_parInvestRentSensitivity]]></Text>
+					<Text><![CDATA[bini_LUTI : SensitivityAnalysis_parCarLandUsage]]></Text>
 					<Font>
 						<Name>SansSerif</Name>
 						<Size>24</Size>
@@ -12361,7 +12431,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<Alignment>LEFT</Alignment>
 				</Text>
 				<Text>
-					<Id>1794782352721</Id>
+					<Id>1794787848196</Id>
 					<Name><![CDATA[text1]]></Name>
 					<X>50</X><Y>80</Y>
 					<Label><X>10</X><Y>0</Y></Label>
@@ -12382,7 +12452,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<Alignment>LEFT</Alignment>
 				</Text>
 				<Text>
-					<Id>1794782352722</Id>
+					<Id>1794787848197</Id>
 					<Name><![CDATA[text2]]></Name>
 					<X>240</X><Y>80</Y>
 					<Label><X>10</X><Y>0</Y></Label>
@@ -12404,7 +12474,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<Alignment>RIGHT</Alignment>
 				</Text>
 				<Text>
-					<Id>1794782352723</Id>
+					<Id>1794787848198</Id>
 					<Name><![CDATA[text3]]></Name>
 					<X>50</X><Y>110</Y>
 					<Label><X>10</X><Y>0</Y></Label>
@@ -12425,7 +12495,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<Alignment>LEFT</Alignment>
 				</Text>
 				<Line>
-					<Id>1794782352724</Id>
+					<Id>1794787848199</Id>
 					<Name><![CDATA[line]]></Name>
 					<X>40</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
@@ -12449,7 +12519,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<Dz>0</Dz>
 				</Line>
 				<Text>
-					<Id>1794782352725</Id>
+					<Id>1794787848200</Id>
 					<Name><![CDATA[text4]]></Name>
 					<X>50</X><Y>140</Y>
 					<Label><X>10</X><Y>0</Y></Label>
@@ -12461,7 +12531,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
 					<Color>-12171190</Color>
-					<Text><![CDATA[parInvestRentSensitivity]]></Text>
+					<Text><![CDATA[parCarLandUsage]]></Text>
 					<Font>
 						<Name>SansSerif</Name>
 						<Size>12</Size>
@@ -12470,7 +12540,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<Alignment>LEFT</Alignment>
 				</Text>
 				<Text>
-					<Id>1794782352726</Id>
+					<Id>1794787848201</Id>
 					<Name><![CDATA[text5]]></Name>
 					<X>240</X><Y>140</Y>
 					<Label><X>10</X><Y>0</Y></Label>
@@ -12483,7 +12553,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<Rotation>0.0</Rotation>
 					<Color>-12042869</Color>
 					<Text><![CDATA[?]]></Text>
-					<TextCode><![CDATA[format( parInvestRentSensitivity )]]></TextCode>
+					<TextCode><![CDATA[format( parCarLandUsage )]]></TextCode>
 					<Font>
 						<Name>SansSerif</Name>
 						<Size>12</Size>
@@ -12492,7 +12562,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<Alignment>RIGHT</Alignment>
 				</Text>
 				<Text>
-					<Id>1794782352727</Id>
+					<Id>1794787848202</Id>
 					<Name><![CDATA[text6]]></Name>
 					<X>50</X><Y>180</Y>
 					<Label><X>10</X><Y>0</Y></Label>
@@ -12504,7 +12574,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
 					<Color>-12566464</Color>
-					<Text><![CDATA[SensitivityAnalysis_parInvestRentSensitivity]]></Text>
+					<Text><![CDATA[SensitivityAnalysis_parCarLandUsage]]></Text>
 					<Font>
 						<Name>SansSerif</Name>
 						<Size>12</Size>
@@ -12513,7 +12583,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<Alignment>LEFT</Alignment>
 				</Text>
     			<Plot>
-					<Id>1794782352729</Id>
+					<Id>1794787848204</Id>
 					<Name><![CDATA[chart0]]></Name>
 					<X>0</X><Y>180</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
@@ -12521,9 +12591,1001 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>false</ShowLabel>
 					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<AutoUpdate>true</AutoUpdate>
+					<RecurrenceProperties>
+						<Id>1794787848203</Id>
+						<OccurrenceAtTime>true</OccurrenceAtTime>
+						<OccurrenceDate>1794816000000</OccurrenceDate>
+						<OccurrenceTime Class="CodeUnitValue">
+							<Code><![CDATA[0]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</OccurrenceTime>
+						<RecurrenceCode Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</RecurrenceCode>
+					</RecurrenceProperties>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Width>680</Width>
+					<Height>300</Height>
+					<BackgroundColor/>
+					<BorderColor/>
+					<ChartArea>
+						<XOffset>50</XOffset>
+						<YOffset>20</YOffset>
+						<Width>610</Width>
+						<Height>220</Height>
+						<BackgroundColor>-1</BackgroundColor>
+						<BorderColor>-9868951</BorderColor>
+						<GridColor>-12566464</GridColor>
+					</ChartArea>
+					<Legend>
+						<Place>SOUTH</Place>
+						<TextColor>-16777216</TextColor>
+						<Size>30</Size>
+					</Legend>
+					<Labels>
+						<HorLabelsPosition>DEFAULT</HorLabelsPosition>
+						<VerLabelsPosition>DEFAULT</VerLabelsPosition>
+						<TextColor>-12566464</TextColor>
+					</Labels>
+					<ShowLegend>false</ShowLegend>
+					<VerScaleFromExpression><![CDATA[30]]></VerScaleFromExpression>
+					<VerScaleToExpression><![CDATA[60]]></VerScaleToExpression>
+					<VerScaleType>FIXED</VerScaleType>
+					<DrawLine>false</DrawLine>
+					<Interpolation>LINEAR</Interpolation>
+					<DatasetExpression>  
+						<Title><![CDATA[SensitivityAnalysis_parCarLandUsage]]></Title>
+					<Id>1794787848209</Id>
+					<Expression><![CDATA[chart0_dataSet]]></Expression>
+					<Color>-12566464</Color>
+					<Expression2><![CDATA[root.varSpreadChangePercent]]></Expression2>
+					<Expression2Flag>false</Expression2Flag>
+						<PointStyle>CIRCLE</PointStyle>
+						<LineWidth>1.0</LineWidth>
+						<HorizontalAxisExpression><![CDATA[root.parCarLandUsage]]></HorizontalAxisExpression>
+					</DatasetExpression>
+					<SamplesToKeep>100</SamplesToKeep>
+					<HorScaleFromExpression><![CDATA[0]]></HorScaleFromExpression>
+					<HorScaleToExpression><![CDATA[6]]></HorScaleToExpression>
+					<HorScaleType>FIXED</HorScaleType>
+    			</Plot>
+			</Presentation>
+
+			<AllowParallelEvaluations>true</AllowParallelEvaluations>
+			<UseFreeformParameters>false</UseFreeformParameters>
+			<NumberOfRuns>10</NumberOfRuns>
+			<FreeformParamValue>	
+				<Id>1793468131891</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793468179891</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793493677767</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793493784751</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793553351797</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793553382114</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793553397391</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793581475775</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793585115539</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793588894441</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793588984644</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793636382660</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793638337691</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793638777428</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639041163</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639220222</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639282181</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639319734</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639600599</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639730177</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793667179006</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669447704</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669555578</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669565283</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669593220</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669599978</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669611700</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669671259</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793670172057</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793670220724</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793674537154</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793674549456</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793674587662</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793674603915</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793725938462</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793725969038</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793726896567</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793739086763</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793739086767</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793740799423</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793743602542</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793748432948</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793748779940</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793748808514</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793748836188</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793749760121</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793750269959</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793753136715</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793756898932</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793797716994</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793806464223</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793915350701</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793917425180</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793941280831</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793941384657</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793941422043</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793948736691</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793950682452</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794003439386</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794009167627</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794009528943</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794034711658</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794037682012</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794132761334</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794146041103</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794175943005</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794193416060</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794199898097</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794209054276</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794286819098</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794287843616</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794307461760</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794308630301</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794316178976</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794475177970</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794501608137</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794505742984</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794505773135</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794588684079</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794603561582</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794646867061</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794649718106</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794651563562</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794666465505</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794671963791</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794703704076</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794749649224</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794762536260</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794774473937</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794774473949</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794780894986</Id>
+			</FreeformParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793468131891</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793468179891</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793493677767</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793493784751</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793553351797</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793553382114</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793553397391</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793581475775</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793585115539</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793588894441</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793588984644</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793636382660</Id>
+				<Type>RANGE</Type>
+				<From Class="CodeValue">
+					<Code><![CDATA[1]]></Code>
+				</From>
+				<To Class="CodeValue">
+					<Code><![CDATA[3]]></Code>
+				</To>
+				<Step Class="CodeValue">
+					<Code><![CDATA[1]]></Code>
+				</Step>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793638337691</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793638777428</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639041163</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639220222</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639282181</Id>
+				<Type>FIXED</Type>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[2]]></Code>
+				</Expression>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639319734</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639600599</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639730177</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793667179006</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669447704</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669555578</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669565283</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669593220</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669599978</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669611700</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669671259</Id>
+				<Type>FIXED</Type>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[0]]></Code>
+				</Expression>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793670172057</Id>
+				<Type>FIXED</Type>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[60*3]]></Code>
+				</Expression>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793670220724</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793674537154</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793674549456</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793674587662</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793674603915</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793725938462</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793725969038</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793726896567</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793739086763</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793739086767</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793740799423</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793743602542</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793748432948</Id>
+				<Type>FIXED</Type>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[500*500]]></Code>
+				</Expression>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793748779940</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793748808514</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793748836188</Id>
+				<Type>FIXED</Type>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[500]]></Code>
+				</Expression>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793749760121</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793750269959</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793753136715</Id>
+				<Type>RANGE</Type>
+				<From Class="CodeValue">
+					<Code><![CDATA[1]]></Code>
+				</From>
+				<To Class="CodeValue">
+					<Code><![CDATA[5]]></Code>
+				</To>
+				<Step Class="CodeValue">
+					<Code><![CDATA[0.5]]></Code>
+				</Step>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793756898932</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793797716994</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793806464223</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793915350701</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793917425180</Id>
+				<Type>FIXED</Type>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[10 * 500]]></Code>
+				</Expression>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793941280831</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793941384657</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793941422043</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793948736691</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793950682452</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794003439386</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794009167627</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794009528943</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794034711658</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794037682012</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794132761334</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794146041103</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794175943005</Id>
+				<Type>FIXED</Type>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[3]]></Code>
+				</Expression>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794193416060</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794199898097</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794209054276</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794286819098</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794287843616</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794307461760</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794308630301</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794316178976</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794475177970</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794501608137</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794505742984</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794505773135</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794588684079</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794603561582</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794646867061</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794649718106</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794651563562</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794666465505</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794671963791</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794703704076</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794749649224</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794762536260</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794774473937</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794774473949</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794780894986</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<ModelTimeProperties>
+				<StopOption><![CDATA[Stop at specified time]]></StopOption>
+				<InitialDate><![CDATA[1793318400000]]></InitialDate>	
+				<InitialTime><![CDATA[0.0]]></InitialTime>	
+				<FinalDate><![CDATA[1795996800000]]></FinalDate>	
+				<FinalTime><![CDATA[100.0]]></FinalTime>	
+			</ModelTimeProperties>
+			<PresentationProperties>
+				<EnableZoomAndPanning>true</EnableZoomAndPanning>
+				<Title><![CDATA[bini_LUTI : SensitivityAnalysis_parCarLandUsage]]></Title>
+				<EnableDeveloperPanel>true</EnableDeveloperPanel>
+				<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
+			</PresentationProperties>
+			<ReplicationsProperties>
+				<UseReplication>false</UseReplication>
+				<FixedReplicationsNumber>true</FixedReplicationsNumber>
+				<ReplicationPerIteration>10</ReplicationPerIteration>
+				<MinimumReplication>2</MinimumReplication>
+				<MaximumReplication>10</MaximumReplication>
+				<ConfidenceLevel>LEVEL_80</ConfidenceLevel>
+				<ErrorPercent>0.5</ErrorPercent>
+				<ExpressionForConfidenceComputation><![CDATA[0]]></ExpressionForConfidenceComputation>
+			</ReplicationsProperties>
+		</ParamVariationExperiment>
+		<!--   =========  Parameter Variation Experiment   ========  -->
+		<ParamVariationExperiment ActiveObjectClassId="1793400593371">
+			<Id>1794795377507</Id>
+			<Name><![CDATA[SensitivityAnalysis_parPeoplePerCitizen]]></Name>
+			<CommandLineArguments><![CDATA[]]></CommandLineArguments>
+			<MaximumMemory>4096</MaximumMemory>
+			<RandomNumberGenerationType>fixedSeed</RandomNumberGenerationType>
+			<CustomGeneratorCode>new Random()</CustomGeneratorCode>
+			<BeforeEachExperimentRunCode><![CDATA[chart0_dataSet.reset();
+]]></BeforeEachExperimentRunCode>
+			<AfterSimulationRunCode><![CDATA[chart0_dataSet.add( root.parPeoplePerCitizen, root.varSpreadChangePercent );
+]]></AfterSimulationRunCode>
+			<SeedValue>1</SeedValue>
+			<SelectionModeForSimultaneousEvents>LIFO</SelectionModeForSimultaneousEvents>
+			<VmArgs><![CDATA[]]></VmArgs>
+			<LoadRootFromSnapshot>false</LoadRootFromSnapshot>
+			<AnalysisData>
+    			<DataSet>
+					<Id>1794795377522</Id>
+					<Name><![CDATA[chart0_dataSet]]></Name>
+					<X>40</X><Y>540</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
 					<AutoUpdate>false</AutoUpdate>
 					<RecurrenceProperties>
-						<Id>1794782352728</Id>
+						<Id>1794795377521</Id>
+						<OccurrenceAtTime>true</OccurrenceAtTime>
+						<OccurrenceDate>1794816000000</OccurrenceDate>
+						<OccurrenceTime Class="CodeUnitValue">
+							<Code><![CDATA[0]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</OccurrenceTime>
+						<RecurrenceCode Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</RecurrenceCode>
+					</RecurrenceProperties>
+					<FreezeXAxis>false</FreezeXAxis>
+					<SamplesToKeep>100</SamplesToKeep>
+				</DataSet>
+			</AnalysisData>
+
+			<Presentation>
+				<Text>
+					<Id>1794795377510</Id>
+					<Name><![CDATA[text]]></Name>
+					<X>40</X><Y>30</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12490271</Color>
+					<Text><![CDATA[bini_LUTI : SensitivityAnalysis_parPeoplePerCitizen]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>24</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794795377511</Id>
+					<Name><![CDATA[text1]]></Name>
+					<X>50</X><Y>80</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12171190</Color>
+					<Text><![CDATA[Iterations completed:]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794795377512</Id>
+					<Name><![CDATA[text2]]></Name>
+					<X>240</X><Y>80</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12042869</Color>
+					<Text><![CDATA[?]]></Text>
+					<TextCode><![CDATA[format( getNumberOfCompletedIterations() )]]></TextCode>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>RIGHT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794795377513</Id>
+					<Name><![CDATA[text3]]></Name>
+					<X>50</X><Y>110</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12566464</Color>
+					<Text><![CDATA[Parameters]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Line>
+					<Id>1794795377514</Id>
+					<Name><![CDATA[line]]></Name>
+					<X>40</X><Y>130</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>2</LineWidth>
+					<LineColor>-12566464</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<BeginArrowSize>1</BeginArrowSize>
+					<BeginArrowStyle>0</BeginArrowStyle>
+					<EndArrowSize>1</EndArrowSize>
+					<EndArrowStyle>0</EndArrowStyle>
+					<Dx>210</Dx>
+					<Dy>0</Dy>
+					<Dz>0</Dz>
+				</Line>
+				<Text>
+					<Id>1794795377515</Id>
+					<Name><![CDATA[text4]]></Name>
+					<X>50</X><Y>140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12171190</Color>
+					<Text><![CDATA[parPeoplePerCitizen]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794795377516</Id>
+					<Name><![CDATA[text5]]></Name>
+					<X>240</X><Y>140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12042869</Color>
+					<Text><![CDATA[?]]></Text>
+					<TextCode><![CDATA[format( parPeoplePerCitizen )]]></TextCode>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>RIGHT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794795377517</Id>
+					<Name><![CDATA[text6]]></Name>
+					<X>50</X><Y>180</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12566464</Color>
+					<Text><![CDATA[SensitivityAnalysis_parPeoplePerCitizen]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+    			<Plot>
+					<Id>1794795377519</Id>
+					<Name><![CDATA[chart0]]></Name>
+					<X>0</X><Y>180</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<AutoUpdate>true</AutoUpdate>
+					<RecurrenceProperties>
+						<Id>1794795377518</Id>
 						<OccurrenceAtTime>true</OccurrenceAtTime>
 						<OccurrenceDate>1794816000000</OccurrenceDate>
 						<OccurrenceTime Class="CodeUnitValue">
@@ -12566,14 +13628,985 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 					<DrawLine>false</DrawLine>
 					<Interpolation>LINEAR</Interpolation>
 					<DatasetExpression>  
-						<Title><![CDATA[SensitivityAnalysis_parInvestRentSensitivity]]></Title>
-					<Id>1794782352734</Id>
+						<Title><![CDATA[SensitivityAnalysis_parPeoplePerCitizen]]></Title>
+					<Id>1794795377524</Id>
 					<Expression><![CDATA[chart0_dataSet]]></Expression>
 					<Color>-12566464</Color>
 					<Expression2Flag>false</Expression2Flag>
 						<PointStyle>CIRCLE</PointStyle>
 						<LineWidth>1.0</LineWidth>
 						<HorizontalAxisExpression><![CDATA[]]></HorizontalAxisExpression>
+					</DatasetExpression>
+					<SamplesToKeep>100</SamplesToKeep>
+					<HorScaleFromExpression><![CDATA[0]]></HorScaleFromExpression>
+					<HorScaleToExpression><![CDATA[1]]></HorScaleToExpression>
+					<HorScaleType>AUTO</HorScaleType>
+    			</Plot>
+			</Presentation>
+
+			<AllowParallelEvaluations>true</AllowParallelEvaluations>
+			<UseFreeformParameters>true</UseFreeformParameters>
+			<NumberOfRuns>10</NumberOfRuns>
+			<FreeformParamValue>	
+				<Id>1793468131891</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793468179891</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793493677767</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793493784751</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793553351797</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793553382114</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793553397391</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793581475775</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793585115539</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793588894441</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793588984644</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793636382660</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793638337691</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793638777428</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639041163</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639220222</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639282181</Id>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[2]]></Code>
+				</Expression>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639319734</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639600599</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639730177</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793667179006</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669447704</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669555578</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669565283</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669593220</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669599978</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669611700</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669671259</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793670172057</Id>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[60*3]]></Code>
+				</Expression>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793670220724</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793674537154</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793674549456</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793674587662</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793674603915</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793725938462</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793725969038</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793726896567</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793739086763</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793739086767</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793740799423</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793743602542</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793748432948</Id>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[500*500]]></Code>
+				</Expression>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793748779940</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793748808514</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793748836188</Id>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[500]]></Code>
+				</Expression>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793749760121</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793750269959</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793753136715</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793756898932</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793797716994</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793806464223</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793915350701</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793917425180</Id>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[10 * 500]]></Code>
+				</Expression>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793941280831</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793941384657</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793941422043</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793948736691</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793950682452</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794003439386</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794009167627</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794009528943</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794034711658</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794037682012</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794132761334</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794146041103</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794175943005</Id>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[3*pow(1.5,index)]]></Code>
+				</Expression>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794193416060</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794199898097</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794209054276</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794286819098</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794287843616</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794307461760</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794308630301</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794316178976</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794475177970</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794501608137</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794505742984</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794505773135</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794588684079</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794603561582</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794646867061</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794649718106</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794651563562</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794666465505</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794671963791</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794703704076</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794749649224</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794762536260</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794774473937</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794774473949</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794780894986</Id>
+			</FreeformParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793468131891</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793468179891</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793493677767</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793493784751</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793553351797</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793553382114</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793553397391</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793581475775</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793585115539</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793588894441</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793588984644</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793636382660</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793638337691</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793638777428</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639041163</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639220222</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639282181</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639319734</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639600599</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639730177</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793667179006</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669447704</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669555578</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669565283</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669593220</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669599978</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669611700</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669671259</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793670172057</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793670220724</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793674537154</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793674549456</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793674587662</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793674603915</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793725938462</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793725969038</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793726896567</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793739086763</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793739086767</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793740799423</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793743602542</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793748432948</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793748779940</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793748808514</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793748836188</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793749760121</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793750269959</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793753136715</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793756898932</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793797716994</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793806464223</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793915350701</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793917425180</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793941280831</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793941384657</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793941422043</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793948736691</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793950682452</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794003439386</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794009167627</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794009528943</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794034711658</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794037682012</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794132761334</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794146041103</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794175943005</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794193416060</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794199898097</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794209054276</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794286819098</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794287843616</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794307461760</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794308630301</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794316178976</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794475177970</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794501608137</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794505742984</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794505773135</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794588684079</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794603561582</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794646867061</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794649718106</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794651563562</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794666465505</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794671963791</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794703704076</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794749649224</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794762536260</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794774473937</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794774473949</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794780894986</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<ModelTimeProperties>
+				<StopOption><![CDATA[Stop at specified time]]></StopOption>
+				<InitialDate><![CDATA[1793318400000]]></InitialDate>	
+				<InitialTime><![CDATA[0.0]]></InitialTime>	
+				<FinalDate><![CDATA[1795996800000]]></FinalDate>	
+				<FinalTime><![CDATA[100.0]]></FinalTime>	
+			</ModelTimeProperties>
+			<PresentationProperties>
+				<EnableZoomAndPanning>true</EnableZoomAndPanning>
+				<Title><![CDATA[bini_LUTI : SensitivityAnalysis_parPeoplePerCitizen]]></Title>
+				<EnableDeveloperPanel>true</EnableDeveloperPanel>
+				<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
+			</PresentationProperties>
+			<ReplicationsProperties>
+				<UseReplication>false</UseReplication>
+				<FixedReplicationsNumber>true</FixedReplicationsNumber>
+				<ReplicationPerIteration>10</ReplicationPerIteration>
+				<MinimumReplication>2</MinimumReplication>
+				<MaximumReplication>10</MaximumReplication>
+				<ConfidenceLevel>LEVEL_80</ConfidenceLevel>
+				<ErrorPercent>0.5</ErrorPercent>
+				<ExpressionForConfidenceComputation><![CDATA[0]]></ExpressionForConfidenceComputation>
+			</ReplicationsProperties>
+		</ParamVariationExperiment>
+		<!--   =========  Parameter Variation Experiment   ========  -->
+		<ParamVariationExperiment ActiveObjectClassId="1793400593371">
+			<Id>1794797290859</Id>
+			<Name><![CDATA[SensitivityAnalysis_parInvestRentSensitivity]]></Name>
+			<CommandLineArguments><![CDATA[]]></CommandLineArguments>
+			<MaximumMemory>4096</MaximumMemory>
+			<RandomNumberGenerationType>fixedSeed</RandomNumberGenerationType>
+			<CustomGeneratorCode>new Random()</CustomGeneratorCode>
+			<BeforeEachExperimentRunCode><![CDATA[chart0.removeAll();
+]]></BeforeEachExperimentRunCode>
+			<AfterSimulationRunCode><![CDATA[chart0_dataSet.add( root.parInvestRentSensitivity, root.varSpreadChangePercent );
+chart0.updateData();]]></AfterSimulationRunCode>
+			<SeedValue>1</SeedValue>
+			<SelectionModeForSimultaneousEvents>LIFO</SelectionModeForSimultaneousEvents>
+			<VmArgs><![CDATA[]]></VmArgs>
+			<LoadRootFromSnapshot>false</LoadRootFromSnapshot>
+			<AnalysisData>
+    			<DataSet>
+					<Id>1794797452692</Id>
+					<Name><![CDATA[chart0_dataSet]]></Name>
+					<X>200</X><Y>640</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<RecurrenceProperties>
+						<Id>1794797452690</Id>
+						<OccurrenceAtTime>true</OccurrenceAtTime>
+						<OccurrenceDate>1794816000000</OccurrenceDate>
+						<OccurrenceTime Class="CodeUnitValue">
+							<Code><![CDATA[0]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+						</OccurrenceTime>
+						<RecurrenceCode Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+						</RecurrenceCode>
+					</RecurrenceProperties>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>100</SamplesToKeep>
+				</DataSet>
+			</AnalysisData>
+
+			<Presentation>
+				<Text>
+					<Id>1794797290861</Id>
+					<Name><![CDATA[text]]></Name>
+					<X>40</X><Y>30</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12490271</Color>
+					<Text><![CDATA[bini_LUTI : SensitivityAnalysis_parInvestRentSensitivity]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>24</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794797290862</Id>
+					<Name><![CDATA[text1]]></Name>
+					<X>50</X><Y>80</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12171190</Color>
+					<Text><![CDATA[Iterations completed:]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794797290863</Id>
+					<Name><![CDATA[text2]]></Name>
+					<X>240</X><Y>80</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12042869</Color>
+					<Text><![CDATA[?]]></Text>
+					<TextCode><![CDATA[format( getNumberOfCompletedIterations() )]]></TextCode>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>RIGHT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794797290864</Id>
+					<Name><![CDATA[text3]]></Name>
+					<X>50</X><Y>110</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12566464</Color>
+					<Text><![CDATA[Parameters]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Line>
+					<Id>1794797290865</Id>
+					<Name><![CDATA[line]]></Name>
+					<X>40</X><Y>130</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>2</LineWidth>
+					<LineColor>-12566464</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<BeginArrowSize>1</BeginArrowSize>
+					<BeginArrowStyle>0</BeginArrowStyle>
+					<EndArrowSize>1</EndArrowSize>
+					<EndArrowStyle>0</EndArrowStyle>
+					<Dx>210</Dx>
+					<Dy>0</Dy>
+					<Dz>0</Dz>
+				</Line>
+				<Text>
+					<Id>1794797290866</Id>
+					<Name><![CDATA[text4]]></Name>
+					<X>50</X><Y>140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12171190</Color>
+					<Text><![CDATA[parInvestRentSensitivity]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794797290867</Id>
+					<Name><![CDATA[text5]]></Name>
+					<X>240</X><Y>140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12042869</Color>
+					<Text><![CDATA[?]]></Text>
+					<TextCode><![CDATA[format( parInvestRentSensitivity )]]></TextCode>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>RIGHT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794797290868</Id>
+					<Name><![CDATA[text6]]></Name>
+					<X>50</X><Y>180</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12566464</Color>
+					<Text><![CDATA[SensitivityAnalysis_parInvestRentSensitivity]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+    			<Plot>
+					<Id>1794797290870</Id>
+					<Name><![CDATA[chart0]]></Name>
+					<X>0</X><Y>180</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<AutoUpdate>false</AutoUpdate>
+					<RecurrenceProperties>
+						<Id>1794797290869</Id>
+						<OccurrenceAtTime>true</OccurrenceAtTime>
+						<OccurrenceDate>1794816000000</OccurrenceDate>
+						<OccurrenceTime Class="CodeUnitValue">
+							<Code><![CDATA[0]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</OccurrenceTime>
+						<RecurrenceCode Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</RecurrenceCode>
+					</RecurrenceProperties>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Width>680</Width>
+					<Height>300</Height>
+					<BackgroundColor/>
+					<BorderColor/>
+					<ChartArea>
+						<XOffset>50</XOffset>
+						<YOffset>20</YOffset>
+						<Width>610</Width>
+						<Height>220</Height>
+						<BackgroundColor>-1</BackgroundColor>
+						<BorderColor>-9868951</BorderColor>
+						<GridColor>-12566464</GridColor>
+					</ChartArea>
+					<Legend>
+						<Place>SOUTH</Place>
+						<TextColor>-12566464</TextColor>
+						<Size>40</Size>
+					</Legend>
+					<Labels>
+						<HorLabelsPosition>DEFAULT</HorLabelsPosition>
+						<VerLabelsPosition>DEFAULT</VerLabelsPosition>
+						<TextColor>-12566464</TextColor>
+					</Labels>
+					<ShowLegend>true</ShowLegend>
+					<VerScaleFromExpression><![CDATA[0]]></VerScaleFromExpression>
+					<VerScaleToExpression><![CDATA[1]]></VerScaleToExpression>
+					<VerScaleType>AUTO</VerScaleType>
+					<DrawLine>false</DrawLine>
+					<Interpolation>LINEAR</Interpolation>
+					<DatasetExpression>  
+						<Title><![CDATA[Title]]></Title>
+					<Id>1794797442440</Id>
+					<Expression><![CDATA[chart0_dataSet]]></Expression>
+					<Color>-12799119</Color>
+					<Expression2><![CDATA[0]]></Expression2>
+					<Expression2Flag>false</Expression2Flag>
+						<PointStyle>CIRCLE</PointStyle>
+						<LineWidth>1.0</LineWidth>
+						<HorizontalAxisExpression><![CDATA[0]]></HorizontalAxisExpression>
 					</DatasetExpression>
 					<SamplesToKeep>100</SamplesToKeep>
 					<HorScaleFromExpression><![CDATA[0]]></HorScaleFromExpression>
@@ -13237,14 +15270,1010 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 				<Id>1794780894986</Id>
 				<Type>RANGE</Type>
 				<From Class="CodeValue">
-					<Code><![CDATA[1]]></Code>
+					<Code><![CDATA[0]]></Code>
 				</From>
 				<To Class="CodeValue">
 					<Code><![CDATA[4]]></Code>
 				</To>
 				<Step Class="CodeValue">
-					<Code><![CDATA[0.5]]></Code>
+					<Code><![CDATA[0.2]]></Code>
 				</Step>
+			</RangeVariationParamValue>
+			<ModelTimeProperties>
+				<StopOption><![CDATA[Never]]></StopOption>
+				<InitialDate><![CDATA[1793318400000]]></InitialDate>	
+				<InitialTime><![CDATA[0.0]]></InitialTime>	
+				<FinalDate><![CDATA[1795996800000]]></FinalDate>	
+				<FinalTime><![CDATA[100.0]]></FinalTime>	
+			</ModelTimeProperties>
+			<PresentationProperties>
+				<EnableZoomAndPanning>true</EnableZoomAndPanning>
+				<Title><![CDATA[bini_LUTI : SensitivityAnalysis_parInvestRentSensitivity]]></Title>
+				<EnableDeveloperPanel>true</EnableDeveloperPanel>
+				<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
+			</PresentationProperties>
+			<ReplicationsProperties>
+				<UseReplication>false</UseReplication>
+				<FixedReplicationsNumber>true</FixedReplicationsNumber>
+				<ReplicationPerIteration>10</ReplicationPerIteration>
+				<MinimumReplication>2</MinimumReplication>
+				<MaximumReplication>10</MaximumReplication>
+				<ConfidenceLevel>LEVEL_80</ConfidenceLevel>
+				<ErrorPercent>0.5</ErrorPercent>
+				<ExpressionForConfidenceComputation><![CDATA[0]]></ExpressionForConfidenceComputation>
+			</ReplicationsProperties>
+		</ParamVariationExperiment>
+		<!--   =========  Parameter Variation Experiment   ========  -->
+		<ParamVariationExperiment ActiveObjectClassId="1793400593371">
+			<Id>1794802448738</Id>
+			<Name><![CDATA[SensitivityAnalysis_parVOTMean]]></Name>
+			<CommandLineArguments><![CDATA[]]></CommandLineArguments>
+			<MaximumMemory>4096</MaximumMemory>
+			<RandomNumberGenerationType>fixedSeed</RandomNumberGenerationType>
+			<CustomGeneratorCode>new Random()</CustomGeneratorCode>
+			<BeforeEachExperimentRunCode><![CDATA[chart0.removeAll();
+]]></BeforeEachExperimentRunCode>
+			<AfterSimulationRunCode><![CDATA[Color color = lerpColor( (getCurrentIteration() - 1) / (double) (getMaximumIterations() - 1), blue, red );
+dataset.add(root.parVOTMean, root.varSpreadChangePercent);
+chart0.updateData();]]></AfterSimulationRunCode>
+			<SeedValue>1</SeedValue>
+			<SelectionModeForSimultaneousEvents>LIFO</SelectionModeForSimultaneousEvents>
+			<VmArgs><![CDATA[]]></VmArgs>
+			<LoadRootFromSnapshot>false</LoadRootFromSnapshot>
+			<AnalysisData>
+    			<DataSet>
+					<Id>1794802825082</Id>
+					<Name><![CDATA[dataset]]></Name>
+					<X>320</X><Y>760</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<RecurrenceProperties>
+						<Id>1794802825080</Id>
+						<OccurrenceAtTime>true</OccurrenceAtTime>
+						<OccurrenceDate>1794816000000</OccurrenceDate>
+						<OccurrenceTime Class="CodeUnitValue">
+							<Code><![CDATA[0]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+						</OccurrenceTime>
+						<RecurrenceCode Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+						</RecurrenceCode>
+					</RecurrenceProperties>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>100</SamplesToKeep>
+				</DataSet>
+			</AnalysisData>
+
+			<Presentation>
+				<Text>
+					<Id>1794802448742</Id>
+					<Name><![CDATA[text]]></Name>
+					<X>40</X><Y>30</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12490271</Color>
+					<Text><![CDATA[bini_LUTI : SensitivityAnalysis_parVOTMean]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>24</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794802448743</Id>
+					<Name><![CDATA[text1]]></Name>
+					<X>50</X><Y>80</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12171190</Color>
+					<Text><![CDATA[Iterations completed:]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794802448744</Id>
+					<Name><![CDATA[text2]]></Name>
+					<X>240</X><Y>80</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12042869</Color>
+					<Text><![CDATA[?]]></Text>
+					<TextCode><![CDATA[format( getNumberOfCompletedIterations() )]]></TextCode>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>RIGHT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794802448745</Id>
+					<Name><![CDATA[text3]]></Name>
+					<X>50</X><Y>110</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12566464</Color>
+					<Text><![CDATA[Parameters]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Line>
+					<Id>1794802448746</Id>
+					<Name><![CDATA[line]]></Name>
+					<X>40</X><Y>130</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>2</LineWidth>
+					<LineColor>-12566464</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<BeginArrowSize>1</BeginArrowSize>
+					<BeginArrowStyle>0</BeginArrowStyle>
+					<EndArrowSize>1</EndArrowSize>
+					<EndArrowStyle>0</EndArrowStyle>
+					<Dx>210</Dx>
+					<Dy>0</Dy>
+					<Dz>0</Dz>
+				</Line>
+				<Text>
+					<Id>1794802448747</Id>
+					<Name><![CDATA[text4]]></Name>
+					<X>50</X><Y>140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12171190</Color>
+					<Text><![CDATA[parVOTMean]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794802448748</Id>
+					<Name><![CDATA[text5]]></Name>
+					<X>240</X><Y>140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12042869</Color>
+					<Text><![CDATA[?]]></Text>
+					<TextCode><![CDATA[format( parVOTMean )]]></TextCode>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>RIGHT</Alignment>
+				</Text>
+				<Text>
+					<Id>1794802448749</Id>
+					<Name><![CDATA[text6]]></Name>
+					<X>50</X><Y>180</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12566464</Color>
+					<Text><![CDATA[SensitivityAnalysis_parVOTMean]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+    			<Plot>
+					<Id>1794802448751</Id>
+					<Name><![CDATA[chart0]]></Name>
+					<X>40</X><Y>240</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<AutoUpdate>false</AutoUpdate>
+					<RecurrenceProperties>
+						<Id>1794802448750</Id>
+						<OccurrenceAtTime>true</OccurrenceAtTime>
+						<OccurrenceDate>1794816000000</OccurrenceDate>
+						<OccurrenceTime Class="CodeUnitValue">
+							<Code><![CDATA[0]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</OccurrenceTime>
+						<RecurrenceCode Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</RecurrenceCode>
+					</RecurrenceProperties>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Width>680</Width>
+					<Height>300</Height>
+					<BackgroundColor/>
+					<BorderColor/>
+					<ChartArea>
+						<XOffset>50</XOffset>
+						<YOffset>20</YOffset>
+						<Width>610</Width>
+						<Height>220</Height>
+						<BackgroundColor>-1</BackgroundColor>
+						<BorderColor>-9868951</BorderColor>
+						<GridColor>-12566464</GridColor>
+					</ChartArea>
+					<Legend>
+						<Place>SOUTH</Place>
+						<TextColor>-12566464</TextColor>
+						<Size>40</Size>
+					</Legend>
+					<Labels>
+						<HorLabelsPosition>DEFAULT</HorLabelsPosition>
+						<VerLabelsPosition>DEFAULT</VerLabelsPosition>
+						<TextColor>-12566464</TextColor>
+					</Labels>
+					<ShowLegend>true</ShowLegend>
+					<VerScaleFromExpression><![CDATA[0]]></VerScaleFromExpression>
+					<VerScaleToExpression><![CDATA[1]]></VerScaleToExpression>
+					<VerScaleType>AUTO</VerScaleType>
+					<DrawLine>false</DrawLine>
+					<Interpolation>LINEAR</Interpolation>
+					<DatasetExpression>  
+						<Title><![CDATA[Title]]></Title>
+					<Id>1794802717797</Id>
+					<Expression><![CDATA[dataset]]></Expression>
+					<Color>-16728065</Color>
+					<Expression2><![CDATA[0]]></Expression2>
+					<Expression2Flag>false</Expression2Flag>
+						<PointStyle>CIRCLE</PointStyle>
+						<LineWidth>1.0</LineWidth>
+						<HorizontalAxisExpression><![CDATA[0]]></HorizontalAxisExpression>
+					</DatasetExpression>
+					<SamplesToKeep>100</SamplesToKeep>
+					<HorScaleFromExpression><![CDATA[0]]></HorScaleFromExpression>
+					<HorScaleToExpression><![CDATA[1]]></HorScaleToExpression>
+					<HorScaleType>AUTO</HorScaleType>
+    			</Plot>
+			</Presentation>
+
+			<AllowParallelEvaluations>true</AllowParallelEvaluations>
+			<UseFreeformParameters>false</UseFreeformParameters>
+			<NumberOfRuns>8</NumberOfRuns>
+			<FreeformParamValue>	
+				<Id>1793468131891</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793468179891</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793493677767</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793493784751</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793553351797</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793553382114</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793553397391</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793581475775</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793585115539</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793588894441</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793588984644</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793636382660</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793638337691</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793638777428</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639041163</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639220222</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639282181</Id>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[2]]></Code>
+				</Expression>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639319734</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639600599</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793639730177</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793667179006</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669447704</Id>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[0.1 * pow(2, index)]]></Code>
+				</Expression>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669555578</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669565283</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669593220</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669599978</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669611700</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793669671259</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793670172057</Id>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[60*3]]></Code>
+				</Expression>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793670220724</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793674537154</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793674549456</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793674587662</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793674603915</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793725938462</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793725969038</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793726896567</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793739086763</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793739086767</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793740799423</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793743602542</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793748432948</Id>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[500*500]]></Code>
+				</Expression>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793748779940</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793748808514</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793748836188</Id>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[500]]></Code>
+				</Expression>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793749760121</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793750269959</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793753136715</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793756898932</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793797716994</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793806464223</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793915350701</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793917425180</Id>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[10 * 500]]></Code>
+				</Expression>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793941280831</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793941384657</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793941422043</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793948736691</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1793950682452</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794003439386</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794009167627</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794009528943</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794034711658</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794037682012</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794132761334</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794146041103</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794175943005</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794193416060</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794199898097</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794209054276</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794286819098</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794287843616</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794307461760</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794308630301</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794316178976</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794475177970</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794501608137</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794505742984</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794505773135</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794588684079</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794603561582</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794646867061</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794649718106</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794651563562</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794666465505</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794671963791</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794703704076</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794749649224</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794762536260</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794774473937</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794774473949</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1794780894986</Id>
+			</FreeformParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793468131891</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793468179891</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793493677767</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793493784751</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793553351797</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793553382114</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793553397391</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793581475775</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793585115539</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793588894441</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793588984644</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793636382660</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793638337691</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793638777428</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639041163</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639220222</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639282181</Id>
+				<Type>FIXED</Type>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[2]]></Code>
+				</Expression>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639319734</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639600599</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793639730177</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793667179006</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669447704</Id>
+				<Type>RANGE</Type>
+				<From Class="CodeValue">
+					<Code><![CDATA[0.1]]></Code>
+				</From>
+				<To Class="CodeValue">
+					<Code><![CDATA[1.1]]></Code>
+				</To>
+				<Step Class="CodeValue">
+					<Code><![CDATA[0.1]]></Code>
+				</Step>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669555578</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669565283</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669593220</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669599978</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669611700</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793669671259</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793670172057</Id>
+				<Type>FIXED</Type>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[60*3]]></Code>
+				</Expression>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793670220724</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793674537154</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793674549456</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793674587662</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793674603915</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793725938462</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793725969038</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793726896567</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793739086763</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793739086767</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793740799423</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793743602542</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793748432948</Id>
+				<Type>FIXED</Type>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[500*500]]></Code>
+				</Expression>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793748779940</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793748808514</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793748836188</Id>
+				<Type>FIXED</Type>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[500]]></Code>
+				</Expression>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793749760121</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793750269959</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793753136715</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793756898932</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793797716994</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793806464223</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793915350701</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793917425180</Id>
+				<Type>FIXED</Type>
+				<Expression Class="CodeValue">
+					<Code><![CDATA[10 * 500]]></Code>
+				</Expression>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793941280831</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793941384657</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793941422043</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793948736691</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1793950682452</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794003439386</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794009167627</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794009528943</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794034711658</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794037682012</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794132761334</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794146041103</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794175943005</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794193416060</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794199898097</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794209054276</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794286819098</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794287843616</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794307461760</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794308630301</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794316178976</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794475177970</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794501608137</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794505742984</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794505773135</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794588684079</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794603561582</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794646867061</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794649718106</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794651563562</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794666465505</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794671963791</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794703704076</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794749649224</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794762536260</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794774473937</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794774473949</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1794780894986</Id>
+				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<ModelTimeProperties>
 				<StopOption><![CDATA[Stop at specified time]]></StopOption>
@@ -13255,7 +16284,7 @@ parVOL = drawLognormal.applyAsDouble(main.parActivityVOLMean, main.parActivityVO
 			</ModelTimeProperties>
 			<PresentationProperties>
 				<EnableZoomAndPanning>true</EnableZoomAndPanning>
-				<Title><![CDATA[bini_LUTI : SensitivityAnalysis_parInvestRentSensitivity]]></Title>
+				<Title><![CDATA[bini_LUTI : SensitivityAnalysis_parVOTMean]]></Title>
 				<EnableDeveloperPanel>true</EnableDeveloperPanel>
 				<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
 			</PresentationProperties>
